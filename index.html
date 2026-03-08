@@ -403,6 +403,10 @@
                 <textarea id="questDescription" rows="4" style="width: 100%;" placeholder="Entrez la description de la quête">Une chasse de monstre personnalisée créée avec le Générateur de quêtes.</textarea>
             </div>
             <div class="form-group">
+                <label for="questClient">Nom du client :</label>
+                <input type="text" id="questClient" placeholder="Entrez le nom du client de la quête" value="Générateur de quêtes">
+            </div>
+            <div class="form-group">
                 <label for="questLevel">Niveau de quête (★) :</label>
                 <select id="questLevel" onchange="onQuestLevelChange(this.value)">
                     <option value="1">★1</option>
@@ -1055,11 +1059,13 @@
                 // ── Infos de base ────────────────────────────────────────────
                 const data = raw._DataList;
                 const msgFR = raw._MessageAssetList?.find(m => m.Language === 2);
-                const title = msgFR?.MessageData?.find(m => m.Name?.endsWith('_100'))?.Text || '';
-                const desc  = msgFR?.MessageData?.find(m => m.Name?.endsWith('_102'))?.Text || '';
+                const title  = msgFR?.MessageData?.find(m => m.Name?.endsWith('_100'))?.Text || '';
+                const client = msgFR?.MessageData?.find(m => m.Name?.endsWith('_101'))?.Text || '';
+                const desc   = msgFR?.MessageData?.find(m => m.Name?.endsWith('_102'))?.Text || '';
 
                 document.getElementById('questId').value        = data._MissionId?._Value ?? ext.questId ?? 10086;
                 document.getElementById('questTitle').value     = title;
+                document.getElementById('questClient').value    = client;
                 document.getElementById('questDescription').value = desc;
                 document.getElementById('timeLimit').value      = data._TimeLimit ?? 20;
                 document.getElementById('rewardMoney').value    = data._RemMoney  ?? 24000;
@@ -1203,6 +1209,7 @@
                 const questId = parseInt(questIdElement.value) || 10086;
                 const questTitle = questTitleElement.value || "Custom Quest";
                 const questDescription = questDescriptionElement.value || "A custom monster hunt";
+                const questClient = document.getElementById('questClient')?.value || "Générateur de quêtes";
                 const questLevel = parseInt(questLevelElement.value) || 8;
                 const questLocation = questLocationElement.value || "1181994624";
                 const timeLimit = parseInt(timeLimitElement.value) || 20;
@@ -1403,7 +1410,7 @@
                                 {"Name": "Mission600016_000", "Text": ""},
                                 {"Name": "Mission600016_001", "Text": ""},
                                 {"Name": "Mission600016_100", "Text": questTitle},
-                                {"Name": "Mission600016_101", "Text": "Générateur de quêtes"},
+                                {"Name": "Mission600016_101", "Text": questClient},
                                 {"Name": "Mission600016_102", "Text": questDescription},
                                 {"Name": "Mission600016_122", "Text": ""},
                                 {"Name": "Mission600016_123", "Text": ""},
@@ -1416,7 +1423,7 @@
                                 {"Name": "Mission600016_000", "Text": ""},
                                 {"Name": "Mission600016_001", "Text": ""},
                                 {"Name": "Mission600016_100", "Text": questTitle},
-                                {"Name": "Mission600016_101", "Text": "Custom Quest Generator"},
+                                {"Name": "Mission600016_101", "Text": questClient},
                                 {"Name": "Mission600016_102", "Text": questDescription},
                                 {"Name": "Mission600016_122", "Text": ""},
                                 {"Name": "Mission600016_123", "Text": ""},
@@ -1429,7 +1436,7 @@
                                 {"Name": "Mission600016_000", "Text": ""},
                                 {"Name": "Mission600016_001", "Text": ""},
                                 {"Name": "Mission600016_100", "Text": questTitle},
-                                {"Name": "Mission600016_101", "Text": "カスタムクエストジェネレーター"},
+                                {"Name": "Mission600016_101", "Text": questClient},
                                 {"Name": "Mission600016_102", "Text": questDescription},
                                 {"Name": "Mission600016_122", "Text": ""},
                                 {"Name": "Mission600016_123", "Text": ""},
@@ -1442,7 +1449,7 @@
                                 {"Name": "Mission600016_000", "Text": ""},
                                 {"Name": "Mission600016_001", "Text": ""},
                                 {"Name": "Mission600016_100", "Text": questTitle},
-                                {"Name": "Mission600016_101", "Text": "自定义任务生成器"},
+                                {"Name": "Mission600016_101", "Text": questClient},
                                 {"Name": "Mission600016_102", "Text": questDescription},
                                 {"Name": "Mission600016_122", "Text": ""},
                                 {"Name": "Mission600016_123", "Text": ""},
@@ -1595,6 +1602,7 @@
                     <h3>Résumé de la quête</h3>
                     <div>
                         <div><strong>Titre :</strong> ${quest._MessageAssetList.find(m => m.Language === getLanguageCode(currentLanguage)).MessageData[2].Text}</div>
+                        <div><strong>Client :</strong> ${quest._MessageAssetList.find(m => m.Language === getLanguageCode(currentLanguage)).MessageData[3].Text}</div>
                         <div><strong>ID :</strong> ${quest._DataList._MissionId._Value}</div>
                         <div><strong>Niveau :</strong> ★${quest._DataList._QuestLv}</div>
                         <div><strong>Lieu :</strong> ${quest._DataList._Stage._Name}</div>
