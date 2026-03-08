@@ -661,6 +661,10 @@
         }
 
         // Populate monster list
+        // Monstres ayant une version Alpha Suprême
+        const ARCH_TEMPERED_IDS = new Set([-1547364608, 1467998976, 1657778432, 746996864]);
+        // Rey Dau, Uth Duna, Nu Udra, Arkveld
+
         function populateMonsterList() {
             const monsterList = document.getElementById('monster-list');
             if (!monsterList) return;
@@ -676,6 +680,11 @@
                 card.dataset.monsterLabel = monster.label;
 
                 const existingSelection = selectedMonsters.find(m => m.fixedId === monster.fixedId);
+                const canBeAT = ARCH_TEMPERED_IDS.has(monster.fixedId);
+                // Si le monstre n'a pas d'AT et était en mode AT, on le repasse Alpha
+                if (existingSelection && existingSelection.variant === 'ARCH_TEMPERED' && !canBeAT) {
+                    existingSelection.variant = 'TEMPERED';
+                }
                 const variant = existingSelection ? (existingSelection.variant || 'TEMPERED') : 'TEMPERED';
 
                 if (existingSelection) {
@@ -689,13 +698,14 @@
 
                 card.innerHTML = `
                     <h3>${monster.name[currentLanguage]}</h3>
-                    <p style="margin:2px 0;font-size:0.85em;color:#666;">ID: ${monster.fixedId}</p>
-                    <p style="margin:2px 0;font-size:0.85em;color:#666;">Label: ${monster.label}</p>
+                    <p style="margin:2px 0;font-size:0.85em;color:var(--text-dim);">ID: ${monster.fixedId}</p>
+                    <p style="margin:2px 0;font-size:0.85em;color:var(--text-dim);">Label: ${monster.label}</p>
                     <div class="monster-controls">
-                        <label for="${checkboxId}" style="color:#c0175f;">
+                        ${canBeAT ? `
+                        <label for="${checkboxId}" style="color:var(--at-h);">
                             <input type="checkbox" id="${checkboxId}" ${isArchTempered ? 'checked' : ''}>
                             Alpha Suprême
-                        </label>
+                        </label>` : `<span style="font-size:0.75em;color:var(--text-dim);font-style:italic;">Alpha uniquement</span>`}
                     </div>
                 `;
 
@@ -706,7 +716,8 @@
                     if (sel) {
                         selectedMonsters.splice(selectedMonsters.indexOf(sel), 1);
                         card.classList.remove('selected', 'alpha', 'arch-tempered');
-                        card.querySelector('input[type="checkbox"]').checked = false;
+                        const cb2 = card.querySelector('input[type="checkbox"]');
+                        if (cb2) cb2.checked = false;
                     } else {
                         const cb = card.querySelector('input[type="checkbox"]');
                         const newVariant = cb.checked ? 'ARCH_TEMPERED' : 'TEMPERED';
@@ -717,20 +728,23 @@
                     updateMonsterPreview();
                 });
 
-                // Checkbox toggles between TEMPERED and ARCH_TEMPERED
-                card.querySelector('input[type="checkbox"]').addEventListener('change', function(e) {
-                    e.stopPropagation();
-                    const newVariant = this.checked ? 'ARCH_TEMPERED' : 'TEMPERED';
-                    const sel = selectedMonsters.find(m => m.fixedId === monster.fixedId);
-                    if (sel) {
-                        sel.variant = newVariant;
-                    } else {
-                        selectedMonsters.push({ ...monster, variant: newVariant });
-                        card.classList.add('selected');
-                    }
-                    applyVariantClass(card, newVariant);
-                    updateMonsterPreview();
-                });
+                // Checkbox toggles between TEMPERED and ARCH_TEMPERED (uniquement si disponible)
+                const cb = card.querySelector('input[type="checkbox"]');
+                if (cb) {
+                    cb.addEventListener('change', function(e) {
+                        e.stopPropagation();
+                        const newVariant = this.checked ? 'ARCH_TEMPERED' : 'TEMPERED';
+                        const sel = selectedMonsters.find(m => m.fixedId === monster.fixedId);
+                        if (sel) {
+                            sel.variant = newVariant;
+                        } else {
+                            selectedMonsters.push({ ...monster, variant: newVariant });
+                            card.classList.add('selected');
+                        }
+                        applyVariantClass(card, newVariant);
+                        updateMonsterPreview();
+                    });
+                }
 
                 monsterList.appendChild(card);
             });
