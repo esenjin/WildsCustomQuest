@@ -263,10 +263,10 @@
 <body>
     <div class="language-selector">
         <select id="language">
-            <option value="fr" selected>Français</option>
-            <option value="en">English</option>
-            <option value="jp">日本語</option>
-            <option value="cn">中文</option>
+            <option value="fr-fr" selected>Français</option>
+            <option value="en-us">English</option>
+            <option value="ja-jp">日本語</option>
+            <option value="zh-cn">中文</option>
         </select>
     </div>
 
@@ -407,7 +407,7 @@
         let rewardListData = {};
         let selectedMonsters = [];
         let rewardItems = [];
-        let currentLanguage = 'fr';
+        let currentLanguage = 'fr-fr';
         let questData = {
             raw: null,
             ext: null
@@ -436,10 +436,10 @@
                 }
                 itemsData = await itemsResponse.json();
                 
-                // Load reward list data
-                const rewardResponse = await fetch(`reward_list_${currentLanguage}.json`);
+                // Load reward list data (single multilingual file)
+                const rewardResponse = await fetch(`reward_list.json`);
                 if (!rewardResponse.ok) {
-                    throw new Error(`Failed to load reward_list_${currentLanguage}.json: ${rewardResponse.status} ${rewardResponse.statusText}`);
+                    throw new Error(`Failed to load reward_list.json: ${rewardResponse.status} ${rewardResponse.statusText}`);
                 }
                 rewardListData = await rewardResponse.json();
                 
@@ -465,10 +465,10 @@
                             fixedId: 26,
                             label: "EM0001_00_0",
                             name: {
-                                fr: "Rathian",
-                                cn: "雌火龙",
-                                en: "Rathian",
-                                jp: "リオレイア"
+                                "fr-fr": "Rathian",
+                                "zh-cn": "雌火龙",
+                                "en-us": "Rathian",
+                                "ja-jp": "リオレイア"
                             }
                         }
                     ];
@@ -482,10 +482,10 @@
                             fixedId: 2,
                             label: "ITEM_0000",
                             name: {
-                                fr: "Potion",
-                                cn: "回复药",
-                                en: "Potion",
-                                jp: "回復薬"
+                                "fr-fr": "Potion",
+                                "zh-cn": "回复药",
+                                "en-us": "Potion",
+                                "ja-jp": "回復薬"
                             }
                         }
                     ];
@@ -525,25 +525,8 @@
                 updateMonsterPreview();
                 updateRewardItemNames();
                 
-                // Try to load reward list for the selected language
-                try {
-                    fetch(`reward_list_${currentLanguage}.json`)
-                        .then(response => {
-                            if (response.ok) {
-                                return response.json();
-                            }
-                            throw new Error(`Could not load reward list for ${currentLanguage}`);
-                        })
-                        .then(data => {
-                            rewardListData = data;
-                            console.log(`Loaded reward list for ${currentLanguage}`);
-                        })
-                        .catch(err => {
-                            console.warn(`Impossible de charger la liste de récompenses pour ${currentLanguage}`, err);
-                        });
-                } catch (error) {
-                    console.warn(`Erreur lors du chargement de la liste de récompenses pour ${currentLanguage}`, error);
-                }
+                // Le fichier reward_list.json est multilingue, pas besoin de recharger
+                console.log(`Langue changée : ${currentLanguage}`);
             });
         }
 
@@ -1379,10 +1362,10 @@
 
         function getLanguageCode(language) {
             const codes = {
-                "fr": 2,
-                "en": 1,
-                "jp": 0,
-                "cn": 13
+                "fr-fr": 2,
+                "en-us": 1,
+                "ja-jp": 0,
+                "zh-cn": 13
             };
             return codes[language] || 2;
         }
