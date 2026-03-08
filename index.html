@@ -720,7 +720,7 @@
                         if (cb2) cb2.checked = false;
                     } else {
                         const cb = card.querySelector('input[type="checkbox"]');
-                        const newVariant = cb.checked ? 'ARCH_TEMPERED' : 'TEMPERED';
+                        const newVariant = cb && cb.checked ? 'ARCH_TEMPERED' : 'TEMPERED';
                         selectedMonsters.push({ ...monster, variant: newVariant });
                         card.classList.add('selected');
                         applyVariantClass(card, newVariant);
