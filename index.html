@@ -200,6 +200,64 @@
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
             transform: translateY(-1px);
         }
+        .monster-card.alpha {
+            background-color: #f8f0ff;
+            border-color: #9b59b6;
+        }
+        .monster-card.alpha.selected {
+            background-color: #f0e6ff;
+            border-color: #7d3c98;
+        }
+        .monster-card.arch-tempered {
+            background-color: #fff0f5;
+            border-color: #e91e8c;
+        }
+        .monster-card.arch-tempered.selected {
+            background-color: #ffe0ee;
+            border-color: #c0175f;
+        }
+        .badge-alpha {
+            display: inline-block;
+            font-size: 0.7em;
+            background-color: #9b59b6;
+            color: white;
+            border-radius: 3px;
+            padding: 1px 5px;
+            margin-left: 5px;
+            vertical-align: middle;
+            font-weight: bold;
+        }
+        .badge-arch-tempered {
+            display: inline-block;
+            font-size: 0.7em;
+            background-color: #e91e8c;
+            color: white;
+            border-radius: 3px;
+            padding: 1px 5px;
+            margin-left: 5px;
+            vertical-align: middle;
+            font-weight: bold;
+        }
+        .monster-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 6px;
+        }
+        .monster-controls label {
+            font-size: 0.8em;
+            font-weight: normal;
+            margin: 0;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .monster-controls input[type="radio"] {
+            width: auto;
+            margin: 0;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -240,7 +298,7 @@
             </div>
             <div class="form-group">
                 <label for="questLevel">Niveau de quête (★) :</label>
-                <select id="questLevel">
+                <select id="questLevel" onchange="onQuestLevelChange(this.value)">
                     <option value="1">★1</option>
                     <option value="2">★2</option>
                     <option value="3">★3</option>
@@ -249,6 +307,8 @@
                     <option value="6">★6</option>
                     <option value="7">★7</option>
                     <option value="8" selected>★8</option>
+                    <option value="9">★9</option>
+                    <option value="10">★10</option>
                 </select>
             </div>
             <div class="form-group">
@@ -515,32 +575,81 @@
             monsterList.innerHTML = '';
 
             enemiesData.forEach(monster => {
-                // Skip monsters with empty names
                 if (!monster.name || !monster.name[currentLanguage]) return;
-                
+
                 const card = document.createElement('div');
                 card.className = 'monster-card';
                 card.dataset.monsterId = monster.fixedId;
                 card.dataset.monsterLabel = monster.label;
-                
-                // Check if this monster is already selected
-                if (selectedMonsters.some(m => m.fixedId === monster.fixedId)) {
+
+                const existingSelection = selectedMonsters.find(m => m.fixedId === monster.fixedId);
+                const variant = existingSelection ? (existingSelection.variant || 'NORMAL') : 'NORMAL';
+
+                if (existingSelection) {
                     card.classList.add('selected');
+                    if (variant === 'TEMPERED') card.classList.add('alpha');
+                    if (variant === 'ARCH_TEMPERED') card.classList.add('arch-tempered');
                 }
-                
+
+                const radioName = `variant-${monster.fixedId}`;
+
                 card.innerHTML = `
                     <h3>${monster.name[currentLanguage]}</h3>
-                    <p>ID: ${monster.fixedId}</p>
-                    <p>Label: ${monster.label}</p>
+                    <p style="margin:2px 0;font-size:0.85em;color:#666;">ID: ${monster.fixedId}</p>
+                    <p style="margin:2px 0;font-size:0.85em;color:#666;">Label: ${monster.label}</p>
+                    <div class="monster-controls">
+                        <label><input type="radio" name="${radioName}" value="NORMAL" ${variant === 'NORMAL' ? 'checked' : ''}> Normal</label>
+                        <label style="color:#7d3c98;"><input type="radio" name="${radioName}" value="TEMPERED" ${variant === 'TEMPERED' ? 'checked' : ''}> Alpha</label>
+                        <label style="color:#c0175f;"><input type="radio" name="${radioName}" value="ARCH_TEMPERED" ${variant === 'ARCH_TEMPERED' ? 'checked' : ''}> Alpha Suprême</label>
+                    </div>
                 `;
-                
-                card.addEventListener('click', function() {
-                    toggleMonsterSelection(monster);
-                    card.classList.toggle('selected');
+
+                // Click on card body (not radio controls) toggles selection
+                card.addEventListener('click', function(e) {
+                    if (e.target.type === 'radio' || e.target.tagName === 'LABEL' || e.target.closest('label')) return;
+                    const sel = selectedMonsters.find(m => m.fixedId === monster.fixedId);
+                    if (sel) {
+                        // Deselect
+                        selectedMonsters.splice(selectedMonsters.indexOf(sel), 1);
+                        card.classList.remove('selected', 'alpha', 'arch-tempered');
+                        // Reset radios to Normal
+                        card.querySelector(`input[value="NORMAL"]`).checked = true;
+                    } else {
+                        // Select with current radio value
+                        const checkedVariant = card.querySelector(`input[name="${radioName}"]:checked`).value;
+                        selectedMonsters.push({ ...monster, variant: checkedVariant });
+                        card.classList.add('selected');
+                        applyVariantClass(card, checkedVariant);
+                    }
+                    updateMonsterPreview();
                 });
-                
+
+                // Radio buttons update the variant (and auto-select if not already selected)
+                card.querySelectorAll(`input[name="${radioName}"]`).forEach(radio => {
+                    radio.addEventListener('change', function(e) {
+                        e.stopPropagation();
+                        const newVariant = this.value;
+                        const sel = selectedMonsters.find(m => m.fixedId === monster.fixedId);
+                        if (sel) {
+                            sel.variant = newVariant;
+                        } else {
+                            selectedMonsters.push({ ...monster, variant: newVariant });
+                            card.classList.add('selected');
+                        }
+                        card.classList.remove('alpha', 'arch-tempered');
+                        applyVariantClass(card, newVariant);
+                        updateMonsterPreview();
+                    });
+                });
+
                 monsterList.appendChild(card);
             });
+        }
+
+        function applyVariantClass(card, variant) {
+            card.classList.remove('alpha', 'arch-tempered');
+            if (variant === 'TEMPERED') card.classList.add('alpha');
+            if (variant === 'ARCH_TEMPERED') card.classList.add('arch-tempered');
         }
 
         // Filter monsters based on search term
@@ -591,7 +700,10 @@
                 selectedMonsters.forEach(monster => {
                     const monsterName = monster.name && monster.name[currentLanguage] ? 
                         monster.name[currentLanguage] : 'Monstre inconnu';
-                    html += `<li>${monsterName} (${monster.label})</li>`;
+                    let badge = '';
+                    if (monster.variant === 'TEMPERED')      badge = '<span class="badge-alpha">Alpha</span>';
+                    if (monster.variant === 'ARCH_TEMPERED') badge = '<span class="badge-arch-tempered">Alpha Suprême</span>';
+                    html += `<li>${monsterName}${badge} <span style="color:#888;font-size:0.85em">(${monster.label})</span></li>`;
                 });
                 
                 html += '</ol>';
@@ -757,6 +869,33 @@
             });
         }
 
+        // Auto-fill suggested defaults when quest level changes
+        function onQuestLevelChange(level) {
+            const lvl = parseInt(level);
+            const cfg = getQuestLevelConfig(lvl);
+            document.getElementById('rewardMoney').value = cfg.money;
+            document.getElementById('hrPoints').value = cfg.hrPoints;
+        }
+
+        // Returns recommended money, HR points, rewardId and OrderHR per level
+        function getQuestLevelConfig(level) {
+            // rewardId mapping derived from reward_list data:
+            // 1-4 → 201, 5-6 → 301, 7 → 450, 8 → 520, 9 → 620, 10 → 630
+            const configs = {
+                1:  { money: 2400,  hrPoints: 100, rewardId: 201, orderHR: 1  },
+                2:  { money: 4800,  hrPoints: 180, rewardId: 201, orderHR: 3  },
+                3:  { money: 7200,  hrPoints: 270, rewardId: 201, orderHR: 5  },
+                4:  { money: 9600,  hrPoints: 360, rewardId: 301, orderHR: 8  },
+                5:  { money: 12000, hrPoints: 450, rewardId: 301, orderHR: 11 },
+                6:  { money: 16800, hrPoints: 540, rewardId: 301, orderHR: 14 },
+                7:  { money: 20400, hrPoints: 600, rewardId: 450, orderHR: 18 },
+                8:  { money: 24000, hrPoints: 660, rewardId: 520, orderHR: 21 },
+                9:  { money: 36000, hrPoints: 900, rewardId: 620, orderHR: 29 },
+                10: { money: 48000, hrPoints: 1200, rewardId: 630, orderHR: 40 }
+            };
+            return configs[level] || configs[8];
+        }
+
         // Generate quest
         function generateQuest() {
             try {
@@ -798,6 +937,9 @@
                 const timeLimit = parseInt(timeLimitElement.value) || 20;
                 const rewardMoney = parseInt(rewardMoneyElement.value) || 24000;
                 const hrPoints = parseInt(hrPointsElement.value) || 660;
+
+                // Resolve level-dependent config
+                const levelConfig = getQuestLevelConfig(questLevel);
                 
                 // Generate the raw quest data
                 const rawData = {
@@ -836,7 +978,7 @@
                             "_InitPos": "(-326,-28,176)",
                             "_IsUseRandomSize": false,
                             "_LayoutKeepID": -1,
-                            "_LegendaryID": "NORMAL",
+                            "_LegendaryID": monster.variant === 'TEMPERED' ? "TEMPERED" : monster.variant === 'ARCH_TEMPERED' ? "ARCH_TEMPERED" : "NORMAL",
                             "_OptionTag": {
                                 "Value": 0
                             },
@@ -889,7 +1031,7 @@
                                     "_StartAfterFirstCondition": false
                                 },
                                 "_EmTargetID": 101 + index,
-                                "_LegendaryID": "NORMAL",
+                                "_LegendaryID": monster.variant === 'TEMPERED' ? "TEMPERED" : monster.variant === 'ARCH_TEMPERED' ? "ARCH_TEMPERED" : "NORMAL",
                                 "_RoleID": "NORMAL",
                                 "_ShowTargetGuide": true,
                                 "_TargetIDValue": monster.fixedId,
@@ -914,7 +1056,7 @@
                         },
                         "_OrderCondition": {
                             "_MaxPlayerNum": 4,
-                            "_OrderHR": 21,
+                            "_OrderHR": levelConfig.orderHR,
                             "_OrderMR": 0,
                             "_PremiseMission": {
                                 "_Name": "前置任务ID",
@@ -1086,7 +1228,7 @@
                 // Generate the ext quest data
                 const extData = {
                     "questId": questId,
-                    "rewardId": 520,
+                    "rewardId": levelConfig.rewardId,
                     "rewardItems": rewardItems.map(item => ({
                         "itemId": item.itemId,
                         "itemName": item.itemName,
@@ -1141,7 +1283,12 @@
                     const monster = enemiesData.find(m => m.fixedId === target._EmID);
                     const monsterName = monster && monster.name && monster.name[currentLanguage] ? 
                         monster.name[currentLanguage] : 'Monstre inconnu';
-                    monstersList += `<li>${monsterName} (${monster ? monster.label : 'Inconnu'})</li>`;
+                    const badge = target._LegendaryID === 'TEMPERED'
+                        ? '<span class="badge-alpha">Alpha</span>'
+                        : target._LegendaryID === 'ARCH_TEMPERED'
+                        ? '<span class="badge-arch-tempered">Alpha Suprême</span>'
+                        : '';
+                    monstersList += `<li>${monsterName}${badge} <span style="color:#888;font-size:0.85em">(${monster ? monster.label : 'Inconnu'})</span></li>`;
                 });
                 
                 let rewardsList = '';
@@ -1158,7 +1305,8 @@
                         <div><strong>Lieu :</strong> ${quest._DataList._Stage._Name}</div>
                         <div><strong>Limite de temps :</strong> ${quest._DataList._TimeLimit} minutes</div>
                         <div><strong>Récompense en zenny :</strong> ${quest._DataList._RemMoney}</div>
-                        <div><strong>Points HR :</strong> ${quest._DataList._HRPoint}</div>
+                        <div><strong>Points de RC :</strong> ${quest._DataList._HRPoint}</div>
+                        <div><strong>ID de récompenses :</strong> ${questData.ext.rewardId}</div>
                         <div><strong>Monstres :</strong></div>
                         <ul>${monstersList}</ul>
                         <div><strong>Récompenses :</strong></div>
