@@ -52,6 +52,7 @@ Un grand merci à kassent pour avoir créé le mod Custom Quest Loader qui rend 
 
 - Cet outil a été créé en complément du mod [Custom Quest Loader](https://www.nexusmods.com/monsterhunterwilds/mods/1096) de kassent
 - Un grand merci à kassent pour avoir rendu les quêtes personnalisées possibles dans Monster Hunter Wilds
+- Merci à kassent pour le dépôt [mhwilds_datas](https://github.com/kassent/mhwilds_data/tree/master) avec les données complètes à jour.
 - Ce projet est un fork de [WildCustomQuest](https://github.com/Farad77/WildCustomQuest) qui ajoute essentiellement une traduction FR
 
 ## Mentions légales
