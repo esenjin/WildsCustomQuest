@@ -333,6 +333,10 @@
                 <label for="hrPoints">Points de RC :</label>
                 <input type="number" id="hrPoints" min="100" step="10" value="660">
             </div>
+            <div class="form-group">
+                <label for="questLife">Nombre de morts autorisées :</label>
+                <input type="number" id="questLife" min="1" max="9" value="2">
+            </div>
             <div class="button-group">
                 <button onclick="goToTab('monsters')">Suivant : Sélectionner les monstres</button>
             </div>
@@ -566,63 +570,60 @@
                 card.dataset.monsterLabel = monster.label;
 
                 const existingSelection = selectedMonsters.find(m => m.fixedId === monster.fixedId);
-                const variant = existingSelection ? (existingSelection.variant || 'NORMAL') : 'NORMAL';
+                const variant = existingSelection ? (existingSelection.variant || 'TEMPERED') : 'TEMPERED';
 
                 if (existingSelection) {
                     card.classList.add('selected');
-                    if (variant === 'TEMPERED') card.classList.add('alpha');
                     if (variant === 'ARCH_TEMPERED') card.classList.add('arch-tempered');
+                    else card.classList.add('alpha');
                 }
 
-                const radioName = `variant-${monster.fixedId}`;
+                const checkboxId = `arch-${monster.fixedId}`;
+                const isArchTempered = variant === 'ARCH_TEMPERED';
 
                 card.innerHTML = `
                     <h3>${monster.name[currentLanguage]}</h3>
                     <p style="margin:2px 0;font-size:0.85em;color:#666;">ID: ${monster.fixedId}</p>
                     <p style="margin:2px 0;font-size:0.85em;color:#666;">Label: ${monster.label}</p>
                     <div class="monster-controls">
-                        <label><input type="radio" name="${radioName}" value="NORMAL" ${variant === 'NORMAL' ? 'checked' : ''}> Normal</label>
-                        <label style="color:#7d3c98;"><input type="radio" name="${radioName}" value="TEMPERED" ${variant === 'TEMPERED' ? 'checked' : ''}> Alpha</label>
-                        <label style="color:#c0175f;"><input type="radio" name="${radioName}" value="ARCH_TEMPERED" ${variant === 'ARCH_TEMPERED' ? 'checked' : ''}> Alpha Suprême</label>
+                        <label for="${checkboxId}" style="color:#c0175f;">
+                            <input type="checkbox" id="${checkboxId}" ${isArchTempered ? 'checked' : ''}>
+                            Alpha Suprême
+                        </label>
                     </div>
                 `;
 
-                // Click on card body (not radio controls) toggles selection
+                // Click on card body (not checkbox) toggles selection
                 card.addEventListener('click', function(e) {
-                    if (e.target.type === 'radio' || e.target.tagName === 'LABEL' || e.target.closest('label')) return;
+                    if (e.target.type === 'checkbox' || e.target.tagName === 'LABEL' || e.target.closest('label')) return;
                     const sel = selectedMonsters.find(m => m.fixedId === monster.fixedId);
                     if (sel) {
-                        // Deselect
                         selectedMonsters.splice(selectedMonsters.indexOf(sel), 1);
                         card.classList.remove('selected', 'alpha', 'arch-tempered');
-                        // Reset radios to Normal
-                        card.querySelector(`input[value="NORMAL"]`).checked = true;
+                        card.querySelector('input[type="checkbox"]').checked = false;
                     } else {
-                        // Select with current radio value
-                        const checkedVariant = card.querySelector(`input[name="${radioName}"]:checked`).value;
-                        selectedMonsters.push({ ...monster, variant: checkedVariant });
+                        const cb = card.querySelector('input[type="checkbox"]');
+                        const newVariant = cb.checked ? 'ARCH_TEMPERED' : 'TEMPERED';
+                        selectedMonsters.push({ ...monster, variant: newVariant });
                         card.classList.add('selected');
-                        applyVariantClass(card, checkedVariant);
+                        applyVariantClass(card, newVariant);
                     }
                     updateMonsterPreview();
                 });
 
-                // Radio buttons update the variant (and auto-select if not already selected)
-                card.querySelectorAll(`input[name="${radioName}"]`).forEach(radio => {
-                    radio.addEventListener('change', function(e) {
-                        e.stopPropagation();
-                        const newVariant = this.value;
-                        const sel = selectedMonsters.find(m => m.fixedId === monster.fixedId);
-                        if (sel) {
-                            sel.variant = newVariant;
-                        } else {
-                            selectedMonsters.push({ ...monster, variant: newVariant });
-                            card.classList.add('selected');
-                        }
-                        card.classList.remove('alpha', 'arch-tempered');
-                        applyVariantClass(card, newVariant);
-                        updateMonsterPreview();
-                    });
+                // Checkbox toggles between TEMPERED and ARCH_TEMPERED
+                card.querySelector('input[type="checkbox"]').addEventListener('change', function(e) {
+                    e.stopPropagation();
+                    const newVariant = this.checked ? 'ARCH_TEMPERED' : 'TEMPERED';
+                    const sel = selectedMonsters.find(m => m.fixedId === monster.fixedId);
+                    if (sel) {
+                        sel.variant = newVariant;
+                    } else {
+                        selectedMonsters.push({ ...monster, variant: newVariant });
+                        card.classList.add('selected');
+                    }
+                    applyVariantClass(card, newVariant);
+                    updateMonsterPreview();
                 });
 
                 monsterList.appendChild(card);
@@ -631,8 +632,8 @@
 
         function applyVariantClass(card, variant) {
             card.classList.remove('alpha', 'arch-tempered');
-            if (variant === 'TEMPERED') card.classList.add('alpha');
             if (variant === 'ARCH_TEMPERED') card.classList.add('arch-tempered');
+            else card.classList.add('alpha');
         }
 
         // Filter monsters based on search term
@@ -684,7 +685,6 @@
                     const monsterName = monster.name && monster.name[currentLanguage] ? 
                         monster.name[currentLanguage] : 'Monstre inconnu';
                     let badge = '';
-                    if (monster.variant === 'TEMPERED')      badge = '<span class="badge-alpha">Alpha</span>';
                     if (monster.variant === 'ARCH_TEMPERED') badge = '<span class="badge-arch-tempered">Alpha Suprême</span>';
                     html += `<li>${monsterName}${badge} <span style="color:#888;font-size:0.85em">(${monster.label})</span></li>`;
                 });
@@ -904,6 +904,7 @@
                 const timeLimitElement = document.getElementById('timeLimit');
                 const rewardMoneyElement = document.getElementById('rewardMoney');
                 const hrPointsElement = document.getElementById('hrPoints');
+                const questLifeElement = document.getElementById('questLife');
                 
                 if (!questIdElement || !questTitleElement || !questDescriptionElement || 
                     !questLevelElement || !questLocationElement || !timeLimitElement || 
@@ -920,6 +921,7 @@
                 const timeLimit = parseInt(timeLimitElement.value) || 20;
                 const rewardMoney = parseInt(rewardMoneyElement.value) || 24000;
                 const hrPoints = parseInt(hrPointsElement.value) || 660;
+                const questLife = parseInt(questLifeElement?.value) || 2;
 
                 // Resolve level-dependent config
                 const levelConfig = getQuestLevelConfig(questLevel);
@@ -964,6 +966,7 @@
                             "_IsUseRandomSize": false,
                             "_LayoutKeepID": -1,
                             "_LegendaryID": monster.variant === 'ARCH_TEMPERED' ? "KING" : "NORMAL",
+                            "_OptionTag": {
                                 "Value": 0
                             },
                             "_RandomSizeTblId": {
@@ -1052,7 +1055,7 @@
                             "_Value": 4
                         },
                         "_QuestAttribute": 0,
-                        "_QuestLife": 2,
+                        "_QuestLife": questLife,
                         "_QuestLv": questLevel,
                         "_QuestMsg": {
                             "_ClearConditionMsg": {
@@ -1282,8 +1285,6 @@
                         monster.name[currentLanguage] : 'Monstre inconnu';
                     const badge = target._LegendaryID === 'KING'
                         ? '<span class="badge-arch-tempered">Alpha Suprême</span>'
-                        : (target._DifficultyRankId && target._DifficultyRankId.Value === '6d893ac4-5f81-4850-b1ac-a2c23845cb15' && target._LegendaryID === 'NORMAL')
-                        ? '<span class="badge-alpha">Alpha</span>'
                         : '';
                     monstersList += `<li>${monsterName}${badge} <span style="color:#888;font-size:0.85em">(${monster ? monster.label : 'Inconnu'})</span></li>`;
                 });
@@ -1301,6 +1302,7 @@
                         <div><strong>Niveau :</strong> ★${quest._DataList._QuestLv}</div>
                         <div><strong>Lieu :</strong> ${quest._DataList._Stage._Name}</div>
                         <div><strong>Limite de temps :</strong> ${quest._DataList._TimeLimit} minutes</div>
+                        <div><strong>Morts autorisées :</strong> ${quest._DataList._QuestLife}</div>
                         <div><strong>Récompense en zenny :</strong> ${quest._DataList._RemMoney}</div>
                         <div><strong>Points de RC :</strong> ${quest._DataList._HRPoint}</div>
                         <div><strong>ID de récompenses :</strong> ${questData.ext.rewardId}</div>
