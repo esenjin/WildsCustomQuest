@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Monster Hunter Wild - Custom Quest Generator</title>
+    <title>Monster Hunter Wilds - Générateur de quêtes personnalisées</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -119,6 +119,12 @@
         button.secondary:hover {
             background-color: #545b62;
         }
+        button.external {
+            background-color: #007bff;
+        }
+        button.external:hover {
+            background-color: #0056b3;
+        }
         #searchMonster, #searchItem {
             padding: 8px;
             margin-bottom: 15px;
@@ -199,40 +205,41 @@
 <body>
     <div class="language-selector">
         <select id="language">
+            <option value="fr" selected>Français</option>
             <option value="en">English</option>
             <option value="jp">日本語</option>
             <option value="cn">中文</option>
         </select>
     </div>
 
-    <h1>Monster Hunter Wild - Custom Quest Generator</h1>
+    <h1>Monster Hunter Wilds - Générateur de quêtes personnalisées</h1>
     
     <div class="alert" id="alert-message"></div>
     
     <div class="container">
         <div class="tabs">
-            <div class="tab active" data-tab="quest-info">Quest Info</div>
-            <div class="tab" data-tab="monsters">Monsters</div>
-            <div class="tab" data-tab="rewards">Rewards</div>
-            <div class="tab" data-tab="generate">Generate & Export</div>
+            <div class="tab active" data-tab="quest-info">Infos de quête</div>
+            <div class="tab" data-tab="monsters">Monstres</div>
+            <div class="tab" data-tab="rewards">Récompenses</div>
+            <div class="tab" data-tab="generate">Générer & Exporter</div>
         </div>
         
         <div class="tab-content active" id="quest-info">
-            <h2>Basic Quest Information</h2>
+            <h2>Informations de base de la quête</h2>
             <div class="form-group">
-                <label for="questId">Quest ID:</label>
-                <input type="number" id="questId" placeholder="Enter a unique ID (e.g. 10086)" value="10086">
+                <label for="questId">ID de la quête :</label>
+                <input type="number" id="questId" placeholder="Entrez un ID unique (ex. 10086)" value="10086">
             </div>
             <div class="form-group">
-                <label for="questTitle">Quest Title:</label>
-                <input type="text" id="questTitle" placeholder="Enter quest title" value="Custom Hunt">
+                <label for="questTitle">Titre de la quête :</label>
+                <input type="text" id="questTitle" placeholder="Entrez le titre de la quête" value="Chasse personnalisée">
             </div>
             <div class="form-group">
-                <label for="questDescription">Quest Description:</label>
-                <textarea id="questDescription" rows="4" style="width: 100%;" placeholder="Enter quest description">A custom monster hunt created with Quest Generator.</textarea>
+                <label for="questDescription">Description de la quête :</label>
+                <textarea id="questDescription" rows="4" style="width: 100%;" placeholder="Entrez la description de la quête">Une chasse de monstre personnalisée créée avec le Générateur de quêtes.</textarea>
             </div>
             <div class="form-group">
-                <label for="questLevel">Quest Level (★):</label>
+                <label for="questLevel">Niveau de quête (★) :</label>
                 <select id="questLevel">
                     <option value="1">★1</option>
                     <option value="2">★2</option>
@@ -245,60 +252,60 @@
                 </select>
             </div>
             <div class="form-group">
-                <label for="questLocation">Location:</label>
+                <label for="questLocation">Lieu :</label>
                 <select id="questLocation">
-                    <option value="1181994624">Arena (st401)</option>
-                    <option value="1198037248">Windward Plains</option>
-                    <option value="1180946048">Scarlet Forest</option>
-                    <option value="1179897472">Oilwell Basin</option>
-                    <option value="1182777600">Cliffside Caverns</option>
+                    <option value="1181994624">Arène (st401)</option>
+                    <option value="1198037248">Plaines venteuses</option>
+                    <option value="1180946048">Forêt écarlate</option>
+                    <option value="1179897472">Bassin pétrolier</option>
+                    <option value="1182777600">Ruines de Wyveria</option>
                 </select>
             </div>
             <div class="form-group">
-                <label for="timeLimit">Time Limit (minutes):</label>
+                <label for="timeLimit">Limite de temps (minutes) :</label>
                 <input type="number" id="timeLimit" min="5" max="50" value="20">
             </div>
             <div class="form-group">
-                <label for="rewardMoney">Money Reward:</label>
+                <label for="rewardMoney">Récompense en zenny :</label>
                 <input type="number" id="rewardMoney" min="1000" step="1000" value="24000">
             </div>
             <div class="form-group">
-                <label for="hrPoints">HR Points:</label>
+                <label for="hrPoints">Points de RC :</label>
                 <input type="number" id="hrPoints" min="100" step="10" value="660">
             </div>
             <div class="button-group">
-                <button onclick="goToTab('monsters')">Next: Select Monsters</button>
+                <button onclick="goToTab('monsters')">Suivant : Sélectionner les monstres</button>
             </div>
         </div>
         
         <div class="tab-content" id="monsters">
-            <h2>Select Monsters</h2>
+            <h2>Sélectionner les monstres</h2>
             <div class="button-group" style="margin-bottom: 20px;">
-                <button class="secondary" onclick="goToTab('quest-info')">Previous</button>
-                <button onclick="goToTab('rewards')">Next: Set Rewards</button>
+                <button class="secondary" onclick="goToTab('quest-info')">Précédent</button>
+                <button onclick="goToTab('rewards')">Suivant : Définir les récompenses</button>
             </div>
-            <input type="text" id="searchMonster" placeholder="Search monsters...">
+            <input type="text" id="searchMonster" placeholder="Rechercher un monstre...">
             <div class="grid" id="monster-list">
                 <!-- Monster cards will be populated by JavaScript -->
             </div>
             <div class="preview" id="monster-preview">
-                <h3>Selected Monsters:</h3>
-                <p>No monsters selected</p>
+                <h3>Monstres sélectionnés :</h3>
+                <p>Aucun monstre sélectionné</p>
             </div>
         </div>
         
         <div class="tab-content" id="rewards">
-            <h2>Quest Rewards</h2>
-            <input type="text" id="searchItem" placeholder="Search items...">
+            <h2>Récompenses de la quête</h2>
+            <input type="text" id="searchItem" placeholder="Rechercher un objet...">
             <div class="search-tags" style="margin: 5px 0 15px; display: flex; flex-wrap: wrap; gap: 8px;">
-                <span style="font-size: 0.85em; margin-right: 5px;">Quick filters:</span>
-                <a href="#" class="tag" onclick="document.getElementById('searchItem').value='orb'; filterItems('orb'); return false;" style="font-size: 0.85em; background: #f0f0f0; padding: 2px 8px; border-radius: 12px; text-decoration: none; color: #333;">orb</a>
+                <span style="font-size: 0.85em; margin-right: 5px;">Filtres rapides :</span>
+                <a href="#" class="tag" onclick="document.getElementById('searchItem').value='orbe'; filterItems('orbe'); return false;" style="font-size: 0.85em; background: #f0f0f0; padding: 2px 8px; border-radius: 12px; text-decoration: none; color: #333;">orbe</a>
                 <a href="#" class="tag" onclick="document.getElementById('searchItem').value='fragment'; filterItems('fragment'); return false;" style="font-size: 0.85em; background: #f0f0f0; padding: 2px 8px; border-radius: 12px; text-decoration: none; color: #333;">fragment</a>
-                <a href="#" class="tag" onclick="document.getElementById('searchItem').value='symbol'; filterItems('symbol'); return false;" style="font-size: 0.85em; background: #f0f0f0; padding: 2px 8px; border-radius: 12px; text-decoration: none; color: #333;">symbol</a>
+                <a href="#" class="tag" onclick="document.getElementById('searchItem').value='symbole'; filterItems('symbole'); return false;" style="font-size: 0.85em; background: #f0f0f0; padding: 2px 8px; border-radius: 12px; text-decoration: none; color: #333;">symbole</a>
                 <a href="#" class="tag" onclick="document.getElementById('searchItem').value='620'; filterItems('620'); return false;" style="font-size: 0.85em; background: #f0f0f0; padding: 2px 8px; border-radius: 12px; text-decoration: none; color: #333;">620</a>
             </div>
             <div class="reward-header" style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px; margin-bottom: 10px; font-weight: bold; padding: 0 10px;">
-                <div>Item Name</div>
+                <div>Nom de l'objet</div>
                 <div>Minimum</div>
                 <div>Maximum</div>
                 <div>Chance %</div>
@@ -306,26 +313,30 @@
             <div id="reward-items">
                 <!-- Reward items will be added here -->
             </div>
-            <button onclick="addReward()" style="margin-top: 15px;">+ Add Reward Item</button>
+            <button onclick="addReward()" style="margin-top: 15px;">+ Ajouter un objet de récompense</button>
             <div class="button-group" style="margin-top: 20px;">
-                <button class="secondary" onclick="goToTab('monsters')">Previous</button>
-                <button onclick="goToTab('generate')">Next: Generate Quest</button>
+                <button class="secondary" onclick="goToTab('monsters')">Précédent</button>
+                <button onclick="goToTab('generate')">Suivant : Générer la quête</button>
             </div>
         </div>
         
         <div class="tab-content" id="generate">
-            <h2>Generated Quest</h2>
+            <h2>Quête générée</h2>
             <div class="preview" id="quest-summary">
-                <h3>Quest Summary</h3>
-                <p>Click the "Generate Quest Files" button to create your custom quest.</p>
+                <h3>Résumé de la quête</h3>
+                <p>Cliquez sur le bouton « Générer les fichiers de quête » pour créer votre quête personnalisée.</p>
             </div>
             <div class="button-group">
-                <button class="secondary" onclick="goToTab('rewards')">Previous</button>
-                <button onclick="generateQuest()">Generate Quest Files</button>
-                <button onclick="downloadQuest()" id="download-btn" disabled>Download Quest Files</button>
+                <button class="secondary" onclick="goToTab('rewards')">Précédent</button>
+                <button onclick="generateQuest()">Générer les fichiers de quête</button>
+                <button onclick="downloadQuest()" id="download-btn" disabled>Télécharger les fichiers de quête</button>
             </div>
-            <h3>Raw JSON Output:</h3>
-            <pre id="output">Quest data will appear here after generation.</pre>
+            <h3>Sortie JSON brute :</h3>
+            <pre id="output">Les données de la quête apparaîtront ici après la génération.</pre>
+        </div>
+
+        <div class="button-group">  
+            <button class="button external" onclick="window.open('https://git.crystalyx.net/Esenjin_Asakha/WildsQuetesPerso', '_blank')">Lien du dépôt sur Gitea</button>
         </div>
     </div>
 
@@ -336,7 +347,7 @@
         let rewardListData = {};
         let selectedMonsters = [];
         let rewardItems = [];
-        let currentLanguage = 'en';
+        let currentLanguage = 'fr';
         let questData = {
             raw: null,
             ext: null
@@ -382,7 +393,7 @@
                 
                 console.log("Data loaded successfully");
             } catch (error) {
-                showAlert("Error loading data: " + error.message);
+                showAlert("Erreur lors du chargement des données : " + error.message);
                 console.error("Error loading data:", error);
                 
                 // Provide fallback data if loading fails
@@ -394,6 +405,7 @@
                             fixedId: 26,
                             label: "EM0001_00_0",
                             name: {
+                                fr: "Rathian",
                                 cn: "雌火龙",
                                 en: "Rathian",
                                 jp: "リオレイア"
@@ -410,6 +422,7 @@
                             fixedId: 2,
                             label: "ITEM_0000",
                             name: {
+                                fr: "Potion",
                                 cn: "回复药",
                                 en: "Potion",
                                 jp: "回復薬"
@@ -466,10 +479,10 @@
                             console.log(`Loaded reward list for ${currentLanguage}`);
                         })
                         .catch(err => {
-                            console.warn(`Failed to load reward list for ${currentLanguage}`, err);
+                            console.warn(`Impossible de charger la liste de récompenses pour ${currentLanguage}`, err);
                         });
                 } catch (error) {
-                    console.warn(`Error loading reward list for ${currentLanguage}`, error);
+                    console.warn(`Erreur lors du chargement de la liste de récompenses pour ${currentLanguage}`, error);
                 }
             });
         }
@@ -568,16 +581,16 @@
             if (!preview) return;
             
             if (selectedMonsters.length === 0) {
-                preview.innerHTML = '<h3>Selected Monsters:</h3><p>No monsters selected</p>';
+                preview.innerHTML = '<h3>Monstres sélectionnés :</h3><p>Aucun monstre sélectionné</p>';
                 return;
             }
             
             try {
-                let html = '<h3>Selected Monsters:</h3><ol>';
+                let html = '<h3>Monstres sélectionnés :</h3><ol>';
                 
                 selectedMonsters.forEach(monster => {
                     const monsterName = monster.name && monster.name[currentLanguage] ? 
-                        monster.name[currentLanguage] : 'Unknown Monster';
+                        monster.name[currentLanguage] : 'Monstre inconnu';
                     html += `<li>${monsterName} (${monster.label})</li>`;
                 });
                 
@@ -585,7 +598,7 @@
                 preview.innerHTML = html;
             } catch (error) {
                 console.error("Error updating monster preview:", error);
-                preview.innerHTML = '<h3>Selected Monsters:</h3><p>Error displaying monsters</p>';
+                preview.innerHTML = '<h3>Monstres sélectionnés :</h3><p>Erreur d\'affichage des monstres</p>';
             }
         }
 
@@ -599,7 +612,7 @@
             // Create a new reward item object
             const newReward = {
                 itemId: itemsData.length > 0 ? itemsData[0].id : 1,
-                itemName: itemsData.length > 0 ? (itemsData[0].name[currentLanguage] || "Unknown Item") : "Potion",
+                itemName: itemsData.length > 0 ? (itemsData[0].name[currentLanguage] || "Objet inconnu") : "Potion",
                 minCount: 1,
                 maxCount: 1,
                 probability: 100
@@ -643,7 +656,7 @@
                 if (selectedItem) {
                     rewardItems[index].itemId = parseInt(value);
                     rewardItems[index].itemName = selectedItem.name && selectedItem.name[currentLanguage] ? 
-                        selectedItem.name[currentLanguage] : 'Unknown Item';
+                        selectedItem.name[currentLanguage] : 'Objet inconnu';
                 }
             } else if (property === 'minCount' || property === 'maxCount') {
                 rewardItems[index][property] = parseInt(value);
@@ -709,7 +722,7 @@
             rewardItems.forEach((item, index) => {
                 const selectedItem = itemsData.find(menuItem => menuItem.id === item.itemId);
                 if (selectedItem && selectedItem.name) {
-                    item.itemName = selectedItem.name[currentLanguage] || 'Unknown Item';
+                    item.itemName = selectedItem.name[currentLanguage] || 'Objet inconnu';
                     
                     const rewardElement = document.querySelector(`.reward-item[data-index="${index}"]`);
                     if (rewardElement) {
@@ -749,13 +762,13 @@
             try {
                 // Validate inputs
                 if (selectedMonsters.length === 0) {
-                    showAlert("Please select at least one monster");
+                    showAlert("Veuillez sélectionner au moins un monstre");
                     goToTab('monsters');
                     return;
                 }
                 
                 if (rewardItems.length === 0) {
-                    showAlert("Please add at least one reward item");
+                    showAlert("Veuillez ajouter au moins un objet de récompense");
                     goToTab('rewards');
                     return;
                 }
@@ -773,7 +786,7 @@
                 if (!questIdElement || !questTitleElement || !questDescriptionElement || 
                     !questLevelElement || !questLocationElement || !timeLimitElement || 
                     !rewardMoneyElement || !hrPointsElement) {
-                    showAlert("Some form elements are missing. Please reload the page.");
+                    showAlert("Certains éléments du formulaire sont manquants. Veuillez recharger la page.");
                     return;
                 }
                 
@@ -1102,10 +1115,10 @@
                     downloadButton.disabled = false;
                 }
                 
-                showAlert("Quest generated successfully!", "success");
+                showAlert("Quête générée avec succès !", "success");
             } catch (error) {
                 console.error("Error generating quest:", error);
-                showAlert("Error generating quest: " + error.message);
+                showAlert("Erreur lors de la génération de la quête : " + error.message);
             }
         }
 
@@ -1127,8 +1140,8 @@
                 quest._BossZakoDataList._MainTargetDataList.forEach(target => {
                     const monster = enemiesData.find(m => m.fixedId === target._EmID);
                     const monsterName = monster && monster.name && monster.name[currentLanguage] ? 
-                        monster.name[currentLanguage] : 'Unknown Monster';
-                    monstersList += `<li>${monsterName} (${monster ? monster.label : 'Unknown'})</li>`;
+                        monster.name[currentLanguage] : 'Monstre inconnu';
+                    monstersList += `<li>${monsterName} (${monster ? monster.label : 'Inconnu'})</li>`;
                 });
                 
                 let rewardsList = '';
@@ -1137,18 +1150,18 @@
                 });
                 
                 let html = `
-                    <h3>Quest Summary</h3>
+                    <h3>Résumé de la quête</h3>
                     <div>
-                        <div><strong>Title:</strong> ${quest._MessageAssetList.find(m => m.Language === getLanguageCode(currentLanguage)).MessageData[2].Text}</div>
-                        <div><strong>ID:</strong> ${quest._DataList._MissionId._Value}</div>
-                        <div><strong>Level:</strong> ★${quest._DataList._QuestLv}</div>
-                        <div><strong>Location:</strong> ${quest._DataList._Stage._Name}</div>
-                        <div><strong>Time Limit:</strong> ${quest._DataList._TimeLimit} minutes</div>
-                        <div><strong>Reward Money:</strong> ${quest._DataList._RemMoney}</div>
-                        <div><strong>HR Points:</strong> ${quest._DataList._HRPoint}</div>
-                        <div><strong>Monsters:</strong></div>
+                        <div><strong>Titre :</strong> ${quest._MessageAssetList.find(m => m.Language === getLanguageCode(currentLanguage)).MessageData[2].Text}</div>
+                        <div><strong>ID :</strong> ${quest._DataList._MissionId._Value}</div>
+                        <div><strong>Niveau :</strong> ★${quest._DataList._QuestLv}</div>
+                        <div><strong>Lieu :</strong> ${quest._DataList._Stage._Name}</div>
+                        <div><strong>Limite de temps :</strong> ${quest._DataList._TimeLimit} minutes</div>
+                        <div><strong>Récompense en zenny :</strong> ${quest._DataList._RemMoney}</div>
+                        <div><strong>Points HR :</strong> ${quest._DataList._HRPoint}</div>
+                        <div><strong>Monstres :</strong></div>
                         <ul>${monstersList}</ul>
-                        <div><strong>Rewards:</strong></div>
+                        <div><strong>Récompenses :</strong></div>
                         <ul>${rewardsList}</ul>
                     </div>
                 `;
@@ -1156,7 +1169,7 @@
                 questSummary.innerHTML = html;
             } catch (error) {
                 console.error("Error updating quest summary:", error);
-                showAlert("Error updating quest summary: " + error.message);
+                showAlert("Erreur lors de la mise à jour du résumé : " + error.message);
             }
         }
 
@@ -1164,7 +1177,7 @@
         function downloadQuest() {
             try {
                 if (!questData.raw || !questData.ext) {
-                    showAlert("No quest data to download");
+                    showAlert("Aucune donnée de quête à télécharger");
                     return;
                 }
                 
@@ -1172,7 +1185,7 @@
                 
                 // Check if JSZip is available
                 if (typeof JSZip === 'undefined') {
-                    showAlert("JSZip library not loaded. Please check your internet connection and try again.");
+                    showAlert("La bibliothèque JSZip n'est pas chargée. Vérifiez votre connexion internet et réessayez.");
                     return;
                 }
                 
@@ -1192,15 +1205,15 @@
                         link.click();
                         document.body.removeChild(link);
                         
-                        showAlert("Quest files downloaded successfully!", "success");
+                        showAlert("Fichiers de quête téléchargés avec succès !", "success");
                     })
                     .catch(function(error) {
                         console.error("Error creating zip file:", error);
-                        showAlert("Error creating zip file: " + error.message);
+                        showAlert("Erreur lors de la création du fichier ZIP : " + error.message);
                     });
             } catch (error) {
                 console.error("Error downloading quest:", error);
-                showAlert("Error downloading quest: " + error.message);
+                showAlert("Erreur lors du téléchargement de la quête : " + error.message);
             }
         }
 
@@ -1218,11 +1231,12 @@
 
         function getLanguageCode(language) {
             const codes = {
+                "fr": 2,
                 "en": 1,
                 "jp": 0,
                 "cn": 13
             };
-            return codes[language] || 1;
+            return codes[language] || 2;
         }
 
         function showAlert(message, type = 'error') {

@@ -6,7 +6,8 @@
         "name": {
             "cn": "",
             "en": "",
-            "jp": ""
+            "jp": "",
+            "fr": ""
         }
     },
     {
@@ -16,7 +17,8 @@
         "name": {
             "cn": "雌火龙",
             "en": "Rathian",
-            "jp": "リオレイア"
+            "jp": "リオレイア",
+            "fr": "Rathian"
         }
     },
     {
@@ -26,7 +28,8 @@
         "name": {
             "cn": "火龙",
             "en": "Rathalos",
-            "jp": "リオレウス"
+            "jp": "リオレウス",
+            "fr": "Rathalos"
         }
     },
     {
@@ -36,7 +39,8 @@
         "name": {
             "cn": "护火龙",
             "en": "Guardian Rathalos",
-            "jp": "護竜リオレウス"
+            "jp": "護竜リオレウス",
+            "fr": "Rathalos gardien"
         }
     },
     {
@@ -46,7 +50,8 @@
         "name": {
             "cn": "铠龙",
             "en": "Gravios",
-            "jp": "グラビモス"
+            "jp": "グラビモス",
+            "fr": "Gravios"
         }
     },
     {
@@ -56,7 +61,8 @@
         "name": {
             "cn": "怪鸟",
             "en": "Yian Kut-Ku",
-            "jp": "イャンクック"
+            "jp": "イャンクック",
+            "fr": "Yian Kut-Ku"
         }
     },
     {
@@ -66,7 +72,8 @@
         "name": {
             "cn": "毒怪鸟",
             "en": "Gypceros",
-            "jp": "ゲリョス"
+            "jp": "ゲリョス",
+            "fr": "Gypceros"
         }
     },
     {
@@ -76,7 +83,8 @@
         "name": {
             "cn": "桃毛兽王",
             "en": "Congalala",
-            "jp": "ババコンガ"
+            "jp": "ババコンガ",
+            "fr": "Congalala"
         }
     },
     {
@@ -86,7 +94,8 @@
         "name": {
             "cn": "雪狮子王",
             "en": "Blangonga",
-            "jp": "ドドブランゴ"
+            "jp": "ドドブランゴ",
+            "fr": "Blangonga"
         }
     },
     {
@@ -96,7 +105,8 @@
         "name": {
             "cn": "",
             "en": "",
-            "jp": ""
+            "jp": "",
+            "fr": ""
         }
     },
     {
@@ -106,7 +116,8 @@
         "name": {
             "cn": "影蜘蛛",
             "en": "Nerscylla",
-            "jp": "ネルスキュラ"
+            "jp": "ネルスキュラ",
+            "fr": "Nerscylla"
         }
     },
     {
@@ -116,7 +127,8 @@
         "name": {
             "cn": "黑蚀龙",
             "en": "Gore Magala",
-            "jp": "ゴア・マガラ"
+            "jp": "ゴア・マガラ",
+            "fr": "Gore Magala"
         }
     },
     {
@@ -126,7 +138,8 @@
         "name": {
             "cn": "",
             "en": "",
-            "jp": ""
+            "jp": "",
+            "fr": ""
         }
     },
     {
@@ -136,7 +149,8 @@
         "name": {
             "cn": "",
             "en": "",
-            "jp": ""
+            "jp": "",
+            "fr": ""
         }
     },
     {
@@ -146,7 +160,8 @@
         "name": {
             "cn": "",
             "en": "",
-            "jp": ""
+            "jp": "",
+            "fr": ""
         }
     },
     {
@@ -156,7 +171,8 @@
         "name": {
             "cn": "护雷颚龙",
             "en": "Guardian Fulgur Anjanath",
-            "jp": "護竜アンジャナフ亜種"
+            "jp": "護竜アンジャナフ亜種",
+            "fr": "Anjanath tonnerre gardien"
         }
     },
     {
@@ -166,7 +182,8 @@
         "name": {
             "cn": "护凶爪龙",
             "en": "Guardian Ebony Odogaron",
-            "jp": "護竜オドガロン亜種"
+            "jp": "護竜オドガロン亜種",
+            "fr": "Odogaron désastre gardien"
         }
     },
     {
@@ -176,7 +193,8 @@
         "name": {
             "cn": "辟兽",
             "en": "Doshaguma",
-            "jp": "ドシャグマ"
+            "jp": "ドシャグマ",
+            "fr": "Doshaguma"
         }
     },
     {
@@ -186,7 +204,8 @@
         "name": {
             "cn": "护辟兽",
             "en": "Guardian Doshaguma",
-            "jp": "護竜ドシャグマ"
+            "jp": "護竜ドシャグマ",
+            "fr": "Doshaguma gardien"
         }
     },
     {
@@ -196,7 +215,8 @@
         "name": {
             "cn": "沙海龙",
             "en": "Balahara",
-            "jp": "バーラハーラ"
+            "jp": "バーラハーラ",
+            "fr": "Balahara"
         }
     },
     {
@@ -206,7 +226,8 @@
         "name": {
             "cn": "缠蛙",
             "en": "Chatacabra",
-            "jp": "チャタカブラ"
+            "jp": "チャタカブラ",
+            "fr": "Chatacabra"
         }
     },
     {
@@ -216,7 +237,8 @@
         "name": {
             "cn": "炎尾龙",
             "en": "Quematrice",
-            "jp": "ケマトリス"
+            "jp": "ケマトリス",
+            "fr": "Quematrice"
         }
     },
     {
@@ -226,7 +248,8 @@
         "name": {
             "cn": "刺花蜘蛛",
             "en": "Lala Barina",
-            "jp": "ラバラ・バリナ"
+            "jp": "ラバラ・バリナ",
+            "fr": "Lala Barina"
         }
     },
     {
@@ -236,7 +259,8 @@
         "name": {
             "cn": "沼喷龙",
             "en": "Rompopolo",
-            "jp": "ププロポル"
+            "jp": "ププロポル",
+            "fr": "Rompopolo"
         }
     },
     {
@@ -246,7 +270,8 @@
         "name": {
             "cn": "煌雷龙",
             "en": "Rey Dau",
-            "jp": "レ・ダウ"
+            "jp": "レ・ダウ",
+            "fr": "Rey Dau"
         }
     },
     {
@@ -256,7 +281,8 @@
         "name": {
             "cn": "波衣龙",
             "en": "Uth Duna",
-            "jp": "ウズ・トゥナ"
+            "jp": "ウズ・トゥナ",
+            "fr": "Uth Duna"
         }
     },
     {
@@ -266,7 +292,8 @@
         "name": {
             "cn": "狱焰蛸",
             "en": "Nu Udra",
-            "jp": "ヌ・エグドラ"
+            "jp": "ヌ・エグドラ",
+            "fr": "Nu Udra"
         }
     },
     {
@@ -276,7 +303,8 @@
         "name": {
             "cn": "赫猿兽",
             "en": "Ajarakan",
-            "jp": "アジャラカン"
+            "jp": "アジャラカン",
+            "fr": "Ajarakan"
         }
     },
     {
@@ -286,7 +314,8 @@
         "name": {
             "cn": "锁刃龙",
             "en": "Arkveld",
-            "jp": "アルシュベルド"
+            "jp": "アルシュベルド",
+            "fr": "Arkveld"
         }
     },
     {
@@ -296,7 +325,8 @@
         "name": {
             "cn": "护锁刃龙",
             "en": "Guardian Arkveld",
-            "jp": "護竜アルシュベルド"
+            "jp": "護竜アルシュベルド",
+            "fr": "Arkveld gardien"
         }
     },
     {
@@ -306,7 +336,8 @@
         "name": {
             "cn": "风铗龙",
             "en": "Hirabami",
-            "jp": "ヒラバミ"
+            "jp": "ヒラバミ",
+            "fr": "Hirabami"
         }
     },
     {
@@ -316,7 +347,8 @@
         "name": {
             "cn": "冻峰龙",
             "en": "Jin Dahaad",
-            "jp": "ジン・ダハド"
+            "jp": "ジン・ダハド",
+            "fr": "Jin Dahaad"
         }
     },
     {
@@ -326,7 +358,8 @@
         "name": {
             "cn": "暗器蛸",
             "en": "Xu Wu",
-            "jp": "シーウー"
+            "jp": "シーウー",
+            "fr": "Xu Wu"
         }
     },
     {
@@ -336,7 +369,8 @@
         "name": {
             "cn": "白炽龙",
             "en": "Zoh Shia",
-            "jp": "ゾ・シア"
+            "jp": "ゾ・シア",
+            "fr": "Zoh Shia"
         }
     },
     {
@@ -346,7 +380,8 @@
         "name": {
             "cn": "猫式训练用拳击木桶靶",
             "en": "High Purrformance Barrel Puncher",
-            "jp": "ネコ式訓練タルパンチャー"
+            "jp": "ネコ式訓練タルパンチャー",
+            "fr": "Tonneau-puncheur ronron haute performance"
         }
     },
     {
@@ -356,7 +391,8 @@
         "name": {
             "cn": "",
             "en": "",
-            "jp": ""
+            "jp": "",
+            "fr": ""
         }
     },
     {
@@ -366,7 +402,8 @@
         "name": {
             "cn": "巨蜂",
             "en": "Vespoid",
-            "jp": "ランゴスタ"
+            "jp": "ランゴスタ",
+            "fr": "Vespoid"
         }
     },
     {
@@ -376,7 +413,8 @@
         "name": {
             "cn": "桃毛兽",
             "en": "Conga",
-            "jp": "コンガ"
+            "jp": "コンガ",
+            "fr": "Conga"
         }
     },
     {
@@ -386,7 +424,8 @@
         "name": {
             "cn": "雪狮子",
             "en": "Blango",
-            "jp": "ブランゴ"
+            "jp": "ブランゴ",
+            "fr": "Blango"
         }
     },
     {
@@ -396,7 +435,8 @@
         "name": {
             "cn": "",
             "en": "",
-            "jp": ""
+            "jp": "",
+            "fr": ""
         }
     },
     {
@@ -406,7 +446,8 @@
         "name": {
             "cn": "雷甲龙♂",
             "en": "Ceratonoth (Male)",
-            "jp": "ケラトノス♂"
+            "jp": "ケラトノス♂",
+            "fr": "Ceratonoth (mâle)"
         }
     },
     {
@@ -416,7 +457,8 @@
         "name": {
             "cn": "雷甲龙♀",
             "en": "Ceratonoth (Female)",
-            "jp": "ケラトノス♀"
+            "jp": "ケラトノス♀",
+            "fr": "Ceratonoth (femelle)"
         }
     },
     {
@@ -426,7 +468,8 @@
         "name": {
             "cn": "盾突龙",
             "en": "Dalthydon",
-            "jp": "ダルトドン"
+            "jp": "ダルトドン",
+            "fr": "Dalthydon"
         }
     },
     {
@@ -436,7 +479,8 @@
         "name": {
             "cn": "盾突龙（家畜种）",
             "en": "Dalthydon (Livestock)",
-            "jp": "ダルトドン（家畜種）"
+            "jp": "ダルトドン（家畜種）",
+            "fr": "Dalthydon (bétail)"
         }
     },
     {
@@ -446,7 +490,8 @@
         "name": {
             "cn": "血盗虫",
             "en": "Bulaqchi",
-            "jp": "ブブラチカ"
+            "jp": "ブブラチカ",
+            "fr": "Bulaqchi"
         }
     },
     {
@@ -456,7 +501,8 @@
         "name": {
             "cn": "钳速龙",
             "en": "Talioth",
-            "jp": "タリオス"
+            "jp": "タリオス",
+            "fr": "Talioth"
         }
     },
     {
@@ -466,7 +512,8 @@
         "name": {
             "cn": "爆翼龙",
             "en": "Baunos",
-            "jp": "バオノス"
+            "jp": "バオノス",
+            "fr": "Baunos"
         }
     },
     {
@@ -476,7 +523,8 @@
         "name": {
             "cn": "棘吻龙",
             "en": "Gajios",
-            "jp": "ガジオス"
+            "jp": "ガジオス",
+            "fr": "Gajios"
         }
     },
     {
@@ -486,7 +534,8 @@
         "name": {
             "cn": "锯带龙",
             "en": "Piragill",
-            "jp": "ピラギル"
+            "jp": "ピラギル",
+            "fr": "Piragill"
         }
     },
     {
@@ -496,7 +545,8 @@
         "name": {
             "cn": "刺枪翼龙",
             "en": "Harpios",
-            "jp": "ハルプス"
+            "jp": "ハルプス",
+            "fr": "Harpios"
         }
     },
     {
@@ -506,7 +556,8 @@
         "name": {
             "cn": "盔速龙",
             "en": "Kranodath",
-            "jp": "クラノダス"
+            "jp": "クラノダス",
+            "fr": "Kranodath"
         }
     },
     {
@@ -516,7 +567,8 @@
         "name": {
             "cn": "血眠虫",
             "en": "Comaqchi",
-            "jp": "ネマラチカ"
+            "jp": "ネマラチカ",
+            "fr": "Comaqchi"
         }
     },
     {
@@ -526,7 +578,8 @@
         "name": {
             "cn": "胶鲵",
             "en": "Gelidron",
-            "jp": "ゼレドロン"
+            "jp": "ゼレドロン",
+            "fr": "Gelidron"
         }
     },
     {
@@ -536,7 +589,8 @@
         "name": {
             "cn": "电角兽",
             "en": "Rafma",
-            "jp": "ラフマー"
+            "jp": "ラフマー",
+            "fr": "Rafma"
         }
     },
     {
@@ -546,7 +600,8 @@
         "name": {
             "cn": "箭羽龙",
             "en": "Porkeplume",
-            "jp": "ポルケピナ"
+            "jp": "ポルケピナ",
+            "fr": "Porkeplume"
         }
     },
     {
@@ -556,7 +611,8 @@
         "name": {
             "cn": "稚影蜘蛛",
             "en": "Nerscylla Hatchling",
-            "jp": "ネルスキュラベビー"
+            "jp": "ネルスキュラベビー",
+            "fr": "Bébé Nerscylla"
         }
     },
     {
@@ -566,7 +622,8 @@
         "name": {
             "cn": "护鹭鹰龙",
             "en": "Guardian Seikret",
-            "jp": "護竜セクレト"
+            "jp": "護竜セクレト",
+            "fr": "Seikret gardien"
         }
     },
     {
@@ -576,7 +633,8 @@
         "name": {
             "cn": "",
             "en": "",
-            "jp": ""
+            "jp": "",
+            "fr": ""
         }
     },
     {
@@ -586,7 +644,8 @@
         "name": {
             "cn": "麻痹瓦斯蛙",
             "en": "Paratoad",
-            "jp": "シビレガスガエル"
+            "jp": "シビレガスガエル",
+            "fr": "Crapaud paralysant"
         }
     },
     {
@@ -596,7 +655,8 @@
         "name": {
             "cn": "爆炸瓦斯蛙",
             "en": "Nitrotoad",
-            "jp": "ニトロガスガエル"
+            "jp": "ニトロガスガエル",
+            "fr": "Crapaud nitro"
         }
     },
     {
@@ -606,7 +666,8 @@
         "name": {
             "cn": "睡眠瓦斯蛙",
             "en": "Sleeptoad",
-            "jp": "ネムリガスガエル"
+            "jp": "ネムリガスガエル",
+            "fr": "Crapaud somnifère"
         }
     },
     {
@@ -616,7 +677,8 @@
         "name": {
             "cn": "回复蜜虫",
             "en": "Vigorwasp",
-            "jp": "回復ミツムシ"
+            "jp": "回復ミツムシ",
+            "fr": "Guêpe vigueur"
         }
     },
     {
@@ -626,7 +688,8 @@
         "name": {
             "cn": "大回复蜜虫",
             "en": "Giant Vigorwasp",
-            "jp": "大回復ミツムシ"
+            "jp": "大回復ミツムシ",
+            "fr": "Grande guêpe vigueur"
         }
     },
     {
@@ -636,7 +699,8 @@
         "name": {
             "cn": "净化蜜虫",
             "en": "Purewasp",
-            "jp": "浄化ミツムシ"
+            "jp": "浄化ミツムシ",
+            "fr": "Guêpe purifiante"
         }
     },
     {
@@ -646,7 +710,8 @@
         "name": {
             "cn": "闪光翅虫",
             "en": "Flashflies",
-            "jp": "閃光羽虫"
+            "jp": "閃光羽虫",
+            "fr": "Lucioles aveuglantes"
         }
     },
     {
@@ -656,7 +721,8 @@
         "name": {
             "cn": "粪金龟",
             "en": "Dung Beetle",
-            "jp": "フンコロガシ"
+            "jp": "フンコロガシ",
+            "fr": "Bousier"
         }
     },
     {
@@ -666,7 +732,8 @@
         "name": {
             "cn": "爆弹甲虫",
             "en": "Bomb Beetle",
-            "jp": "バクダンイワコロガシ"
+            "jp": "バクダンイワコロガシ",
+            "fr": "Scarabée bombe"
         }
     },
     {
@@ -676,7 +743,8 @@
         "name": {
             "cn": "雪球虫",
             "en": "Rime Beetle",
-            "jp": "ユキダマコガネ"
+            "jp": "ユキダマコガネ",
+            "fr": "Scarabée givre"
         }
     },
     {
@@ -686,7 +754,8 @@
         "name": {
             "cn": "回复蓑衣虫",
             "en": "Vigormantle Bug",
-            "jp": "カイフクコロモムシ"
+            "jp": "カイフクコロモムシ",
+            "fr": "Insecte manteau-vigueur"
         }
     },
     {
@@ -696,7 +765,8 @@
         "name": {
             "cn": "冰冷蓑衣虫",
             "en": "Chillmantle Bug",
-            "jp": "ヒンヤリコロモムシ"
+            "jp": "ヒンヤリコロモムシ",
+            "fr": "Insecte manteau-froid"
         }
     },
     {
@@ -706,7 +776,8 @@
         "name": {
             "cn": "温暖蓑衣虫",
             "en": "Heatmantle Bug",
-            "jp": "ホカホカコロモムシ"
+            "jp": "ホカホカコロモムシ",
+            "fr": "Insecte manteau-chaleur"
         }
     },
     {
@@ -716,7 +787,8 @@
         "name": {
             "cn": "耐力雷虫",
             "en": "Wiggly Litchi",
-            "jp": "スタミナライチュウ"
+            "jp": "スタミナライチュウ",
+            "fr": "Litchi frétillant"
         }
     },
     {
@@ -726,7 +798,8 @@
         "name": {
             "cn": "照暗蜂",
             "en": "Dark Hornet",
-            "jp": "ヤミテラシバチ"
+            "jp": "ヤミテラシバチ",
+            "fr": "Frelon des ténèbres"
         }
     },
     {
@@ -736,7 +809,8 @@
         "name": {
             "cn": "大雷光虫",
             "en": "Great Thunderbugs",
-            "jp": "大雷光虫"
+            "jp": "大雷光虫",
+            "fr": "Grand foudrinsecte"
         }
     },
     {
@@ -746,7 +820,8 @@
         "name": {
             "cn": "楔虫",
             "en": "Wedge Beetle",
-            "jp": "楔虫"
+            "jp": "楔虫",
+            "fr": "Scarabée coin"
         }
     },
     {
@@ -756,7 +831,8 @@
         "name": {
             "cn": "雷光虫",
             "en": "Thunderbug",
-            "jp": "雷光虫"
+            "jp": "雷光虫",
+            "fr": "Foudrinsecte"
         }
     },
     {
@@ -766,7 +842,8 @@
         "name": {
             "cn": "光虫",
             "en": "Flashbug",
-            "jp": "光蟲"
+            "jp": "光蟲",
+            "fr": "Flashinsecte"
         }
     },
     {
@@ -776,7 +853,8 @@
         "name": {
             "cn": "不死虫",
             "en": "Godbug",
-            "jp": "不死虫"
+            "jp": "不死虫",
+            "fr": "Insecte immortel"
         }
     },
     {
@@ -786,7 +864,8 @@
         "name": {
             "cn": "苦虫",
             "en": "Bitterbug",
-            "jp": "にが虫"
+            "jp": "にが虫",
+            "fr": "Amerinsecte"
         }
     },
     {
@@ -796,7 +875,8 @@
         "name": {
             "cn": "搬叶蚁",
             "en": "Leaflugger Ant",
-            "jp": "コノハコビアリ"
+            "jp": "コノハコビアリ",
+            "fr": "Fourmi porte-feuille"
         }
     },
     {
@@ -806,7 +886,8 @@
         "name": {
             "cn": "风切龙",
             "en": "Windrustler",
-            "jp": "カザキリカケリ"
+            "jp": "カザキリカケリ",
+            "fr": "Bruisseur de vent"
         }
     },
     {
@@ -816,7 +897,8 @@
         "name": {
             "cn": "黑风切龙",
             "en": "Black Windrustler",
-            "jp": "クロカゼカケリ"
+            "jp": "クロカゼカケリ",
+            "fr": "Bruisseur de vent noir"
         }
     },
     {
@@ -826,7 +908,8 @@
         "name": {
             "cn": "沙地龙椋鸟",
             "en": "Nothpecker",
-            "jp": "スナチリュウツツキ"
+            "jp": "スナチリュウツツキ",
+            "fr": "Pic des sables"
         }
     },
     {
@@ -836,7 +919,8 @@
         "name": {
             "cn": "陆萤虾",
             "en": "Landlight Shrimp",
-            "jp": "オカホタルエビ"
+            "jp": "オカホタルエビ",
+            "fr": "Crevette lumineuse terrestre"
         }
     },
     {
@@ -846,7 +930,8 @@
         "name": {
             "cn": "淡红萤虾",
             "en": "Pink Landlight Shrimp",
-            "jp": "ウスベニホタルエビ"
+            "jp": "ウスベニホタルエビ",
+            "fr": "Crevette lumineuse rose"
         }
     },
     {
@@ -856,7 +941,8 @@
         "name": {
             "cn": "泡歌鸮",
             "en": "Amstrigian",
-            "jp": "アワウタイズク"
+            "jp": "アワウタイズク",
+            "fr": "Chouette bulleuse"
         }
     },
     {
@@ -866,7 +952,8 @@
         "name": {
             "cn": "美声歌鸮",
             "en": "Hymstrigian",
-            "jp": "ビセイウタイズク"
+            "jp": "ビセイウタイズク",
+            "fr": "Chouette mélodieuse"
         }
     },
     {
@@ -876,7 +963,8 @@
         "name": {
             "cn": "蓄领蜥",
             "en": "Rufflizard",
-            "jp": "ツメコミエリトカゲ"
+            "jp": "ツメコミエリトカゲ",
+            "fr": "Lézard à collerette"
         }
     },
     {
@@ -886,7 +974,8 @@
         "name": {
             "cn": "火焰领蜥",
             "en": "Ember Rufflizard",
-            "jp": "ホムラエリトカゲ"
+            "jp": "ホムラエリトカゲ",
+            "fr": "Lézard à collerette de braise"
         }
     },
     {
@@ -896,7 +985,8 @@
         "name": {
             "cn": "燐炎领蜥",
             "en": "Azure Rufflizard",
-            "jp": "リンエンエリトカゲ"
+            "jp": "リンエンエリトカゲ",
+            "fr": "Lézard à collerette azur"
         }
     },
     {
@@ -906,7 +996,8 @@
         "name": {
             "cn": "清腐虫",
             "en": "Pallbug",
-            "jp": "ノベムシ"
+            "jp": "ノベムシ",
+            "fr": "Insecte pâle"
         }
     },
     {
@@ -916,7 +1007,8 @@
         "name": {
             "cn": "足迹蜥蜴",
             "en": "Tracktail Lizard",
-            "jp": "アシアトノコシ"
+            "jp": "アシアトノコシ",
+            "fr": "Lézard à queue-piste"
         }
     },
     {
@@ -926,7 +1018,8 @@
         "name": {
             "cn": "皇帝蚱蜢",
             "en": "Emperor Hopper",
-            "jp": "皇帝バッタ"
+            "jp": "皇帝バッタ",
+            "fr": "Sauterelle impériale"
         }
     },
     {
@@ -936,7 +1029,8 @@
         "name": {
             "cn": "暴君蚱蜢",
             "en": "Tyrant Hopper",
-            "jp": "暴君バッタ"
+            "jp": "暴君バッタ",
+            "fr": "Sauterelle tyran"
         }
     },
     {
@@ -946,7 +1040,8 @@
         "name": {
             "cn": "大独角仙",
             "en": "Hercudrome",
-            "jp": "ドスヘラクレス"
+            "jp": "ドスヘラクレス",
+            "fr": "Hercudrome"
         }
     },
     {
@@ -956,7 +1051,8 @@
         "name": {
             "cn": "金色独角仙",
             "en": "Gold Hercudrome",
-            "jp": "ゴールデンヘラクレス"
+            "jp": "ゴールデンヘラクレス",
+            "fr": "Hercudrome doré"
         }
     },
     {
@@ -966,7 +1062,8 @@
         "name": {
             "cn": "虹色大独角仙",
             "en": "Prism Hercudrome",
-            "jp": "虹色ドスヘラクレス"
+            "jp": "虹色ドスヘラクレス",
+            "fr": "Hercudrome prisme"
         }
     },
     {
@@ -976,7 +1073,8 @@
         "name": {
             "cn": "四叶蜉蝣",
             "en": "Quatreflies",
-            "jp": "ヨツバカゲロウ"
+            "jp": "ヨツバカゲロウ",
+            "fr": "Quatreflies"
         }
     },
     {
@@ -986,7 +1084,8 @@
         "name": {
             "cn": "千羽蝶",
             "en": "Myriads",
-            "jp": "センバチョウ"
+            "jp": "センバチョウ",
+            "fr": "Myriades"
         }
     },
     {
@@ -996,7 +1095,8 @@
         "name": {
             "cn": "千羽蝶",
             "en": "Myriads",
-            "jp": "センバチョウ"
+            "jp": "センバチョウ",
+            "fr": "Myriades"
         }
     },
     {
@@ -1006,7 +1106,8 @@
         "name": {
             "cn": "宝石金龟子",
             "en": "Jewel Scarab",
-            "jp": "ジュエルコガネ"
+            "jp": "ジュエルコガネ",
+            "fr": "Scarabée joyau"
         }
     },
     {
@@ -1016,7 +1117,8 @@
         "name": {
             "cn": "瑰宝金龟子",
             "en": "Regal Jewel Scarab",
-            "jp": "プレミアジュエルコガネ"
+            "jp": "プレミアジュエルコガネ",
+            "fr": "Scarabée joyau royal"
         }
     },
     {
@@ -1026,7 +1128,8 @@
         "name": {
             "cn": "霞雾蜘蛛",
             "en": "Vaporonid",
-            "jp": "カスミジョロウ"
+            "jp": "カスミジョロウ",
+            "fr": "Vaporonide"
         }
     },
     {
@@ -1036,7 +1139,8 @@
         "name": {
             "cn": "预兆蜻蜓",
             "en": "Omenfly",
-            "jp": "キザシヤンマ"
+            "jp": "キザシヤンマ",
+            "fr": "Libellule présage"
         }
     },
     {
@@ -1046,7 +1150,8 @@
         "name": {
             "cn": "花妖猩",
             "en": "Mimiphyta",
-            "jp": "ハナショウジョウ"
+            "jp": "ハナショウジョウ",
+            "fr": "Mimiphyta"
         }
     },
     {
@@ -1056,7 +1161,8 @@
         "name": {
             "cn": "凝目鼠",
             "en": "Gawkie",
-            "jp": "ジロジロ"
+            "jp": "ジロジロ",
+            "fr": "Gawkie"
         }
     },
     {
@@ -1066,7 +1172,8 @@
         "name": {
             "cn": "绯水攀鲈",
             "en": "Scarlet Joyperch",
-            "jp": "ヒミズキノボリウオ"
+            "jp": "ヒミズキノボリウオ",
+            "fr": "Perchoir écarlate"
         }
     },
     {
@@ -1076,7 +1183,8 @@
         "name": {
             "cn": "闪灯鱼",
             "en": "Blink Angler",
-            "jp": "マタタキウオ"
+            "jp": "マタタキウオ",
+            "fr": "Poisson-lanterne clignotant"
         }
     },
     {
@@ -1086,7 +1194,8 @@
         "name": {
             "cn": "森盏蟹",
             "en": "Florashell Crab",
-            "jp": "モリサカズキガニ"
+            "jp": "モリサカズキガニ",
+            "fr": "Crabe coquille florale"
         }
     },
     {
@@ -1096,7 +1205,8 @@
         "name": {
             "cn": "古盏蟹",
             "en": "Curioshell Crab",
-            "jp": "コットウサカズキガニ"
+            "jp": "コットウサカズキガニ",
+            "fr": "Crabe coquille curieux"
         }
     },
     {
@@ -1106,7 +1216,8 @@
         "name": {
             "cn": "沼盏蟹",
             "en": "Crudeshell Crab",
-            "jp": "ヌマサカズキガニ"
+            "jp": "ヌマサカズキガニ",
+            "fr": "Crabe coquille brute"
         }
     },
     {
@@ -1116,7 +1227,8 @@
         "name": {
             "cn": "隐遁壁虎",
             "en": "Smokeshroud Gekko",
-            "jp": "クラマシゲッコー"
+            "jp": "クラマシゲッコー",
+            "fr": "Gecko voile de fumée"
         }
     },
     {
@@ -1126,7 +1238,8 @@
         "name": {
             "cn": "黑暗壁虎",
             "en": "Gloom Gekko",
-            "jp": "クラヤミゲッコー"
+            "jp": "クラヤミゲッコー",
+            "fr": "Gecko des ténèbres"
         }
     },
     {
@@ -1136,7 +1249,8 @@
         "name": {
             "cn": "端丽翼鸟",
             "en": "Dapperwing",
-            "jp": "オメカシプテルス"
+            "jp": "オメカシプテルス",
+            "fr": "Aile élégante"
         }
     },
     {
@@ -1146,7 +1260,8 @@
         "name": {
             "cn": "绚烂翼鸟",
             "en": "Dazzlewing",
-            "jp": "ケンランプテルス"
+            "jp": "ケンランプテルス",
+            "fr": "Aile éblouissante"
         }
     },
     {
@@ -1156,7 +1271,8 @@
         "name": {
             "cn": "沙野流星",
             "en": "Sandstar",
-            "jp": "スナノリュウセイ"
+            "jp": "スナノリュウセイ",
+            "fr": "Étoile des sables"
         }
     },
     {
@@ -1166,7 +1282,8 @@
         "name": {
             "cn": "鳞片蝙蝠",
             "en": "Scalebat",
-            "jp": "ウロコウモリ"
+            "jp": "ウロコウモリ",
+            "fr": "Chauve-souris écailleuse"
         }
     },
     {
@@ -1176,7 +1293,8 @@
         "name": {
             "cn": "望花水母",
             "en": "Sparklerjelly",
-            "jp": "ハナミアゲ"
+            "jp": "ハナミアゲ",
+            "fr": "Méduse étincelante"
         }
     },
     {
@@ -1186,7 +1304,8 @@
         "name": {
             "cn": "大望花水母",
             "en": "Peony Sparklerjelly",
-            "jp": "タイリンハナミアゲ"
+            "jp": "タイリンハナミアゲ",
+            "fr": "Grande méduse étincelante"
         }
     },
     {
@@ -1196,7 +1315,8 @@
         "name": {
             "cn": "稚狱蛸",
             "en": "Nu Yaya",
-            "jp": "ヌ・ヤヤ"
+            "jp": "ヌ・ヤヤ",
+            "fr": "Nu Yaya"
         }
     },
     {
@@ -1206,7 +1326,8 @@
         "name": {
             "cn": "虚幼",
             "en": "Xu Yo",
-            "jp": "シウシウ"
+            "jp": "シウシウ",
+            "fr": "Xu Yo"
         }
     },
     {
@@ -1216,7 +1337,8 @@
         "name": {
             "cn": "空涡虫",
             "en": "Solanaria",
-            "jp": "ソラナリア"
+            "jp": "ソラナリア",
+            "fr": "Solanaria"
         }
     },
     {
@@ -1226,7 +1348,8 @@
         "name": {
             "cn": "虚无动",
             "en": "Pillopod",
-            "jp": "キョムトン"
+            "jp": "キョムトン",
+            "fr": "Pillopode"
         }
     },
     {
@@ -1236,7 +1359,8 @@
         "name": {
             "cn": "大虚无动",
             "en": "Gillopod",
-            "jp": "ギョムドン"
+            "jp": "ギョムドン",
+            "fr": "Gillopode"
         }
     },
     {
@@ -1246,7 +1370,8 @@
         "name": {
             "cn": "花瓣虫",
             "en": "Petalfly",
-            "jp": "ハナヒラムシ"
+            "jp": "ハナヒラムシ",
+            "fr": "Pétaloinsecte"
         }
     },
     {
@@ -1256,7 +1381,8 @@
         "name": {
             "cn": "柔毛秧鸡",
             "en": "Downy Crake",
-            "jp": "フワフワクイナ"
+            "jp": "フワフワクイナ",
+            "fr": "Râle duveteux"
         }
     },
     {
@@ -1266,7 +1392,8 @@
         "name": {
             "cn": "",
             "en": "",
-            "jp": ""
+            "jp": "",
+            "fr": ""
         }
     },
     {
@@ -1276,7 +1403,8 @@
         "name": {
             "cn": "星屑鱼",
             "en": "Starduster",
-            "jp": "ホシクズイクチス"
+            "jp": "ホシクズイクチス",
+            "fr": "Poussière d'étoile"
         }
     },
     {
@@ -1286,7 +1414,8 @@
         "name": {
             "cn": "星屑鱼",
             "en": "Starduster",
-            "jp": "ホシクズイクチス"
+            "jp": "ホシクズイクチス",
+            "fr": "Poussière d'étoile"
         }
     },
     {
@@ -1296,7 +1425,8 @@
         "name": {
             "cn": "橄榄弓鳍鱼",
             "en": "Virid Bowfin",
-            "jp": "カンランアミア"
+            "jp": "カンランアミア",
+            "fr": "Bowfin verdâtre"
         }
     },
     {
@@ -1306,7 +1436,8 @@
         "name": {
             "cn": "坚硬竹荚鱼",
             "en": "Whetfish",
-            "jp": "キレアジ"
+            "jp": "キレアジ",
+            "fr": "Poisson-aiguisoir"
         }
     },
     {
@@ -1316,7 +1447,8 @@
         "name": {
             "cn": "刺身鱼",
             "en": "Sushifish",
-            "jp": "サシミウオ"
+            "jp": "サシミウオ",
+            "fr": "Poisson-sushi"
         }
     },
     {
@@ -1326,7 +1458,8 @@
         "name": {
             "cn": "贪吃金枪鱼",
             "en": "Gastronome Tuna",
-            "jp": "大食いマグロ"
+            "jp": "大食いマグロ",
+            "fr": "Thon gastronome"
         }
     },
     {
@@ -1336,7 +1469,8 @@
         "name": {
             "cn": "咬鱼",
             "en": "Gajau",
-            "jp": "ガライーバ"
+            "jp": "ガライーバ",
+            "fr": "Gajau"
         }
     },
     {
@@ -1346,7 +1480,8 @@
         "name": {
             "cn": "小金鱼",
             "en": "Goldenfry",
-            "jp": "小金魚"
+            "jp": "小金魚",
+            "fr": "Fretin doré"
         }
     },
     {
@@ -1356,7 +1491,8 @@
         "name": {
             "cn": "黄金鱼",
             "en": "Goldenfish",
-            "jp": "黄金魚"
+            "jp": "黄金魚",
+            "fr": "Poisson doré"
         }
     },
     {
@@ -1366,7 +1502,8 @@
         "name": {
             "cn": "白金鱼",
             "en": "Platinumfish",
-            "jp": "白金魚"
+            "jp": "白金魚",
+            "fr": "Poisson platine"
         }
     },
     {
@@ -1376,7 +1513,8 @@
         "name": {
             "cn": "破裂龙鱼",
             "en": "Burst Arowana",
-            "jp": "ハレツアロワナ"
+            "jp": "ハレツアロワナ",
+            "fr": "Arowana explosif"
         }
     },
     {
@@ -1386,7 +1524,8 @@
         "name": {
             "cn": "爆裂龙鱼",
             "en": "Bomb Arowana",
-            "jp": "バクレツアロワナ"
+            "jp": "バクレツアロワナ",
+            "fr": "Arowana bombe"
         }
     },
     {
@@ -1396,7 +1535,8 @@
         "name": {
             "cn": "火药金鱼",
             "en": "Gunpowderfish",
-            "jp": "バクヤクデメキン"
+            "jp": "バクヤクデメキン",
+            "fr": "Poisson poudre à canon"
         }
     },
     {
@@ -1406,7 +1546,8 @@
         "name": {
             "cn": "大王旗鱼",
             "en": "Speartuna",
-            "jp": "ダイオウカジキ"
+            "jp": "ダイオウカジキ",
+            "fr": "Thon-lance"
         }
     },
     {
@@ -1416,7 +1557,8 @@
         "name": {
             "cn": "化石腔棘鱼",
             "en": "Petricanths",
-            "jp": "カセキカンス"
+            "jp": "カセキカンス",
+            "fr": "Pétricanthe"
         }
     },
     {
@@ -1426,7 +1568,8 @@
         "name": {
             "cn": "玻璃异形鱼",
             "en": "Glass Parexus",
-            "jp": "グラスパレクス"
+            "jp": "グラスパレクス",
+            "fr": "Parexus de verre"
         }
     },
     {
@@ -1436,7 +1579,8 @@
         "name": {
             "cn": "入道乌贼",
             "en": "Goliath Squid",
-            "jp": "ニュウドウイカ"
+            "jp": "ニュウドウイカ",
+            "fr": "Calmar goliath"
         }
     },
     {
@@ -1446,7 +1590,8 @@
         "name": {
             "cn": "大珍鲈",
             "en": "Great Trevally",
-            "jp": "ドストレバリーパーチ"
+            "jp": "ドストレバリーパーチ",
+            "fr": "Grande carangue"
         }
     },
     {
@@ -1456,7 +1601,8 @@
         "name": {
             "cn": "盾章菊螺",
             "en": "Escunite",
-            "jp": "エスカナイト"
+            "jp": "エスカナイト",
+            "fr": "Escunite"
         }
     },
     {
@@ -1466,7 +1612,8 @@
         "name": {
             "cn": "瑰丽盾章菊螺",
             "en": "Grand Escunite",
-            "jp": "グランドエスカナイト"
+            "jp": "グランドエスカナイト",
+            "fr": "Grande escunite"
         }
     },
     {
@@ -1476,7 +1623,8 @@
         "name": {
             "cn": "带卵弓鳍鱼",
             "en": "Gravid Bowfin",
-            "jp": "コモチアミア"
+            "jp": "コモチアミア",
+            "fr": "Bowfin gravide"
         }
     },
     {
@@ -1486,7 +1634,8 @@
         "name": {
             "cn": "盲鲈",
             "en": "Blind Perch",
-            "jp": "ブラインドパーチ"
+            "jp": "ブラインドパーチ",
+            "fr": "Perche aveugle"
         }
     },
     {
@@ -1496,7 +1645,8 @@
         "name": {
             "cn": "",
             "en": "",
-            "jp": ""
+            "jp": "",
+            "fr": ""
         }
     },
     {
@@ -1506,7 +1656,8 @@
         "name": {
             "cn": "",
             "en": "",
-            "jp": ""
+            "jp": "",
+            "fr": ""
         }
     },
     {
@@ -1516,7 +1667,8 @@
         "name": {
             "cn": "",
             "en": "",
-            "jp": ""
+            "jp": "",
+            "fr": ""
         }
     },
     {
@@ -1526,7 +1678,8 @@
         "name": {
             "cn": "",
             "en": "",
-            "jp": ""
+            "jp": "",
+            "fr": ""
         }
     },
     {
@@ -1536,7 +1689,8 @@
         "name": {
             "cn": "",
             "en": "",
-            "jp": ""
+            "jp": "",
+            "fr": ""
         }
     },
     {
@@ -1546,7 +1700,8 @@
         "name": {
             "cn": "",
             "en": "",
-            "jp": ""
+            "jp": "",
+            "fr": ""
         }
     },
     {
@@ -1556,7 +1711,8 @@
         "name": {
             "cn": "",
             "en": "",
-            "jp": ""
+            "jp": "",
+            "fr": ""
         }
     },
     {
@@ -1566,7 +1722,8 @@
         "name": {
             "cn": "",
             "en": "",
-            "jp": ""
+            "jp": "",
+            "fr": ""
         }
     },
     {
@@ -1576,7 +1733,8 @@
         "name": {
             "cn": "",
             "en": "",
-            "jp": ""
+            "jp": "",
+            "fr": ""
         }
     },
     {
@@ -1586,7 +1744,8 @@
         "name": {
             "cn": "",
             "en": "",
-            "jp": ""
+            "jp": "",
+            "fr": ""
         }
     },
     {
@@ -1596,7 +1755,8 @@
         "name": {
             "cn": "",
             "en": "",
-            "jp": ""
+            "jp": "",
+            "fr": ""
         }
     },
     {
@@ -1606,7 +1766,8 @@
         "name": {
             "cn": "",
             "en": "",
-            "jp": ""
+            "jp": "",
+            "fr": ""
         }
     },
     {
@@ -1616,7 +1777,8 @@
         "name": {
             "cn": "",
             "en": "",
-            "jp": ""
+            "jp": "",
+            "fr": ""
         }
     },
     {
@@ -1626,7 +1788,8 @@
         "name": {
             "cn": "",
             "en": "",
-            "jp": ""
+            "jp": "",
+            "fr": ""
         }
     },
     {
@@ -1636,7 +1799,8 @@
         "name": {
             "cn": "",
             "en": "",
-            "jp": ""
+            "jp": "",
+            "fr": ""
         }
     },
     {
@@ -1646,7 +1810,8 @@
         "name": {
             "cn": "",
             "en": "",
-            "jp": ""
+            "jp": "",
+            "fr": ""
         }
     },
     {
@@ -1656,7 +1821,8 @@
         "name": {
             "cn": "",
             "en": "",
-            "jp": ""
+            "jp": "",
+            "fr": ""
         }
     },
     {
@@ -1666,7 +1832,8 @@
         "name": {
             "cn": "",
             "en": "",
-            "jp": ""
+            "jp": "",
+            "fr": ""
         }
     },
     {
@@ -1676,7 +1843,8 @@
         "name": {
             "cn": "",
             "en": "",
-            "jp": ""
+            "jp": "",
+            "fr": ""
         }
     },
     {
@@ -1686,7 +1854,8 @@
         "name": {
             "cn": "",
             "en": "",
-            "jp": ""
+            "jp": "",
+            "fr": ""
         }
     },
     {
@@ -1696,7 +1865,8 @@
         "name": {
             "cn": "",
             "en": "",
-            "jp": ""
+            "jp": "",
+            "fr": ""
         }
     },
     {
@@ -1706,7 +1876,8 @@
         "name": {
             "cn": "",
             "en": "",
-            "jp": ""
+            "jp": "",
+            "fr": ""
         }
     },
     {
@@ -1716,7 +1887,8 @@
         "name": {
             "cn": "",
             "en": "",
-            "jp": ""
+            "jp": "",
+            "fr": ""
         }
     },
     {
@@ -1726,7 +1898,8 @@
         "name": {
             "cn": "",
             "en": "",
-            "jp": ""
+            "jp": "",
+            "fr": ""
         }
     },
     {
@@ -1736,7 +1909,8 @@
         "name": {
             "cn": "",
             "en": "",
-            "jp": ""
+            "jp": "",
+            "fr": ""
         }
     },
     {
@@ -1746,7 +1920,8 @@
         "name": {
             "cn": "",
             "en": "",
-            "jp": ""
+            "jp": "",
+            "fr": ""
         }
     },
     {
@@ -1756,7 +1931,8 @@
         "name": {
             "cn": "",
             "en": "",
-            "jp": ""
+            "jp": "",
+            "fr": ""
         }
     },
     {
@@ -1766,7 +1942,8 @@
         "name": {
             "cn": "",
             "en": "",
-            "jp": ""
+            "jp": "",
+            "fr": ""
         }
     },
     {
@@ -1776,7 +1953,8 @@
         "name": {
             "cn": "",
             "en": "",
-            "jp": ""
+            "jp": "",
+            "fr": ""
         }
     },
     {
@@ -1786,7 +1964,8 @@
         "name": {
             "cn": "",
             "en": "",
-            "jp": ""
+            "jp": "",
+            "fr": ""
         }
     },
     {
@@ -1796,7 +1975,8 @@
         "name": {
             "cn": "",
             "en": "",
-            "jp": ""
+            "jp": "",
+            "fr": ""
         }
     },
     {
@@ -1806,7 +1986,8 @@
         "name": {
             "cn": "",
             "en": "",
-            "jp": ""
+            "jp": "",
+            "fr": ""
         }
     },
     {
@@ -1816,7 +1997,8 @@
         "name": {
             "cn": "",
             "en": "",
-            "jp": ""
+            "jp": "",
+            "fr": ""
         }
     },
     {
@@ -1826,7 +2008,8 @@
         "name": {
             "cn": "",
             "en": "",
-            "jp": ""
+            "jp": "",
+            "fr": ""
         }
     },
     {
@@ -1836,7 +2019,8 @@
         "name": {
             "cn": "",
             "en": "",
-            "jp": ""
+            "jp": "",
+            "fr": ""
         }
     },
     {
@@ -1846,7 +2030,8 @@
         "name": {
             "cn": "",
             "en": "",
-            "jp": ""
+            "jp": "",
+            "fr": ""
         }
     },
     {
@@ -1856,7 +2041,8 @@
         "name": {
             "cn": "",
             "en": "",
-            "jp": ""
+            "jp": "",
+            "fr": ""
         }
     },
     {
@@ -1866,7 +2052,8 @@
         "name": {
             "cn": "",
             "en": "",
-            "jp": ""
+            "jp": "",
+            "fr": ""
         }
     },
     {
@@ -1876,7 +2063,8 @@
         "name": {
             "cn": "",
             "en": "",
-            "jp": ""
+            "jp": "",
+            "fr": ""
         }
     },
     {
@@ -1886,7 +2074,8 @@
         "name": {
             "cn": "",
             "en": "",
-            "jp": ""
+            "jp": "",
+            "fr": ""
         }
     },
     {
@@ -1896,7 +2085,8 @@
         "name": {
             "cn": "",
             "en": "",
-            "jp": ""
+            "jp": "",
+            "fr": ""
         }
     },
     {
@@ -1906,7 +2096,8 @@
         "name": {
             "cn": "",
             "en": "",
-            "jp": ""
+            "jp": "",
+            "fr": ""
         }
     },
     {
@@ -1916,7 +2107,8 @@
         "name": {
             "cn": "",
             "en": "",
-            "jp": ""
+            "jp": "",
+            "fr": ""
         }
     },
     {
@@ -1926,7 +2118,8 @@
         "name": {
             "cn": "",
             "en": "",
-            "jp": ""
+            "jp": "",
+            "fr": ""
         }
     },
     {
@@ -1936,7 +2129,8 @@
         "name": {
             "cn": "",
             "en": "",
-            "jp": ""
+            "jp": "",
+            "fr": ""
         }
     },
     {
@@ -1946,7 +2140,8 @@
         "name": {
             "cn": "",
             "en": "",
-            "jp": ""
+            "jp": "",
+            "fr": ""
         }
     },
     {
@@ -1956,7 +2151,8 @@
         "name": {
             "cn": "",
             "en": "",
-            "jp": ""
+            "jp": "",
+            "fr": ""
         }
     },
     {
@@ -1966,7 +2162,8 @@
         "name": {
             "cn": "",
             "en": "",
-            "jp": ""
+            "jp": "",
+            "fr": ""
         }
     },
     {
@@ -1976,7 +2173,8 @@
         "name": {
             "cn": "",
             "en": "",
-            "jp": ""
+            "jp": "",
+            "fr": ""
         }
     },
     {
@@ -1986,7 +2184,8 @@
         "name": {
             "cn": "",
             "en": "",
-            "jp": ""
+            "jp": "",
+            "fr": ""
         }
     },
     {
@@ -1996,7 +2195,8 @@
         "name": {
             "cn": "",
             "en": "",
-            "jp": ""
+            "jp": "",
+            "fr": ""
         }
     },
     {
@@ -2006,7 +2206,8 @@
         "name": {
             "cn": "",
             "en": "",
-            "jp": ""
+            "jp": "",
+            "fr": ""
         }
     },
     {
@@ -2016,7 +2217,8 @@
         "name": {
             "cn": "",
             "en": "",
-            "jp": ""
+            "jp": "",
+            "fr": ""
         }
     },
     {
@@ -2026,7 +2228,8 @@
         "name": {
             "cn": "",
             "en": "",
-            "jp": ""
+            "jp": "",
+            "fr": ""
         }
     },
     {
@@ -2036,7 +2239,8 @@
         "name": {
             "cn": "",
             "en": "",
-            "jp": ""
+            "jp": "",
+            "fr": ""
         }
     },
     {
@@ -2046,7 +2250,8 @@
         "name": {
             "cn": "",
             "en": "",
-            "jp": ""
+            "jp": "",
+            "fr": ""
         }
     },
     {
@@ -2056,7 +2261,8 @@
         "name": {
             "cn": "",
             "en": "",
-            "jp": ""
+            "jp": "",
+            "fr": ""
         }
     },
     {
@@ -2066,7 +2272,8 @@
         "name": {
             "cn": "",
             "en": "",
-            "jp": ""
+            "jp": "",
+            "fr": ""
         }
     },
     {
@@ -2076,7 +2283,8 @@
         "name": {
             "cn": "",
             "en": "",
-            "jp": ""
+            "jp": "",
+            "fr": ""
         }
     },
     {
@@ -2086,7 +2294,8 @@
         "name": {
             "cn": "",
             "en": "",
-            "jp": ""
+            "jp": "",
+            "fr": ""
         }
     },
     {
@@ -2096,7 +2305,8 @@
         "name": {
             "cn": "",
             "en": "",
-            "jp": ""
+            "jp": "",
+            "fr": ""
         }
     }
 ]

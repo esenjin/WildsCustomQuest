@@ -1,58 +1,59 @@
-# WildCustomQuest - Monster Hunter Wild Custom Quest Generator
+# WildCustomQuest - Générateur de quêtes personnalisées pour Monster Hunter Wilds
 
-A tool for creating custom quests for Monster Hunter Wild with a user-friendly interface.
+Un outil pour créer des quêtes personnalisées dans Monster Hunter Wilds via une interface conviviale.
 
-**Try it online: [https://farad77.github.io/WildCustomQuest/quest_generator.html](https://farad77.github.io/WildCustomQuest/quest_generator.html)**
+**Essayer en ligne : [https://concepts.esenjin.xyz/mhwilds-qp](https://concepts.esenjin.xyz/mhwilds-qp)**
 
-## Overview
+## Présentation
 
-WildCustomQuest allows you to create custom hunts by selecting monsters, defining rewards, and setting quest parameters through a simple web interface. Generate quest files that can be imported directly into the game for a personalized hunting experience.
+WildsQuetesPerso vous permet de créer des chasses personnalisées en sélectionnant des monstres, en définissant des récompenses et en configurant les paramètres de la quête depuis une interface web simple. Générez des fichiers de quête importables directement dans le jeu pour une expérience de chasse sur mesure.
 
-## Requirements
+## Prérequis
 
-This tool requires [Custom Quest Loader](https://www.nexusmods.com/monsterhunterwilds/mods/1096) by kassent to work. Please install the mod before attempting to use custom quests.
+Cet outil nécessite [Custom Quest Loader](https://www.nexusmods.com/monsterhunterwilds/mods/1096) de kassent pour fonctionner. Veuillez installer ce mod avant d'utiliser des quêtes personnalisées.
 
-Special thanks to kassent for creating the Custom Quest Loader mod that makes this possible!
+Un grand merci à kassent pour avoir créé le mod Custom Quest Loader qui rend tout cela possible !
 
-## Features
+## Fonctionnalités
 
-- Create quests with custom titles, descriptions, and parameters
-- Select from the full monster roster in Monster Hunter Wild
-- Add custom rewards with item quantities and drop probabilities
-- Multi-language support (English, Japanese, Chinese)
-- Export quest files ready for in-game use
+- Créez des quêtes avec des titres, descriptions et paramètres personnalisés
+- Choisissez parmi le roster complet de monstres de Monster Hunter Wilds
+- Ajoutez des récompenses personnalisées avec quantités et probabilités de drop
+- Support multilingue (Français, Anglais, Japonais, Chinois)
+- Exportez les fichiers de quête prêts à l'emploi en jeu
 
-## How to Use
+## Comment utiliser
 
-1. **Setup**:
-   - Install [Custom Quest Loader](https://www.nexusmods.com/monsterhunterwilds/mods/1096) by kassent
-   - Follow the mod installation instructions
+1. **Installation** :
+   - Installez [Custom Quest Loader](https://www.nexusmods.com/monsterhunterwilds/mods/1096) de kassent
+   - Suivez les instructions d'installation du mod
 
-2. **Creating Quests**:
-   - Open `quest_generator.html` in a web browser
-   - Fill in quest details (title, description, difficulty, etc.)
-   - Select monsters for your quest
-   - Configure reward items with quantities and probabilities
-   - Generate and download quest files
+2. **Création de quêtes** :
+   - Ouvrez `index.html` dans un navigateur web
+   - Renseignez les détails de la quête (titre, description, difficulté, etc.)
+   - Sélectionnez les monstres de votre quête
+   - Configurez les objets de récompense avec leurs quantités et probabilités
+   - Générez et téléchargez les fichiers de quête
 
-3. **Installing Quests**:
-   - Extract the ZIP file created by the generator
-   - Place the `.raw.json` and `.ext.json` files in the appropriate folder as specified by Custom Quest Loader
-   - Start the game and enjoy your custom quest!
+3. **Installation des quêtes** :
+   - Extrayez le fichier ZIP créé par le générateur
+   - Placez les fichiers `.raw.json` et `.ext.json` dans le dossier approprié tel qu'indiqué par Custom Quest Loader
+   - Lancez le jeu et profitez de votre quête personnalisée !
 
-## File Structure
+## Structure des fichiers
 
-- `quest_generator.html`: Main application file
-- `enemies.json`: Database of all monsters
-- `items.json`: Database of all items
-- `reward_list_*.json`: Reward templates by language
-- `quest_examples/`: Example quest files for reference
+- `index.html` : Fichier principal de l'application
+- `enemies.json` : Base de données de tous les monstres
+- `items.json` : Base de données de tous les objets
+- `reward_list_*.json` : Modèles de récompenses par langue
+- `quest_examples/` : Exemples de fichiers de quête pour référence
 
-## Credits
+## Crédits
 
-- This tool was created as a companion to kassent's [Custom Quest Loader](https://www.nexusmods.com/monsterhunterwilds/mods/1096)
-- Special thanks to kassent for making custom quests possible in Monster Hunter Wild
+- Cet outil a été créé en complément du mod [Custom Quest Loader](https://www.nexusmods.com/monsterhunterwilds/mods/1096) de kassent
+- Un grand merci à kassent pour avoir rendu les quêtes personnalisées possibles dans Monster Hunter Wilds
+- Ce projet est un fork de [WildCustomQuest](https://github.com/Farad77/WildCustomQuest) qui ajoute essentiellement une traduction FR
 
-## Legal Notice
+## Mentions légales
 
-This is an unofficial fan-made tool and is not affiliated with CAPCOM or Monster Hunter Wild. All game assets and data referenced belong to their respective owners.
+Ceci est un outil non officiel créé par des fans et n'est affilié ni à CAPCOM ni à Monster Hunter Wilds. Tous les éléments et données du jeu référencés appartiennent à leurs propriétaires respectifs.
