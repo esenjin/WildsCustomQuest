@@ -1,1047 +1,1047 @@
 [
-    {
-        "id": -1,
-        "fixedId": 0,
-        "label": "INVALID",
-        "name": {
-            "cn": "",
-            "en": "",
-            "jp": "",
-            "fr": ""
-        }
-    },
-    {
-        "id": 0,
-        "fixedId": 26,
-        "label": "EM0001_00_0",
-        "name": {
-            "cn": "雌火龙",
-            "en": "Rathian",
-            "jp": "リオレイア",
-            "fr": "Rathian"
-        }
-    },
-    {
-        "id": 1,
-        "fixedId": 1965232896,
-        "label": "EM0002_00_0",
-        "name": {
-            "cn": "火龙",
-            "en": "Rathalos",
-            "jp": "リオレウス",
-            "fr": "Rathalos"
-        }
-    },
-    {
-        "id": 2,
-        "fixedId": 1411933184,
-        "label": "EM0002_50_0",
-        "name": {
-            "cn": "护火龙",
-            "en": "Guardian Rathalos",
-            "jp": "護竜リオレウス",
-            "fr": "Rathalos gardien"
-        }
-    },
-    {
-        "id": 3,
-        "fixedId": -535078400,
-        "label": "EM0005_00_0",
-        "name": {
-            "cn": "铠龙",
-            "en": "Gravios",
-            "jp": "グラビモス",
-            "fr": "Gravios"
-        }
-    },
-    {
-        "id": 4,
-        "fixedId": 402056736,
-        "label": "EM0008_00_0",
-        "name": {
-            "cn": "怪鸟",
-            "en": "Yian Kut-Ku",
-            "jp": "イャンクック",
-            "fr": "Yian Kut-Ku"
-        }
-    },
-    {
-        "id": 5,
-        "fixedId": 1049705664,
-        "label": "EM0009_00_0",
-        "name": {
-            "cn": "毒怪鸟",
-            "en": "Gypceros",
-            "jp": "ゲリョス",
-            "fr": "Gypceros"
-        }
-    },
-    {
-        "id": 6,
-        "fixedId": -1440201088,
-        "label": "EM0021_00_0",
-        "name": {
-            "cn": "桃毛兽王",
-            "en": "Congalala",
-            "jp": "ババコンガ",
-            "fr": "Congalala"
-        }
-    },
-    {
-        "id": 7,
-        "fixedId": 2129596800,
-        "label": "EM0022_00_0",
-        "name": {
-            "cn": "雪狮子王",
-            "en": "Blangonga",
-            "jp": "ドドブランゴ",
-            "fr": "Blangonga"
-        }
-    },
-    {
-        "id": 8,
-        "fixedId": -1083842944,
-        "label": "EM0046_00_0",
-        "name": {
-            "cn": "",
-            "en": "",
-            "jp": "",
-            "fr": ""
-        }
-    },
-    {
-        "id": 9,
-        "fixedId": -1363370496,
-        "label": "EM0070_00_0",
-        "name": {
-            "cn": "影蜘蛛",
-            "en": "Nerscylla",
-            "jp": "ネルスキュラ",
-            "fr": "Nerscylla"
-        }
-    },
-    {
-        "id": 10,
-        "fixedId": -758250816,
-        "label": "EM0071_00_0",
-        "name": {
-            "cn": "黑蚀龙",
-            "en": "Gore Magala",
-            "jp": "ゴア・マガラ",
-            "fr": "Gore Magala"
-        }
-    },
-    {
-        "id": 11,
-        "fixedId": 25,
-        "label": "EM0077_00_0",
-        "name": {
-            "cn": "",
-            "en": "",
-            "jp": "",
-            "fr": ""
-        }
-    },
-    {
-        "id": 12,
-        "fixedId": 13052,
-        "label": "EM0078_00_0",
-        "name": {
-            "cn": "",
-            "en": "",
-            "jp": "",
-            "fr": ""
-        }
-    },
-    {
-        "id": 13,
-        "fixedId": 32634,
-        "label": "EM0082_00_0",
-        "name": {
-            "cn": "",
-            "en": "",
-            "jp": "",
-            "fr": ""
-        }
-    },
-    {
-        "id": 14,
-        "fixedId": 107194928,
-        "label": "EM0100_51_0",
-        "name": {
-            "cn": "护雷颚龙",
-            "en": "Guardian Fulgur Anjanath",
-            "jp": "護竜アンジャナフ亜種",
-            "fr": "Anjanath tonnerre gardien"
-        }
-    },
-    {
-        "id": 15,
-        "fixedId": 1663995904,
-        "label": "EM0113_51_0",
-        "name": {
-            "cn": "护凶爪龙",
-            "en": "Guardian Ebony Odogaron",
-            "jp": "護竜オドガロン亜種",
-            "fr": "Odogaron désastre gardien"
-        }
-    },
-    {
-        "id": 16,
-        "fixedId": 15,
-        "label": "EM0150_00_0",
-        "name": {
-            "cn": "辟兽",
-            "en": "Doshaguma",
-            "jp": "ドシャグマ",
-            "fr": "Doshaguma"
-        }
-    },
-    {
-        "id": 17,
-        "fixedId": -1916429696,
-        "label": "EM0150_50_0",
-        "name": {
-            "cn": "护辟兽",
-            "en": "Guardian Doshaguma",
-            "jp": "護竜ドシャグマ",
-            "fr": "Doshaguma gardien"
-        }
-    },
-    {
-        "id": 18,
-        "fixedId": 16,
-        "label": "EM0151_00_0",
-        "name": {
-            "cn": "沙海龙",
-            "en": "Balahara",
-            "jp": "バーラハーラ",
-            "fr": "Balahara"
-        }
-    },
-    {
-        "id": 19,
-        "fixedId": 33,
-        "label": "EM0152_00_0",
-        "name": {
-            "cn": "缠蛙",
-            "en": "Chatacabra",
-            "jp": "チャタカブラ",
-            "fr": "Chatacabra"
-        }
-    },
-    {
-        "id": 20,
-        "fixedId": -34937520,
-        "label": "EM0153_00_0",
-        "name": {
-            "cn": "炎尾龙",
-            "en": "Quematrice",
-            "jp": "ケマトリス",
-            "fr": "Quematrice"
-        }
-    },
-    {
-        "id": 21,
-        "fixedId": -1528962176,
-        "label": "EM0154_00_0",
-        "name": {
-            "cn": "刺花蜘蛛",
-            "en": "Lala Barina",
-            "jp": "ラバラ・バリナ",
-            "fr": "Lala Barina"
-        }
-    },
-    {
-        "id": 22,
-        "fixedId": 567628288,
-        "label": "EM0155_00_0",
-        "name": {
-            "cn": "沼喷龙",
-            "en": "Rompopolo",
-            "jp": "ププロポル",
-            "fr": "Rompopolo"
-        }
-    },
-    {
-        "id": 23,
-        "fixedId": -1547364608,
-        "label": "EM0156_00_0",
-        "name": {
-            "cn": "煌雷龙",
-            "en": "Rey Dau",
-            "jp": "レ・ダウ",
-            "fr": "Rey Dau"
-        }
-    },
-    {
-        "id": 24,
-        "fixedId": 1467998976,
-        "label": "EM0157_00_0",
-        "name": {
-            "cn": "波衣龙",
-            "en": "Uth Duna",
-            "jp": "ウズ・トゥナ",
-            "fr": "Uth Duna"
-        }
-    },
-    {
-        "id": 25,
-        "fixedId": 1657778432,
-        "label": "EM0158_00_0",
-        "name": {
-            "cn": "狱焰蛸",
-            "en": "Nu Udra",
-            "jp": "ヌ・エグドラ",
-            "fr": "Nu Udra"
-        }
-    },
-    {
-        "id": 26,
-        "fixedId": 777460864,
-        "label": "EM0159_00_0",
-        "name": {
-            "cn": "赫猿兽",
-            "en": "Ajarakan",
-            "jp": "アジャラカン",
-            "fr": "Ajarakan"
-        }
-    },
-    {
-        "id": 27,
-        "fixedId": 746996864,
-        "label": "EM0160_00_0",
-        "name": {
-            "cn": "锁刃龙",
-            "en": "Arkveld",
-            "jp": "アルシュベルド",
-            "fr": "Arkveld"
-        }
-    },
-    {
-        "id": 28,
-        "fixedId": -283654400,
-        "label": "EM0160_50_0",
-        "name": {
-            "cn": "护锁刃龙",
-            "en": "Guardian Arkveld",
-            "jp": "護竜アルシュベルド",
-            "fr": "Arkveld gardien"
-        }
-    },
-    {
-        "id": 29,
-        "fixedId": 222933952,
-        "label": "EM0161_00_0",
-        "name": {
-            "cn": "风铗龙",
-            "en": "Hirabami",
-            "jp": "ヒラバミ",
-            "fr": "Hirabami"
-        }
-    },
-    {
-        "id": 30,
-        "fixedId": 1553456768,
-        "label": "EM0162_00_0",
-        "name": {
-            "cn": "冻峰龙",
-            "en": "Jin Dahaad",
-            "jp": "ジン・ダハド",
-            "fr": "Jin Dahaad"
-        }
-    },
-    {
-        "id": 31,
-        "fixedId": 1401863296,
-        "label": "EM0163_00_0",
-        "name": {
-            "cn": "暗器蛸",
-            "en": "Xu Wu",
-            "jp": "シーウー",
-            "fr": "Xu Wu"
-        }
-    },
-    {
-        "id": 32,
-        "fixedId": -2003468672,
-        "label": "EM0164_50_0",
-        "name": {
-            "cn": "白炽龙",
-            "en": "Zoh Shia",
-            "jp": "ゾ・シア",
-            "fr": "Zoh Shia"
-        }
-    },
-    {
-        "id": 148,
-        "fixedId": 27789,
-        "label": "EM0003_00_0",
-        "name": {
-            "cn": "",
-            "en": "",
-            "jp": "",
-            "fr": ""
-        }
-    },
-    {
-        "id": 149,
-        "fixedId": 2836,
-        "label": "EM0004_00_0",
-        "name": {
-            "cn": "",
-            "en": "",
-            "jp": "",
-            "fr": ""
-        }
-    },
-    {
-        "id": 150,
-        "fixedId": 32196,
-        "label": "EM0007_00_0",
-        "name": {
-            "cn": "",
-            "en": "",
-            "jp": "",
-            "fr": ""
-        }
-    },
-    {
-        "id": 151,
-        "fixedId": 15529,
-        "label": "EM0011_00_0",
-        "name": {
-            "cn": "",
-            "en": "",
-            "jp": "",
-            "fr": ""
-        }
-    },
-    {
-        "id": 152,
-        "fixedId": 5185,
-        "label": "EM0018_00_0",
-        "name": {
-            "cn": "",
-            "en": "",
-            "jp": "",
-            "fr": ""
-        }
-    },
-    {
-        "id": 153,
-        "fixedId": 8501,
-        "label": "EM0019_00_0",
-        "name": {
-            "cn": "",
-            "en": "",
-            "jp": "",
-            "fr": ""
-        }
-    },
-    {
-        "id": 154,
-        "fixedId": 5240,
-        "label": "EM0020_00_0",
-        "name": {
-            "cn": "",
-            "en": "",
-            "jp": "",
-            "fr": ""
-        }
-    },
-    {
-        "id": 155,
-        "fixedId": 3350,
-        "label": "EM0023_00_0",
-        "name": {
-            "cn": "",
-            "en": "",
-            "jp": "",
-            "fr": ""
-        }
-    },
-    {
-        "id": 156,
-        "fixedId": 27175,
-        "label": "EM0024_00_0",
-        "name": {
-            "cn": "",
-            "en": "",
-            "jp": "",
-            "fr": ""
-        }
-    },
-    {
-        "id": 157,
-        "fixedId": 14908,
-        "label": "EM0025_00_0",
-        "name": {
-            "cn": "",
-            "en": "",
-            "jp": "",
-            "fr": ""
-        }
-    },
-    {
-        "id": 158,
-        "fixedId": 22066,
-        "label": "EM0026_00_0",
-        "name": {
-            "cn": "",
-            "en": "",
-            "jp": "",
-            "fr": ""
-        }
-    },
-    {
-        "id": 159,
-        "fixedId": 18117,
-        "label": "EM0027_00_0",
-        "name": {
-            "cn": "",
-            "en": "",
-            "jp": "",
-            "fr": ""
-        }
-    },
-    {
-        "id": 160,
-        "fixedId": 13180,
-        "label": "EM0032_00_0",
-        "name": {
-            "cn": "",
-            "en": "",
-            "jp": "",
-            "fr": ""
-        }
-    },
-    {
-        "id": 161,
-        "fixedId": 3673,
-        "label": "EM0036_00_0",
-        "name": {
-            "cn": "",
-            "en": "",
-            "jp": "",
-            "fr": ""
-        }
-    },
-    {
-        "id": 162,
-        "fixedId": 7423,
-        "label": "EM0037_00_0",
-        "name": {
-            "cn": "",
-            "en": "",
-            "jp": "",
-            "fr": ""
-        }
-    },
-    {
-        "id": 163,
-        "fixedId": 16972,
-        "label": "EM0042_00_0",
-        "name": {
-            "cn": "",
-            "en": "",
-            "jp": "",
-            "fr": ""
-        }
-    },
-    {
-        "id": 164,
-        "fixedId": 22174,
-        "label": "EM0043_00_0",
-        "name": {
-            "cn": "",
-            "en": "",
-            "jp": "",
-            "fr": ""
-        }
-    },
-    {
-        "id": 165,
-        "fixedId": 23366,
-        "label": "EM0044_00_0",
-        "name": {
-            "cn": "",
-            "en": "",
-            "jp": "",
-            "fr": ""
-        }
-    },
-    {
-        "id": 166,
-        "fixedId": 15658,
-        "label": "EM0045_00_0",
-        "name": {
-            "cn": "",
-            "en": "",
-            "jp": "",
-            "fr": ""
-        }
-    },
-    {
-        "id": 167,
-        "fixedId": 177,
-        "label": "EM0047_00_0",
-        "name": {
-            "cn": "",
-            "en": "",
-            "jp": "",
-            "fr": ""
-        }
-    },
-    {
-        "id": 168,
-        "fixedId": 20261,
-        "label": "EM0054_00_0",
-        "name": {
-            "cn": "",
-            "en": "",
-            "jp": "",
-            "fr": ""
-        }
-    },
-    {
-        "id": 169,
-        "fixedId": 16629,
-        "label": "EM0057_00_0",
-        "name": {
-            "cn": "",
-            "en": "",
-            "jp": "",
-            "fr": ""
-        }
-    },
-    {
-        "id": 170,
-        "fixedId": 21597,
-        "label": "EM0059_00_0",
-        "name": {
-            "cn": "",
-            "en": "",
-            "jp": "",
-            "fr": ""
-        }
-    },
-    {
-        "id": 171,
-        "fixedId": 29384,
-        "label": "EM0060_00_0",
-        "name": {
-            "cn": "",
-            "en": "",
-            "jp": "",
-            "fr": ""
-        }
-    },
-    {
-        "id": 172,
-        "fixedId": 22496,
-        "label": "EM0061_00_0",
-        "name": {
-            "cn": "",
-            "en": "",
-            "jp": "",
-            "fr": ""
-        }
-    },
-    {
-        "id": 173,
-        "fixedId": 24076,
-        "label": "EM0062_00_0",
-        "name": {
-            "cn": "",
-            "en": "",
-            "jp": "",
-            "fr": ""
-        }
-    },
-    {
-        "id": 174,
-        "fixedId": 882,
-        "label": "EM0063_00_0",
-        "name": {
-            "cn": "",
-            "en": "",
-            "jp": "",
-            "fr": ""
-        }
-    },
-    {
-        "id": 175,
-        "fixedId": 19536,
-        "label": "EM0080_00_0",
-        "name": {
-            "cn": "",
-            "en": "",
-            "jp": "",
-            "fr": ""
-        }
-    },
-    {
-        "id": 176,
-        "fixedId": 14424,
-        "label": "EM0081_00_0",
-        "name": {
-            "cn": "",
-            "en": "",
-            "jp": "",
-            "fr": ""
-        }
-    },
-    {
-        "id": 177,
-        "fixedId": 31556,
-        "label": "EM0089_00_0",
-        "name": {
-            "cn": "",
-            "en": "",
-            "jp": "",
-            "fr": ""
-        }
-    },
-    {
-        "id": 178,
-        "fixedId": 2290,
-        "label": "EM0090_00_0",
-        "name": {
-            "cn": "",
-            "en": "",
-            "jp": "",
-            "fr": ""
-        }
-    },
-    {
-        "id": 179,
-        "fixedId": 12516,
-        "label": "EM0091_00_0",
-        "name": {
-            "cn": "",
-            "en": "",
-            "jp": "",
-            "fr": ""
-        }
-    },
-    {
-        "id": 180,
-        "fixedId": 16506,
-        "label": "EM0092_00_0",
-        "name": {
-            "cn": "",
-            "en": "",
-            "jp": "",
-            "fr": ""
-        }
-    },
-    {
-        "id": 181,
-        "fixedId": 29221,
-        "label": "EM0093_00_0",
-        "name": {
-            "cn": "",
-            "en": "",
-            "jp": "",
-            "fr": ""
-        }
-    },
-    {
-        "id": 182,
-        "fixedId": 5593,
-        "label": "EM0094_00_0",
-        "name": {
-            "cn": "",
-            "en": "",
-            "jp": "",
-            "fr": ""
-        }
-    },
-    {
-        "id": 183,
-        "fixedId": 25401,
-        "label": "EM0095_00_0",
-        "name": {
-            "cn": "",
-            "en": "",
-            "jp": "",
-            "fr": ""
-        }
-    },
-    {
-        "id": 184,
-        "fixedId": 17175,
-        "label": "EM0096_00_0",
-        "name": {
-            "cn": "",
-            "en": "",
-            "jp": "",
-            "fr": ""
-        }
-    },
-    {
-        "id": 185,
-        "fixedId": 19070,
-        "label": "EM0097_00_0",
-        "name": {
-            "cn": "",
-            "en": "",
-            "jp": "",
-            "fr": ""
-        }
-    },
-    {
-        "id": 186,
-        "fixedId": 19802,
-        "label": "EM0098_00_0",
-        "name": {
-            "cn": "",
-            "en": "",
-            "jp": "",
-            "fr": ""
-        }
-    },
-    {
-        "id": 187,
-        "fixedId": 13353,
-        "label": "EM0100_00_0",
-        "name": {
-            "cn": "",
-            "en": "",
-            "jp": "",
-            "fr": ""
-        }
-    },
-    {
-        "id": 188,
-        "fixedId": 23732,
-        "label": "EM0101_00_0",
-        "name": {
-            "cn": "",
-            "en": "",
-            "jp": "",
-            "fr": ""
-        }
-    },
-    {
-        "id": 189,
-        "fixedId": 20112,
-        "label": "EM0102_00_0",
-        "name": {
-            "cn": "",
-            "en": "",
-            "jp": "",
-            "fr": ""
-        }
-    },
-    {
-        "id": 190,
-        "fixedId": 18945,
-        "label": "EM0103_00_0",
-        "name": {
-            "cn": "",
-            "en": "",
-            "jp": "",
-            "fr": ""
-        }
-    },
-    {
-        "id": 191,
-        "fixedId": 24647,
-        "label": "EM0107_00_0",
-        "name": {
-            "cn": "",
-            "en": "",
-            "jp": "",
-            "fr": ""
-        }
-    },
-    {
-        "id": 192,
-        "fixedId": 7847,
-        "label": "EM0108_00_0",
-        "name": {
-            "cn": "",
-            "en": "",
-            "jp": "",
-            "fr": ""
-        }
-    },
-    {
-        "id": 193,
-        "fixedId": 3161,
-        "label": "EM0109_00_0",
-        "name": {
-            "cn": "",
-            "en": "",
-            "jp": "",
-            "fr": ""
-        }
-    },
-    {
-        "id": 194,
-        "fixedId": 7890,
-        "label": "EM0110_00_0",
-        "name": {
-            "cn": "",
-            "en": "",
-            "jp": "",
-            "fr": ""
-        }
-    },
-    {
-        "id": 195,
-        "fixedId": 18822,
-        "label": "EM0111_00_0",
-        "name": {
-            "cn": "",
-            "en": "",
-            "jp": "",
-            "fr": ""
-        }
-    },
-    {
-        "id": 196,
-        "fixedId": 20820,
-        "label": "EM0112_00_0",
-        "name": {
-            "cn": "",
-            "en": "",
-            "jp": "",
-            "fr": ""
-        }
-    },
-    {
-        "id": 197,
-        "fixedId": 763,
-        "label": "EM0113_00_0",
-        "name": {
-            "cn": "",
-            "en": "",
-            "jp": "",
-            "fr": ""
-        }
-    },
-    {
-        "id": 198,
-        "fixedId": 22880,
-        "label": "EM0114_00_0",
-        "name": {
-            "cn": "",
-            "en": "",
-            "jp": "",
-            "fr": ""
-        }
-    },
-    {
-        "id": 199,
-        "fixedId": 21320,
-        "label": "EM0115_00_0",
-        "name": {
-            "cn": "",
-            "en": "",
-            "jp": "",
-            "fr": ""
-        }
-    },
-    {
-        "id": 200,
-        "fixedId": 8649,
-        "label": "EM0116_00_0",
-        "name": {
-            "cn": "",
-            "en": "",
-            "jp": "",
-            "fr": ""
-        }
-    },
-    {
-        "id": 201,
-        "fixedId": 10650,
-        "label": "EM0118_00_0",
-        "name": {
-            "cn": "",
-            "en": "",
-            "jp": "",
-            "fr": ""
-        }
-    },
-    {
-        "id": 202,
-        "fixedId": 3535,
-        "label": "EM0120_00_0",
-        "name": {
-            "cn": "",
-            "en": "",
-            "jp": "",
-            "fr": ""
-        }
-    },
-    {
-        "id": 203,
-        "fixedId": 13356,
-        "label": "EM0122_00_0",
-        "name": {
-            "cn": "",
-            "en": "",
-            "jp": "",
-            "fr": ""
-        }
-    },
-    {
-        "id": 204,
-        "fixedId": 25352,
-        "label": "EM0123_00_0",
-        "name": {
-            "cn": "",
-            "en": "",
-            "jp": "",
-            "fr": ""
-        }
-    },
-    {
-        "id": 205,
-        "fixedId": 30988,
-        "label": "EM0124_00_0",
-        "name": {
-            "cn": "",
-            "en": "",
-            "jp": "",
-            "fr": ""
-        }
-    },
-    {
-        "id": 206,
-        "fixedId": 9613,
-        "label": "EM0125_00_0",
-        "name": {
-            "cn": "",
-            "en": "",
-            "jp": "",
-            "fr": ""
-        }
-    },
-    {
-        "id": 207,
-        "fixedId": 645,
-        "label": "EM0136_00_0",
-        "name": {
-            "cn": "",
-            "en": "",
-            "jp": "",
-            "fr": ""
-        }
-    },
-    {
-        "id": 208,
-        "fixedId": 1,
-        "label": "MAX",
-        "name": {
-            "cn": "",
-            "en": "",
-            "jp": "",
-            "fr": ""
-        }
+  {
+    "id": -1,
+    "fixedId": 0,
+    "label": "INVALID",
+    "name": {
+      "cn": "",
+      "en": "",
+      "jp": "",
+      "fr": ""
     }
+  },
+  {
+    "id": 0,
+    "fixedId": 26,
+    "label": "EM0001_00_0",
+    "name": {
+      "cn": "雌火龙",
+      "en": "Rathian",
+      "jp": "リオレイア",
+      "fr": "Rathian"
+    }
+  },
+  {
+    "id": 1,
+    "fixedId": 1965232896,
+    "label": "EM0002_00_0",
+    "name": {
+      "cn": "火龙",
+      "en": "Rathalos",
+      "jp": "リオレウス",
+      "fr": "Rathalos"
+    }
+  },
+  {
+    "id": 2,
+    "fixedId": 1411933184,
+    "label": "EM0002_50_0",
+    "name": {
+      "cn": "护火龙",
+      "en": "Guardian Rathalos",
+      "jp": "護竜リオレウス",
+      "fr": "Rathalos gardien"
+    }
+  },
+  {
+    "id": 3,
+    "fixedId": -535078400,
+    "label": "EM0005_00_0",
+    "name": {
+      "cn": "铠龙",
+      "en": "Gravios",
+      "jp": "グラビモス",
+      "fr": "Gravios"
+    }
+  },
+  {
+    "id": 4,
+    "fixedId": 402056736,
+    "label": "EM0008_00_0",
+    "name": {
+      "cn": "怪鸟",
+      "en": "Yian Kut-Ku",
+      "jp": "イャンクック",
+      "fr": "Yian Kut-Ku"
+    }
+  },
+  {
+    "id": 5,
+    "fixedId": 1049705664,
+    "label": "EM0009_00_0",
+    "name": {
+      "cn": "毒怪鸟",
+      "en": "Gypceros",
+      "jp": "ゲリョス",
+      "fr": "Gypceros"
+    }
+  },
+  {
+    "id": 6,
+    "fixedId": -1440201088,
+    "label": "EM0021_00_0",
+    "name": {
+      "cn": "桃毛兽王",
+      "en": "Congalala",
+      "jp": "ババコンガ",
+      "fr": "Congalala"
+    }
+  },
+  {
+    "id": 7,
+    "fixedId": 2129596800,
+    "label": "EM0022_00_0",
+    "name": {
+      "cn": "雪狮子王",
+      "en": "Blangonga",
+      "jp": "ドドブランゴ",
+      "fr": "Blangonga"
+    }
+  },
+  {
+    "id": 8,
+    "fixedId": -1083842944,
+    "label": "EM0046_00_0",
+    "name": {
+      "cn": "雷狼竜",
+      "en": "Lagiacrus",
+      "jp": "ラギアクルス",
+      "fr": "Lagiacrus"
+    }
+  },
+  {
+    "id": 9,
+    "fixedId": -1363370496,
+    "label": "EM0070_00_0",
+    "name": {
+      "cn": "影蜘蛛",
+      "en": "Nerscylla",
+      "jp": "ネルスキュラ",
+      "fr": "Nerscylla"
+    }
+  },
+  {
+    "id": 10,
+    "fixedId": -758250816,
+    "label": "EM0071_00_0",
+    "name": {
+      "cn": "黑蚀龙",
+      "en": "Gore Magala",
+      "jp": "ゴア・マガラ",
+      "fr": "Gore Magala"
+    }
+  },
+  {
+    "id": 11,
+    "fixedId": 25,
+    "label": "EM0077_00_0",
+    "name": {
+      "cn": "",
+      "en": "",
+      "jp": "",
+      "fr": ""
+    }
+  },
+  {
+    "id": 12,
+    "fixedId": 13052,
+    "label": "EM0078_00_0",
+    "name": {
+      "cn": "",
+      "en": "",
+      "jp": "",
+      "fr": ""
+    }
+  },
+  {
+    "id": 13,
+    "fixedId": 32634,
+    "label": "EM0082_00_0",
+    "name": {
+      "cn": "",
+      "en": "",
+      "jp": "",
+      "fr": ""
+    }
+  },
+  {
+    "id": 14,
+    "fixedId": 107194928,
+    "label": "EM0100_51_0",
+    "name": {
+      "cn": "护雷颚龙",
+      "en": "Guardian Fulgur Anjanath",
+      "jp": "護竜アンジャナフ亜種",
+      "fr": "Anjanath tonnerre gardien"
+    }
+  },
+  {
+    "id": 15,
+    "fixedId": 1663995904,
+    "label": "EM0113_51_0",
+    "name": {
+      "cn": "护凶爪龙",
+      "en": "Guardian Ebony Odogaron",
+      "jp": "護竜オドガロン亜種",
+      "fr": "Odogaron désastre gardien"
+    }
+  },
+  {
+    "id": 16,
+    "fixedId": 15,
+    "label": "EM0150_00_0",
+    "name": {
+      "cn": "辟兽",
+      "en": "Doshaguma",
+      "jp": "ドシャグマ",
+      "fr": "Doshaguma"
+    }
+  },
+  {
+    "id": 17,
+    "fixedId": -1916429696,
+    "label": "EM0150_50_0",
+    "name": {
+      "cn": "护辟兽",
+      "en": "Guardian Doshaguma",
+      "jp": "護竜ドシャグマ",
+      "fr": "Doshaguma gardien"
+    }
+  },
+  {
+    "id": 18,
+    "fixedId": 16,
+    "label": "EM0151_00_0",
+    "name": {
+      "cn": "沙海龙",
+      "en": "Balahara",
+      "jp": "バーラハーラ",
+      "fr": "Balahara"
+    }
+  },
+  {
+    "id": 19,
+    "fixedId": 33,
+    "label": "EM0152_00_0",
+    "name": {
+      "cn": "缠蛙",
+      "en": "Chatacabra",
+      "jp": "チャタカブラ",
+      "fr": "Chatacabra"
+    }
+  },
+  {
+    "id": 20,
+    "fixedId": -34937520,
+    "label": "EM0153_00_0",
+    "name": {
+      "cn": "炎尾龙",
+      "en": "Quematrice",
+      "jp": "ケマトリス",
+      "fr": "Quematrice"
+    }
+  },
+  {
+    "id": 21,
+    "fixedId": -1528962176,
+    "label": "EM0154_00_0",
+    "name": {
+      "cn": "刺花蜘蛛",
+      "en": "Lala Barina",
+      "jp": "ラバラ・バリナ",
+      "fr": "Lala Barina"
+    }
+  },
+  {
+    "id": 22,
+    "fixedId": 567628288,
+    "label": "EM0155_00_0",
+    "name": {
+      "cn": "沼喷龙",
+      "en": "Rompopolo",
+      "jp": "ププロポル",
+      "fr": "Rompopolo"
+    }
+  },
+  {
+    "id": 23,
+    "fixedId": -1547364608,
+    "label": "EM0156_00_0",
+    "name": {
+      "cn": "煌雷龙",
+      "en": "Rey Dau",
+      "jp": "レ・ダウ",
+      "fr": "Rey Dau"
+    }
+  },
+  {
+    "id": 24,
+    "fixedId": 1467998976,
+    "label": "EM0157_00_0",
+    "name": {
+      "cn": "波衣龙",
+      "en": "Uth Duna",
+      "jp": "ウズ・トゥナ",
+      "fr": "Uth Duna"
+    }
+  },
+  {
+    "id": 25,
+    "fixedId": 1657778432,
+    "label": "EM0158_00_0",
+    "name": {
+      "cn": "狱焰蛸",
+      "en": "Nu Udra",
+      "jp": "ヌ・エグドラ",
+      "fr": "Nu Udra"
+    }
+  },
+  {
+    "id": 26,
+    "fixedId": 777460864,
+    "label": "EM0159_00_0",
+    "name": {
+      "cn": "赫猿兽",
+      "en": "Ajarakan",
+      "jp": "アジャラカン",
+      "fr": "Ajarakan"
+    }
+  },
+  {
+    "id": 27,
+    "fixedId": 746996864,
+    "label": "EM0160_00_0",
+    "name": {
+      "cn": "锁刃龙",
+      "en": "Arkveld",
+      "jp": "アルシュベルド",
+      "fr": "Arkveld"
+    }
+  },
+  {
+    "id": 28,
+    "fixedId": -283654400,
+    "label": "EM0160_50_0",
+    "name": {
+      "cn": "护锁刃龙",
+      "en": "Guardian Arkveld",
+      "jp": "護竜アルシュベルド",
+      "fr": "Arkveld gardien"
+    }
+  },
+  {
+    "id": 29,
+    "fixedId": 222933952,
+    "label": "EM0161_00_0",
+    "name": {
+      "cn": "风铗龙",
+      "en": "Hirabami",
+      "jp": "ヒラバミ",
+      "fr": "Hirabami"
+    }
+  },
+  {
+    "id": 30,
+    "fixedId": 1553456768,
+    "label": "EM0162_00_0",
+    "name": {
+      "cn": "冻峰龙",
+      "en": "Jin Dahaad",
+      "jp": "ジン・ダハド",
+      "fr": "Jin Dahaad"
+    }
+  },
+  {
+    "id": 31,
+    "fixedId": 1401863296,
+    "label": "EM0163_00_0",
+    "name": {
+      "cn": "暗器蛸",
+      "en": "Xu Wu",
+      "jp": "シーウー",
+      "fr": "Xu Wu"
+    }
+  },
+  {
+    "id": 32,
+    "fixedId": -2003468672,
+    "label": "EM0164_50_0",
+    "name": {
+      "cn": "白炽龙",
+      "en": "Zoh Shia",
+      "jp": "ゾ・シア",
+      "fr": "Zoh Shia"
+    }
+  },
+  {
+    "id": 148,
+    "fixedId": 27789,
+    "label": "EM0003_00_0",
+    "name": {
+      "cn": "",
+      "en": "",
+      "jp": "",
+      "fr": ""
+    }
+  },
+  {
+    "id": 149,
+    "fixedId": 2836,
+    "label": "EM0004_00_0",
+    "name": {
+      "cn": "",
+      "en": "",
+      "jp": "",
+      "fr": ""
+    }
+  },
+  {
+    "id": 150,
+    "fixedId": 32196,
+    "label": "EM0007_00_0",
+    "name": {
+      "cn": "",
+      "en": "",
+      "jp": "",
+      "fr": ""
+    }
+  },
+  {
+    "id": 151,
+    "fixedId": 15529,
+    "label": "EM0011_00_0",
+    "name": {
+      "cn": "",
+      "en": "",
+      "jp": "",
+      "fr": ""
+    }
+  },
+  {
+    "id": 152,
+    "fixedId": 5185,
+    "label": "EM0018_00_0",
+    "name": {
+      "cn": "",
+      "en": "",
+      "jp": "",
+      "fr": ""
+    }
+  },
+  {
+    "id": 153,
+    "fixedId": 8501,
+    "label": "EM0019_00_0",
+    "name": {
+      "cn": "",
+      "en": "",
+      "jp": "",
+      "fr": ""
+    }
+  },
+  {
+    "id": 154,
+    "fixedId": 5240,
+    "label": "EM0020_00_0",
+    "name": {
+      "cn": "",
+      "en": "",
+      "jp": "",
+      "fr": ""
+    }
+  },
+  {
+    "id": 155,
+    "fixedId": 3350,
+    "label": "EM0023_00_0",
+    "name": {
+      "cn": "",
+      "en": "",
+      "jp": "",
+      "fr": ""
+    }
+  },
+  {
+    "id": 156,
+    "fixedId": 27175,
+    "label": "EM0024_00_0",
+    "name": {
+      "cn": "",
+      "en": "",
+      "jp": "",
+      "fr": ""
+    }
+  },
+  {
+    "id": 157,
+    "fixedId": 14908,
+    "label": "EM0025_00_0",
+    "name": {
+      "cn": "",
+      "en": "",
+      "jp": "",
+      "fr": ""
+    }
+  },
+  {
+    "id": 158,
+    "fixedId": 22066,
+    "label": "EM0026_00_0",
+    "name": {
+      "cn": "",
+      "en": "",
+      "jp": "",
+      "fr": ""
+    }
+  },
+  {
+    "id": 159,
+    "fixedId": 18117,
+    "label": "EM0027_00_0",
+    "name": {
+      "cn": "",
+      "en": "",
+      "jp": "",
+      "fr": ""
+    }
+  },
+  {
+    "id": 160,
+    "fixedId": 13180,
+    "label": "EM0032_00_0",
+    "name": {
+      "cn": "",
+      "en": "",
+      "jp": "",
+      "fr": ""
+    }
+  },
+  {
+    "id": 161,
+    "fixedId": 3673,
+    "label": "EM0036_00_0",
+    "name": {
+      "cn": "泡狐竜",
+      "en": "Mizutsune",
+      "jp": "タマミツネ",
+      "fr": "Mizutsune"
+    }
+  },
+  {
+    "id": 162,
+    "fixedId": 7423,
+    "label": "EM0037_00_0",
+    "name": {
+      "cn": "",
+      "en": "",
+      "jp": "",
+      "fr": ""
+    }
+  },
+  {
+    "id": 163,
+    "fixedId": 16972,
+    "label": "EM0042_00_0",
+    "name": {
+      "cn": "",
+      "en": "",
+      "jp": "",
+      "fr": ""
+    }
+  },
+  {
+    "id": 164,
+    "fixedId": 22174,
+    "label": "EM0043_00_0",
+    "name": {
+      "cn": "",
+      "en": "",
+      "jp": "",
+      "fr": ""
+    }
+  },
+  {
+    "id": 165,
+    "fixedId": 23366,
+    "label": "EM0044_00_0",
+    "name": {
+      "cn": "",
+      "en": "",
+      "jp": "",
+      "fr": ""
+    }
+  },
+  {
+    "id": 166,
+    "fixedId": 15658,
+    "label": "EM0045_00_0",
+    "name": {
+      "cn": "",
+      "en": "",
+      "jp": "",
+      "fr": ""
+    }
+  },
+  {
+    "id": 167,
+    "fixedId": 177,
+    "label": "EM0047_00_0",
+    "name": {
+      "cn": "",
+      "en": "",
+      "jp": "",
+      "fr": ""
+    }
+  },
+  {
+    "id": 168,
+    "fixedId": 20261,
+    "label": "EM0054_00_0",
+    "name": {
+      "cn": "",
+      "en": "",
+      "jp": "",
+      "fr": ""
+    }
+  },
+  {
+    "id": 169,
+    "fixedId": 16629,
+    "label": "EM0057_00_0",
+    "name": {
+      "cn": "",
+      "en": "",
+      "jp": "",
+      "fr": ""
+    }
+  },
+  {
+    "id": 170,
+    "fixedId": 21597,
+    "label": "EM0059_00_0",
+    "name": {
+      "cn": "",
+      "en": "",
+      "jp": "",
+      "fr": ""
+    }
+  },
+  {
+    "id": 171,
+    "fixedId": 29384,
+    "label": "EM0060_00_0",
+    "name": {
+      "cn": "",
+      "en": "",
+      "jp": "",
+      "fr": ""
+    }
+  },
+  {
+    "id": 172,
+    "fixedId": 22496,
+    "label": "EM0061_00_0",
+    "name": {
+      "cn": "",
+      "en": "",
+      "jp": "",
+      "fr": ""
+    }
+  },
+  {
+    "id": 173,
+    "fixedId": 24076,
+    "label": "EM0062_00_0",
+    "name": {
+      "cn": "",
+      "en": "",
+      "jp": "",
+      "fr": ""
+    }
+  },
+  {
+    "id": 174,
+    "fixedId": 882,
+    "label": "EM0063_00_0",
+    "name": {
+      "cn": "",
+      "en": "",
+      "jp": "",
+      "fr": ""
+    }
+  },
+  {
+    "id": 175,
+    "fixedId": 19536,
+    "label": "EM0080_00_0",
+    "name": {
+      "cn": "",
+      "en": "",
+      "jp": "",
+      "fr": ""
+    }
+  },
+  {
+    "id": 176,
+    "fixedId": 14424,
+    "label": "EM0081_00_0",
+    "name": {
+      "cn": "",
+      "en": "",
+      "jp": "",
+      "fr": ""
+    }
+  },
+  {
+    "id": 177,
+    "fixedId": 31556,
+    "label": "EM0089_00_0",
+    "name": {
+      "cn": "",
+      "en": "",
+      "jp": "",
+      "fr": ""
+    }
+  },
+  {
+    "id": 178,
+    "fixedId": 2290,
+    "label": "EM0090_00_0",
+    "name": {
+      "cn": "",
+      "en": "",
+      "jp": "",
+      "fr": ""
+    }
+  },
+  {
+    "id": 179,
+    "fixedId": 12516,
+    "label": "EM0091_00_0",
+    "name": {
+      "cn": "",
+      "en": "",
+      "jp": "",
+      "fr": ""
+    }
+  },
+  {
+    "id": 180,
+    "fixedId": 16506,
+    "label": "EM0092_00_0",
+    "name": {
+      "cn": "",
+      "en": "",
+      "jp": "",
+      "fr": ""
+    }
+  },
+  {
+    "id": 181,
+    "fixedId": 29221,
+    "label": "EM0093_00_0",
+    "name": {
+      "cn": "",
+      "en": "",
+      "jp": "",
+      "fr": ""
+    }
+  },
+  {
+    "id": 182,
+    "fixedId": 5593,
+    "label": "EM0094_00_0",
+    "name": {
+      "cn": "",
+      "en": "",
+      "jp": "",
+      "fr": ""
+    }
+  },
+  {
+    "id": 183,
+    "fixedId": 25401,
+    "label": "EM0095_00_0",
+    "name": {
+      "cn": "",
+      "en": "",
+      "jp": "",
+      "fr": ""
+    }
+  },
+  {
+    "id": 184,
+    "fixedId": 17175,
+    "label": "EM0096_00_0",
+    "name": {
+      "cn": "",
+      "en": "",
+      "jp": "",
+      "fr": ""
+    }
+  },
+  {
+    "id": 185,
+    "fixedId": 19070,
+    "label": "EM0097_00_0",
+    "name": {
+      "cn": "",
+      "en": "",
+      "jp": "",
+      "fr": ""
+    }
+  },
+  {
+    "id": 186,
+    "fixedId": 19802,
+    "label": "EM0098_00_0",
+    "name": {
+      "cn": "",
+      "en": "",
+      "jp": "",
+      "fr": ""
+    }
+  },
+  {
+    "id": 187,
+    "fixedId": 13353,
+    "label": "EM0100_00_0",
+    "name": {
+      "cn": "",
+      "en": "",
+      "jp": "",
+      "fr": ""
+    }
+  },
+  {
+    "id": 188,
+    "fixedId": 23732,
+    "label": "EM0101_00_0",
+    "name": {
+      "cn": "",
+      "en": "",
+      "jp": "",
+      "fr": ""
+    }
+  },
+  {
+    "id": 189,
+    "fixedId": 20112,
+    "label": "EM0102_00_0",
+    "name": {
+      "cn": "",
+      "en": "",
+      "jp": "",
+      "fr": ""
+    }
+  },
+  {
+    "id": 190,
+    "fixedId": 18945,
+    "label": "EM0103_00_0",
+    "name": {
+      "cn": "",
+      "en": "",
+      "jp": "",
+      "fr": ""
+    }
+  },
+  {
+    "id": 191,
+    "fixedId": 24647,
+    "label": "EM0107_00_0",
+    "name": {
+      "cn": "",
+      "en": "",
+      "jp": "",
+      "fr": ""
+    }
+  },
+  {
+    "id": 192,
+    "fixedId": 7847,
+    "label": "EM0108_00_0",
+    "name": {
+      "cn": "",
+      "en": "",
+      "jp": "",
+      "fr": ""
+    }
+  },
+  {
+    "id": 193,
+    "fixedId": 3161,
+    "label": "EM0109_00_0",
+    "name": {
+      "cn": "",
+      "en": "",
+      "jp": "",
+      "fr": ""
+    }
+  },
+  {
+    "id": 194,
+    "fixedId": 7890,
+    "label": "EM0110_00_0",
+    "name": {
+      "cn": "",
+      "en": "",
+      "jp": "",
+      "fr": ""
+    }
+  },
+  {
+    "id": 195,
+    "fixedId": 18822,
+    "label": "EM0111_00_0",
+    "name": {
+      "cn": "",
+      "en": "",
+      "jp": "",
+      "fr": ""
+    }
+  },
+  {
+    "id": 196,
+    "fixedId": 20820,
+    "label": "EM0112_00_0",
+    "name": {
+      "cn": "",
+      "en": "",
+      "jp": "",
+      "fr": ""
+    }
+  },
+  {
+    "id": 197,
+    "fixedId": 763,
+    "label": "EM0113_00_0",
+    "name": {
+      "cn": "",
+      "en": "",
+      "jp": "",
+      "fr": ""
+    }
+  },
+  {
+    "id": 198,
+    "fixedId": 22880,
+    "label": "EM0114_00_0",
+    "name": {
+      "cn": "",
+      "en": "",
+      "jp": "",
+      "fr": ""
+    }
+  },
+  {
+    "id": 199,
+    "fixedId": 21320,
+    "label": "EM0115_00_0",
+    "name": {
+      "cn": "",
+      "en": "",
+      "jp": "",
+      "fr": ""
+    }
+  },
+  {
+    "id": 200,
+    "fixedId": 8649,
+    "label": "EM0116_00_0",
+    "name": {
+      "cn": "",
+      "en": "",
+      "jp": "",
+      "fr": ""
+    }
+  },
+  {
+    "id": 201,
+    "fixedId": 10650,
+    "label": "EM0118_00_0",
+    "name": {
+      "cn": "",
+      "en": "",
+      "jp": "",
+      "fr": ""
+    }
+  },
+  {
+    "id": 202,
+    "fixedId": 3535,
+    "label": "EM0120_00_0",
+    "name": {
+      "cn": "",
+      "en": "",
+      "jp": "",
+      "fr": ""
+    }
+  },
+  {
+    "id": 203,
+    "fixedId": 13356,
+    "label": "EM0122_00_0",
+    "name": {
+      "cn": "千刃竜",
+      "en": "Seregios",
+      "jp": "セルレギオス",
+      "fr": "Seregios"
+    }
+  },
+  {
+    "id": 204,
+    "fixedId": 25352,
+    "label": "EM0123_00_0",
+    "name": {
+      "cn": "",
+      "en": "",
+      "jp": "",
+      "fr": ""
+    }
+  },
+  {
+    "id": 205,
+    "fixedId": 30988,
+    "label": "EM0124_00_0",
+    "name": {
+      "cn": "",
+      "en": "",
+      "jp": "",
+      "fr": ""
+    }
+  },
+  {
+    "id": 206,
+    "fixedId": 9613,
+    "label": "EM0125_00_0",
+    "name": {
+      "cn": "",
+      "en": "",
+      "jp": "",
+      "fr": ""
+    }
+  },
+  {
+    "id": 207,
+    "fixedId": 645,
+    "label": "EM0136_00_0",
+    "name": {
+      "cn": "",
+      "en": "",
+      "jp": "",
+      "fr": ""
+    }
+  },
+  {
+    "id": 208,
+    "fixedId": 1,
+    "label": "MAX",
+    "name": {
+      "cn": "",
+      "en": "",
+      "jp": "",
+      "fr": ""
+    }
+  }
 ]
