@@ -1,4 +1,4 @@
-# WildCustomQuest - Générateur de quêtes personnalisées pour Monster Hunter Wilds
+# Générateur de quêtes personnalisées pour Monster Hunter Wilds
 
 Un outil pour créer des quêtes personnalisées dans Monster Hunter Wilds via une interface conviviale.
 
