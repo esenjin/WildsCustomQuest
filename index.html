@@ -362,9 +362,19 @@
     <div class="language-selector">
         <select id="language">
             <option value="fr-fr" selected>Français</option>
-            <option value="en-us">English</option>
             <option value="ja-jp">日本語</option>
-            <option value="zh-cn">中文</option>
+            <option value="en-us">English</option>
+            <option value="it-it">Italiano</option>
+            <option value="de-de">Deutsch</option>
+            <option value="es-es">Español (ES)</option>
+            <option value="es-la">Español (LATAM)</option>
+            <option value="pt-br">Português (BR)</option>
+            <option value="pl-pl">Polski</option>
+            <option value="ru-ru">Русский</option>
+            <option value="ko-kr">한국어</option>
+            <option value="zh-cn">中文 (简体)</option>
+            <option value="zh-tw">中文 (繁體)</option>
+            <option value="ar-sa">العربية</option>
         </select>
     </div>
 
@@ -1404,59 +1414,22 @@
                     },
                     "_IsRecommended": false,
                     "_MessageAssetList": [
-                        {
-                            "Language": 2, // French
-                            "MessageData": [
-                                {"Name": "Mission600016_000", "Text": ""},
-                                {"Name": "Mission600016_001", "Text": ""},
-                                {"Name": "Mission600016_100", "Text": questTitle},
-                                {"Name": "Mission600016_101", "Text": questClient},
-                                {"Name": "Mission600016_102", "Text": questDescription},
-                                {"Name": "Mission600016_122", "Text": ""},
-                                {"Name": "Mission600016_123", "Text": ""},
-                                {"Name": "Mission600016_132", "Text": ""}
-                            ]
-                        },
-                        {
-                            "Language": 1, // English
-                            "MessageData": [
-                                {"Name": "Mission600016_000", "Text": ""},
-                                {"Name": "Mission600016_001", "Text": ""},
-                                {"Name": "Mission600016_100", "Text": questTitle},
-                                {"Name": "Mission600016_101", "Text": questClient},
-                                {"Name": "Mission600016_102", "Text": questDescription},
-                                {"Name": "Mission600016_122", "Text": ""},
-                                {"Name": "Mission600016_123", "Text": ""},
-                                {"Name": "Mission600016_132", "Text": ""}
-                            ]
-                        },
-                        {
-                            "Language": 0, // Japanese
-                            "MessageData": [
-                                {"Name": "Mission600016_000", "Text": ""},
-                                {"Name": "Mission600016_001", "Text": ""},
-                                {"Name": "Mission600016_100", "Text": questTitle},
-                                {"Name": "Mission600016_101", "Text": questClient},
-                                {"Name": "Mission600016_102", "Text": questDescription},
-                                {"Name": "Mission600016_122", "Text": ""},
-                                {"Name": "Mission600016_123", "Text": ""},
-                                {"Name": "Mission600016_132", "Text": ""}
-                            ]
-                        },
-                        {
-                            "Language": 13, // Chinese
-                            "MessageData": [
-                                {"Name": "Mission600016_000", "Text": ""},
-                                {"Name": "Mission600016_001", "Text": ""},
-                                {"Name": "Mission600016_100", "Text": questTitle},
-                                {"Name": "Mission600016_101", "Text": questClient},
-                                {"Name": "Mission600016_102", "Text": questDescription},
-                                {"Name": "Mission600016_122", "Text": ""},
-                                {"Name": "Mission600016_123", "Text": ""},
-                                {"Name": "Mission600016_132", "Text": ""}
-                            ]
-                        }
-                    ],
+                        "ja-jp", "en-us", "fr-fr", "it-it", "de-de",
+                        "es-es", "es-la", "pt-br", "pl-pl", "ru-ru",
+                        "ko-kr", "zh-cn", "zh-tw", "ar-sa"
+                    ].map(lang => ({
+                        "Language": getLanguageCode(lang),
+                        "MessageData": [
+                            {"Name": "Mission600016_000", "Text": ""},
+                            {"Name": "Mission600016_001", "Text": ""},
+                            {"Name": "Mission600016_100", "Text": questTitle},
+                            {"Name": "Mission600016_101", "Text": questClient},
+                            {"Name": "Mission600016_102", "Text": questDescription},
+                            {"Name": "Mission600016_122", "Text": ""},
+                            {"Name": "Mission600016_123", "Text": ""},
+                            {"Name": "Mission600016_132", "Text": ""}
+                        ]
+                    })),
                     "_StreamQuestData": {
                         "_EmSetData": {
                             "_EmSet_AnimalTag": {
@@ -1686,12 +1659,22 @@
 
         function getLanguageCode(language) {
             const codes = {
-                "fr-fr": 2,
-                "en-us": 1,
-                "ja-jp": 0,
-                "zh-cn": 13
+                "ja-jp":  0,
+                "en-us":  1,
+                "fr-fr":  2,
+                "it-it":  3,
+                "de-de":  4,
+                "es-es":  5,
+                "es-la":  6,
+                "pt-br":  7,
+                "pl-pl":  8,
+                "ru-ru":  9,
+                "ko-kr": 10,
+                "zh-cn": 11,
+                "zh-tw": 12,
+                "ar-sa": 13
             };
-            return codes[language] || 2;
+            return codes[language] ?? 2;
         }
 
         function showAlert(message, type = 'error') {
