@@ -952,7 +952,9 @@
                             "_DifficultyAdjustRange": 0,
                             "_DifficultyRankId": {
                                 "Name": `★${questLevel}`,
-                                "Value": "aa92e87f-9a58-4a8f-8613-c00ddb9e763a"
+                                "Value": (monster.variant === 'TEMPERED' || monster.variant === 'ARCH_TEMPERED')
+                                    ? "6d893ac4-5f81-4850-b1ac-a2c23845cb15"
+                                    : "aa92e87f-9a58-4a8f-8613-c00ddb9e763a"
                             },
                             "_EmID": monster.fixedId,
                             "_EventTargetID": "INVALID",
@@ -961,8 +963,7 @@
                             "_InitPos": "(-326,-28,176)",
                             "_IsUseRandomSize": false,
                             "_LayoutKeepID": -1,
-                            "_LegendaryID": monster.variant === 'TEMPERED' ? "TEMPERED" : monster.variant === 'ARCH_TEMPERED' ? "ARCH_TEMPERED" : "NORMAL",
-                            "_OptionTag": {
+                            "_LegendaryID": monster.variant === 'ARCH_TEMPERED' ? "KING" : "NORMAL",
                                 "Value": 0
                             },
                             "_RandomSizeTblId": {
@@ -1014,7 +1015,7 @@
                                     "_StartAfterFirstCondition": false
                                 },
                                 "_EmTargetID": 101 + index,
-                                "_LegendaryID": monster.variant === 'TEMPERED' ? "TEMPERED" : monster.variant === 'ARCH_TEMPERED' ? "ARCH_TEMPERED" : "NORMAL",
+                                "_LegendaryID": monster.variant === 'ARCH_TEMPERED' ? "KING" : "NORMAL",
                                 "_RoleID": "NORMAL",
                                 "_ShowTargetGuide": true,
                                 "_TargetIDValue": monster.fixedId,
@@ -1097,12 +1098,12 @@
                     "_IsRecommended": false,
                     "_MessageAssetList": [
                         {
-                            "Language": 13, // Chinese
+                            "Language": 2, // French
                             "MessageData": [
                                 {"Name": "Mission600016_000", "Text": ""},
                                 {"Name": "Mission600016_001", "Text": ""},
                                 {"Name": "Mission600016_100", "Text": questTitle},
-                                {"Name": "Mission600016_101", "Text": "Custom Quest Generator"},
+                                {"Name": "Mission600016_101", "Text": "Générateur de quêtes"},
                                 {"Name": "Mission600016_102", "Text": questDescription},
                                 {"Name": "Mission600016_122", "Text": ""},
                                 {"Name": "Mission600016_123", "Text": ""},
@@ -1128,7 +1129,20 @@
                                 {"Name": "Mission600016_000", "Text": ""},
                                 {"Name": "Mission600016_001", "Text": ""},
                                 {"Name": "Mission600016_100", "Text": questTitle},
-                                {"Name": "Mission600016_101", "Text": "Custom Quest Generator"},
+                                {"Name": "Mission600016_101", "Text": "カスタムクエストジェネレーター"},
+                                {"Name": "Mission600016_102", "Text": questDescription},
+                                {"Name": "Mission600016_122", "Text": ""},
+                                {"Name": "Mission600016_123", "Text": ""},
+                                {"Name": "Mission600016_132", "Text": ""}
+                            ]
+                        },
+                        {
+                            "Language": 13, // Chinese
+                            "MessageData": [
+                                {"Name": "Mission600016_000", "Text": ""},
+                                {"Name": "Mission600016_001", "Text": ""},
+                                {"Name": "Mission600016_100", "Text": questTitle},
+                                {"Name": "Mission600016_101", "Text": "自定义任务生成器"},
                                 {"Name": "Mission600016_102", "Text": questDescription},
                                 {"Name": "Mission600016_122", "Text": ""},
                                 {"Name": "Mission600016_123", "Text": ""},
@@ -1266,10 +1280,10 @@
                     const monster = enemiesData.find(m => m.fixedId === target._EmID);
                     const monsterName = monster && monster.name && monster.name[currentLanguage] ? 
                         monster.name[currentLanguage] : 'Monstre inconnu';
-                    const badge = target._LegendaryID === 'TEMPERED'
-                        ? '<span class="badge-alpha">Alpha</span>'
-                        : target._LegendaryID === 'ARCH_TEMPERED'
+                    const badge = target._LegendaryID === 'KING'
                         ? '<span class="badge-arch-tempered">Alpha Suprême</span>'
+                        : (target._DifficultyRankId && target._DifficultyRankId.Value === '6d893ac4-5f81-4850-b1ac-a2c23845cb15' && target._LegendaryID === 'NORMAL')
+                        ? '<span class="badge-alpha">Alpha</span>'
                         : '';
                     monstersList += `<li>${monsterName}${badge} <span style="color:#888;font-size:0.85em">(${monster ? monster.label : 'Inconnu'})</span></li>`;
                 });
