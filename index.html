@@ -382,6 +382,14 @@
         
         <div class="tab-content active" id="quest-info">
             <h2>Informations de base de la quête</h2>
+
+            <!-- Zone d'import -->
+            <div style="margin-bottom: 20px; padding: 14px 16px; background: var(--surface2); border: 1px dashed var(--border); border-radius: 6px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+                <span style="color: var(--text-dim); font-size: 0.9em;">Importer une quête existante&nbsp;:</span>
+                <input type="file" id="importFile" accept=".zip" style="display:none;" onchange="importQuest(this)">
+                <button class="secondary" onclick="document.getElementById('importFile').click()" style="margin:0;">📂 Charger un ZIP</button>
+                <span id="import-status" style="font-size:0.85em; color: var(--text-dim);"></span>
+            </div>
             <div class="form-group">
                 <label for="questId">ID de la quête :</label>
                 <input type="number" id="questId" placeholder="Entrez un ID unique (ex. 10086)" value="10086">
@@ -450,6 +458,7 @@
             <div class="form-group">
                 <label for="minRC">RC minimum requis :</label>
                 <input type="number" id="minRC" min="1" max="999" value="21">
+            </div>
             <div class="button-group">
                 <button onclick="goToTab('monsters')">Suivant : Sélectionner les monstres</button>
             </div>
@@ -1018,6 +1027,145 @@
             return configs[level] || configs[8];
         }
 
+        // ── Import d'une quête depuis un ZIP ──────────────────────────────────
+        async function importQuest(input) {
+            const file = input.files[0];
+            if (!file) return;
+            const status = document.getElementById('import-status');
+            status.textContent = 'Chargement…';
+            status.style.color = 'var(--text-dim)';
+
+            try {
+                if (typeof JSZip === 'undefined') throw new Error('JSZip non chargé');
+
+                const zip = await JSZip.loadAsync(file);
+
+                // Cherche les fichiers .raw.json et .ext.json dans le ZIP
+                let rawFile = null, extFile = null;
+                zip.forEach((path, f) => {
+                    if (path.endsWith('.raw.json')) rawFile = f;
+                    if (path.endsWith('.ext.json')) extFile = f;
+                });
+                if (!rawFile) throw new Error('Fichier .raw.json introuvable dans le ZIP');
+                if (!extFile) throw new Error('Fichier .ext.json introuvable dans le ZIP');
+
+                const raw = JSON.parse(await rawFile.async('string'));
+                const ext = JSON.parse(await extFile.async('string'));
+
+                // ── Infos de base ────────────────────────────────────────────
+                const data = raw._DataList;
+                const msgFR = raw._MessageAssetList?.find(m => m.Language === 2);
+                const title = msgFR?.MessageData?.find(m => m.Name?.endsWith('_100'))?.Text || '';
+                const desc  = msgFR?.MessageData?.find(m => m.Name?.endsWith('_102'))?.Text || '';
+
+                document.getElementById('questId').value        = data._MissionId?._Value ?? ext.questId ?? 10086;
+                document.getElementById('questTitle').value     = title;
+                document.getElementById('questDescription').value = desc;
+                document.getElementById('timeLimit').value      = data._TimeLimit ?? 20;
+                document.getElementById('rewardMoney').value    = data._RemMoney  ?? 24000;
+                document.getElementById('hrPoints').value       = data._HRPoint   ?? 660;
+                document.getElementById('questLife').value      = data._QuestLife ?? 2;
+                document.getElementById('maxPlayers').value     = data._OrderCondition?._MaxPlayerNum ?? 4;
+                document.getElementById('minRC').value          = data._OrderCondition?._OrderHR      ?? 1;
+
+                // Niveau ★
+                const lvl = data._QuestLv ?? 8;
+                document.getElementById('questLevel').value = lvl;
+
+                // Lieu
+                const stageVal = String(data._Stage?._Value ?? '1181994624');
+                const locSelect = document.getElementById('questLocation');
+                if ([...locSelect.options].some(o => o.value === stageVal)) {
+                    locSelect.value = stageVal;
+                }
+                onLocationChange(stageVal);
+
+                // ── Monstres ─────────────────────────────────────────────────
+                selectedMonsters = [];
+                const targets = raw._BossZakoDataList?._MainTargetDataList ?? [];
+                targets.forEach(t => {
+                    const monster = enemiesData.find(m => m.fixedId === t._EmID);
+                    if (!monster) return;
+                    const isAT   = t._LegendaryID === 'KING';
+                    const canAT  = ARCH_TEMPERED_IDS.has(monster.fixedId);
+                    const variant = isAT && canAT ? 'ARCH_TEMPERED' : 'TEMPERED';
+                    // Détection spawn séquentiel
+                    selectedMonsters.push({ ...monster, variant });
+                });
+
+                // Mode séquentiel : au moins un monstre a _SpawnCondition
+                const isSeq = targets.some(t => t._SpawnCondition);
+                if (stageVal === '1181994624') {
+                    document.getElementById('sequentialMonsters').checked = isSeq;
+                }
+
+                populateMonsterList();
+                updateMonsterPreview();
+
+                // ── Récompenses ───────────────────────────────────────────────
+                rewardItems = [];
+                (ext.rewardItems ?? []).forEach(r => {
+                    const item = itemsData.find(i => i.id === r.itemId);
+                    rewardItems.push({
+                        itemId:      r.itemId,
+                        itemName:    item?.name?.[currentLanguage] ?? r.itemName ?? 'Inconnu',
+                        minCount:    r.minCount,
+                        maxCount:    r.maxCount,
+                        probability: r.probability
+                    });
+                });
+                rebuildRewardUI();
+
+                // Remettre le fichier input à zéro pour permettre un ré-import
+                input.value = '';
+
+                status.textContent = `✓ "${file.name}" importé avec succès`;
+                status.style.color = 'var(--accent)';
+                setTimeout(() => { status.textContent = ''; }, 4000);
+
+                showAlert('Quête importée ! Vérifiez et modifiez les champs, puis régénérez.', 'success');
+
+            } catch (err) {
+                console.error('Import error:', err);
+                status.textContent = '✗ ' + err.message;
+                status.style.color = '#e07070';
+                showAlert('Erreur lors de l\'import : ' + err.message);
+                input.value = '';
+            }
+        }
+
+        // Reconstruit l'UI des récompenses depuis rewardItems[]
+        function rebuildRewardUI() {
+            const container = document.getElementById('reward-items');
+            if (!container) return;
+            container.innerHTML = '';
+            if (rewardItems.length === 0) { addReward(); return; }
+            rewardItems.forEach((item, idx) => {
+                const el = document.createElement('div');
+                el.className = 'reward-item';
+                el.dataset.index = idx;
+                el.innerHTML = `
+                    <div class="reward-controls">
+                        <select class="item-select" title="Item Name" onchange="updateRewardItem(${idx}, 'itemId', this.value)">
+                            ${itemsData.map(mi => `
+                                <option value="${mi.id}" ${mi.id === item.itemId ? 'selected' : ''}>
+                                    ${mi.id}: ${mi.name?.[currentLanguage] ?? '---'}
+                                </option>`).join('')}
+                        </select>
+                        <input type="number" title="Minimum" placeholder="Min" min="1" value="${item.minCount}"
+                            onchange="updateRewardItem(${idx}, 'minCount', this.value)">
+                        <input type="number" title="Maximum" placeholder="Max" min="1" value="${item.maxCount}"
+                            onchange="updateRewardItem(${idx}, 'maxCount', this.value)">
+                        <input type="number" title="Chance %" placeholder="Chance %" min="1" max="100" value="${item.probability}"
+                            onchange="updateRewardItem(${idx}, 'probability', this.value)">
+                    </div>
+                    <button onclick="removeRewardItem(${idx})">×</button>
+                `;
+                container.appendChild(el);
+            });
+        }
+
+        // ── Génération de quête ───────────────────────────────────────────────
         // Generate quest
         function generateQuest() {
             try {
