@@ -37,7 +37,7 @@ Un grand merci à kassent pour avoir créé le mod Custom Quest Loader qui rend 
 
 3. **Installation des quêtes** :
    - Extrayez le fichier ZIP créé par le générateur
-   - Placez les fichiers `.raw.json` et `.ext.json` dans le dossier approprié tel qu'indiqué par Custom Quest Loader
+   - Placez les fichiers `.raw.json` et `.ext.json` dans le dossier approprié tel qu'indiqué par Custom Quest Loader (normalement dans `\MonsterHunterWilds\reframework\plugins\PermanentEventQuest\quests`)
    - Lancez le jeu et profitez de votre quête personnalisée !
 
 ## Structure des fichiers
