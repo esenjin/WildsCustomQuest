@@ -670,26 +670,5 @@
             "zh-cn": "白炽龙",
             "zh-tw": "白熾龍"
         }
-    },
-    {
-        "fixedId": 21849,
-        "id": 34,
-        "label": "EM0166_00_0",
-        "name": {
-            "ar-sa": "أوميغا بلانيتيس",
-            "de-de": "Omega Planetes",
-            "en-us": "Omega Planetes",
-            "es-es": "Omega Planetes",
-            "es-la": "Omega Planetes",
-            "fr-fr": "Oméga Planetikos",
-            "it-it": "Omega Planetes",
-            "ja-jp": "オメガ・プラネテス",
-            "ko-kr": "오메가 플라네테스",
-            "pl-pl": "Omega Planetes",
-            "pt-br": "Omega Planetes",
-            "ru-ru": "Омега-Планетес",
-            "zh-cn": "游星欧米茄",
-            "zh-tw": "遊星歐米茄"
-        }
     }
 ]
