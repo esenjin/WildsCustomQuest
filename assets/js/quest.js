@@ -62,6 +62,12 @@ function generateQuest() {
         const isArena  = questLocation === '1181994624';
         const sequential = isArena && document.getElementById('sequentialMonsters')?.checked;
 
+        // Développer la liste des monstres en tenant compte de la quantité choisie.
+        // Ex. : un Rathalos ×3 devient trois entrées distinctes dans le tableau.
+        const expandedMonsters = selectedMonsters.flatMap(m =>
+            Array.from({ length: m.count || 1 }, () => ({ ...m }))
+        );
+
         // ── Construction du fichier .raw.json ───────────────
         const rawData = {
             "_ArenaDataList": {
@@ -82,7 +88,7 @@ function generateQuest() {
                     "_Name": getLocationName(questLocation),
                     "_Value": parseInt(questLocation)
                 },
-                "_MainTargetDataList": selectedMonsters.map((monster, index) => ({
+                "_MainTargetDataList": expandedMonsters.map((monster, index) => ({
                     "_AdvancedSettings": {
                         "_IsDeepSleepCreate": index > 0 && sequential
                     },
@@ -153,7 +159,8 @@ function generateQuest() {
                 "_BossRushParams=": null,
                 "_ClearBGM": 0,
                 "_ClearCondition": {
-                    "_TargetInfoArray": selectedMonsters.map((monster, index) => ({
+                    // Un objectif par entrée dans la liste développée (respecte les doublons dus au count)
+                    "_TargetInfoArray": expandedMonsters.map((monster, index) => ({
                         "_ConditionalMoveData": {
                             "_DestArray": [],
                             "_IsUse": false,

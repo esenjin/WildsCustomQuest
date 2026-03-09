@@ -393,6 +393,53 @@ button.external:hover { background-color: var(--blue-h); }
     transform: translateY(-1px);
 }
 
+/* ── Contrôle de quantité (visible uniquement si sélectionné) ─ */
+.monster-count-control {
+    display: none;
+    align-items: center;
+    gap: 6px;
+    margin-top: 8px;
+}
+
+.monster-count-control.visible { display: flex; }
+
+.count-btn {
+    padding: 0;
+    width: 22px;
+    height: 22px;
+    min-width: 22px;
+    border-radius: 4px;
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-size: 1em;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: none;
+    transition: background-color 0.15s;
+}
+
+.count-btn:hover {
+    background-color: var(--border);
+    transform: none;
+}
+
+.count-value {
+    min-width: 18px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 0.95em;
+    color: var(--accent);
+}
+
+.count-label {
+    font-size: 0.75em;
+    color: var(--text-dim);
+}
+
 /* ── Badges de variantes monstres ─────────────────────────── */
 
 /* Badge Alpha (monstre trempé violet) */

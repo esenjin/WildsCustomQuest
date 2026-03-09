@@ -6,7 +6,10 @@
  * IDs des monstres disposant d'une version Alpha Suprême (LegendaryID = KING).
  * Rey Dau, Uth Duna, Nu Udra, Arkveld.
  */
-const ARCH_TEMPERED_IDS = new Set([-1547364608, 1467998976, 1657778432, 746996864, 1553456768]);
+const ARCH_TEMPERED_IDS = new Set([-1547364608, 1467998976, 1657778432, 746996864]);
+
+/** Nombre maximum d'exemplaires d'un même monstre autorisé par quête. */
+const MAX_MONSTER_COUNT = 5;
 
 /* ── Affichage de la liste ────────────────────────────────── */
 
@@ -38,16 +41,19 @@ function populateMonsterList() {
             existingSelection.variant = 'TEMPERED';
         }
 
-        const variant = existingSelection ? (existingSelection.variant || 'TEMPERED') : 'TEMPERED';
+        const variant      = existingSelection ? (existingSelection.variant || 'TEMPERED') : 'TEMPERED';
+        const currentCount = existingSelection ? (existingSelection.count || 1) : 1;
+        const isSelected   = !!existingSelection;
 
         // Appliquer les classes visuelles si déjà sélectionné
-        if (existingSelection) {
+        if (isSelected) {
             card.classList.add('selected');
             if (variant === 'ARCH_TEMPERED') card.classList.add('arch-tempered');
             else card.classList.add('alpha');
         }
 
         const checkboxId     = `arch-${monster.fixedId}`;
+        const counterId      = `count-${monster.fixedId}`;
         const isArchTempered = variant === 'ARCH_TEMPERED';
 
         card.innerHTML = `
@@ -63,27 +69,41 @@ function populateMonsterList() {
                     : `<span style="font-size:0.75em;color:var(--text-dim);font-style:italic;">Alpha uniquement</span>`
                 }
             </div>
+            <div class="monster-count-control ${isSelected ? 'visible' : ''}">
+                <button class="count-btn count-minus" type="button">−</button>
+                <span class="count-value" id="${counterId}">${currentCount}</span>
+                <button class="count-btn count-plus" type="button">+</button>
+                <span class="count-label">/ ${MAX_MONSTER_COUNT}</span>
+            </div>
         `;
 
-        // Clic sur la carte (hors case à cocher) : toggle de la sélection
+        // Clic sur la carte (hors contrôles interactifs) : toggle de la sélection
         card.addEventListener('click', function (e) {
-            // Ignorer si le clic vient de la case à cocher ou de son libellé
-            if (e.target.type === 'checkbox' || e.target.tagName === 'LABEL' || e.target.closest('label')) return;
+            // Ignorer si le clic vient d'un contrôle interactif
+            if (e.target.type === 'checkbox'
+                || e.target.tagName === 'LABEL'
+                || e.target.closest('label')
+                || e.target.closest('.monster-count-control')) return;
 
             const sel = selectedMonsters.find(m => m.fixedId === monster.fixedId);
             if (sel) {
-                // Désélectionner le monstre
+                // Désélectionner le monstre et réinitialiser le compteur
                 selectedMonsters.splice(selectedMonsters.indexOf(sel), 1);
                 card.classList.remove('selected', 'alpha', 'arch-tempered');
                 const cb = card.querySelector('input[type="checkbox"]');
                 if (cb) cb.checked = false;
+                // Masquer le contrôle de quantité et remettre à 1
+                _setCountControlVisible(card, false);
+                _setCountDisplay(card, monster.fixedId, 1);
             } else {
                 // Sélectionner le monstre avec la variante courante de la case
                 const cb         = card.querySelector('input[type="checkbox"]');
                 const newVariant = cb && cb.checked ? 'ARCH_TEMPERED' : 'TEMPERED';
-                selectedMonsters.push({ ...monster, variant: newVariant });
+                selectedMonsters.push({ ...monster, variant: newVariant, count: 1 });
                 card.classList.add('selected');
                 applyVariantClass(card, newVariant);
+                // Afficher le contrôle de quantité
+                _setCountControlVisible(card, true);
             }
             updateMonsterPreview();
         });
@@ -99,13 +119,38 @@ function populateMonsterList() {
                     sel.variant = newVariant;
                 } else {
                     // Auto-sélection si la case est cochée sans sélection préalable
-                    selectedMonsters.push({ ...monster, variant: newVariant });
+                    selectedMonsters.push({ ...monster, variant: newVariant, count: 1 });
                     card.classList.add('selected');
+                    _setCountControlVisible(card, true);
                 }
                 applyVariantClass(card, newVariant);
                 updateMonsterPreview();
             });
         }
+
+        // Bouton « − » : décrémenter le compteur (minimum 1)
+        card.querySelector('.count-minus').addEventListener('click', function (e) {
+            e.stopPropagation();
+            const sel = selectedMonsters.find(m => m.fixedId === monster.fixedId);
+            if (!sel) return;
+            if (sel.count > 1) {
+                sel.count--;
+                _setCountDisplay(card, monster.fixedId, sel.count);
+                updateMonsterPreview();
+            }
+        });
+
+        // Bouton « + » : incrémenter le compteur (maximum MAX_MONSTER_COUNT)
+        card.querySelector('.count-plus').addEventListener('click', function (e) {
+            e.stopPropagation();
+            const sel = selectedMonsters.find(m => m.fixedId === monster.fixedId);
+            if (!sel) return;
+            if (sel.count < MAX_MONSTER_COUNT) {
+                sel.count++;
+                _setCountDisplay(card, monster.fixedId, sel.count);
+                updateMonsterPreview();
+            }
+        });
 
         monsterList.appendChild(card);
     });
@@ -120,6 +165,29 @@ function applyVariantClass(card, variant) {
     card.classList.remove('alpha', 'arch-tempered');
     if (variant === 'ARCH_TEMPERED') card.classList.add('arch-tempered');
     else card.classList.add('alpha');
+}
+
+/* ── Fonctions internes ───────────────────────────────────── */
+
+/**
+ * Affiche ou masque le contrôle de quantité d'une carte.
+ * @param {HTMLElement} card    - La carte monstre.
+ * @param {boolean}     visible - true pour afficher, false pour masquer.
+ */
+function _setCountControlVisible(card, visible) {
+    const ctrl = card.querySelector('.monster-count-control');
+    if (ctrl) ctrl.classList.toggle('visible', visible);
+}
+
+/**
+ * Met à jour l'affichage du compteur dans une carte.
+ * @param {HTMLElement} card      - La carte monstre.
+ * @param {number}      fixedId   - L'ID du monstre (pour cibler le bon span).
+ * @param {number}      count     - La nouvelle valeur à afficher.
+ */
+function _setCountDisplay(card, fixedId, count) {
+    const span = card.querySelector(`#count-${fixedId}`);
+    if (span) span.textContent = count;
 }
 
 /* ── Filtrage ─────────────────────────────────────────────── */
@@ -145,7 +213,7 @@ function filterMonsters(searchTerm) {
 
 /**
  * Met à jour le bloc de prévisualisation des monstres sélectionnés.
- * Affiche leur nom dans la langue courante ainsi que leur variante.
+ * Affiche leur nom, leur variante et leur quantité dans la langue courante.
  */
 function updateMonsterPreview() {
     const preview = document.getElementById('monster-preview');
@@ -164,7 +232,10 @@ function updateMonsterPreview() {
             const badge = monster.variant === 'ARCH_TEMPERED'
                 ? '<span class="badge-arch-tempered">Alpha Suprême</span>'
                 : '';
-            html += `<li>${name}${badge} <span style="color:#888;font-size:0.85em">(${monster.label})</span></li>`;
+            const count = monster.count && monster.count > 1
+                ? ` <span style="color:var(--accent);font-size:0.85em;">×${monster.count}</span>`
+                : '';
+            html += `<li>${name}${badge}${count} <span style="color:#888;font-size:0.85em">(${monster.label})</span></li>`;
         });
 
         html += '</ol>';
@@ -183,7 +254,7 @@ function updateMonsterPreview() {
 function toggleMonsterSelection(monster) {
     const index = selectedMonsters.findIndex(m => m.fixedId === monster.fixedId);
     if (index === -1) {
-        selectedMonsters.push(monster);
+        selectedMonsters.push({ ...monster, count: 1 });
     } else {
         selectedMonsters.splice(index, 1);
     }
