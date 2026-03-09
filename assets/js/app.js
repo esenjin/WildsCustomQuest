@@ -37,13 +37,11 @@ let questData = {
  */
 function getLocationName(locationId) {
     const locations = {
-        "1181994624": "st401",
-        "1198037248": "st001",
-        "1180946048": "st101",
-        "1179897472": "st201",
-        "1182777600": "st301",
-        "544388992":  "st402",
-        "13836":      "st405"
+        "-1226157568": "st101",  // Plaines venteuses
+        "-859829056":  "st102",  // Forêt écarlate
+        "-1251081216": "st103",  // Bassin pétrolier
+        "327401792":   "st105",  // Ruines de Wyveria
+        "1181994624":  "st401"   // Vallon meurtri
     };
     return locations[locationId] || "st401";
 }
