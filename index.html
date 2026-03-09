@@ -3,362 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Monster Hunter Wilds - Générateur de quêtes personnalisées</title>
-    <style>
-        :root {
-            --bg:        #0f1117;
-            --surface:   #181c27;
-            --surface2:  #1f2435;
-            --border:    #2e3450;
-            --text:      #d4cfc8;
-            --text-dim:  #7a7d94;
-            --accent:    #c8872a;
-            --accent-h:  #e09a38;
-            --red:       #b83232;
-            --red-h:     #d43a3a;
-            --blue:      #2d6fb5;
-            --blue-h:    #3a82cc;
-            --alpha:     #7b3fa0;
-            --alpha-h:   #9b59b6;
-            --at:        #b01566;
-            --at-h:      #d4256e;
-        }
+    <title>Monster Hunter Wilds – Générateur de quêtes personnalisées</title>
 
-        * { box-sizing: border-box; }
-
-        body {
-            font-family: 'Segoe UI', system-ui, sans-serif;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: var(--bg);
-            color: var(--text);
-        }
-
-        h1 {
-            color: var(--accent);
-            font-size: 1.4em;
-            letter-spacing: 0.05em;
-            text-transform: uppercase;
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 12px;
-            margin-bottom: 20px;
-        }
-        h2 { color: var(--accent); font-size: 1.1em; margin-top: 0; }
-        h3 { color: var(--text); font-size: 1em; }
-
-        .container {
-            background-color: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-
-        .form-group { margin-bottom: 15px; }
-
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 600;
-            font-size: 0.9em;
-            color: var(--text-dim);
-            text-transform: uppercase;
-            letter-spacing: 0.04em;
-        }
-
-        input, select, textarea {
-            width: 100%;
-            padding: 8px 10px;
-            background: var(--surface2);
-            border: 1px solid var(--border);
-            border-radius: 4px;
-            color: var(--text);
-            font-size: 0.95em;
-            transition: border-color 0.2s;
-        }
-        input:focus, select:focus, textarea:focus {
-            outline: none;
-            border-color: var(--accent);
-        }
-        select option { background: var(--surface2); }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 12px;
-        }
-
-        .monster-card {
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            padding: 10px;
-            cursor: pointer;
-            transition: all 0.2s;
-            background-color: var(--surface2);
-        }
-        .monster-card:hover {
-            transform: translateY(-2px);
-            border-color: var(--accent);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-        }
-        .monster-card.selected {
-            background-color: #1a2240;
-            border-color: var(--blue);
-            box-shadow: 0 0 0 1px var(--blue);
-        }
-        .monster-card.alpha {
-            background-color: #1e1430;
-            border-color: var(--alpha);
-        }
-        .monster-card.alpha.selected {
-            background-color: #231540;
-            border-color: var(--alpha-h);
-            box-shadow: 0 0 0 1px var(--alpha-h);
-        }
-        .monster-card.arch-tempered {
-            background-color: #200d1a;
-            border-color: var(--at);
-        }
-        .monster-card.arch-tempered.selected {
-            background-color: #280d20;
-            border-color: var(--at-h);
-            box-shadow: 0 0 0 1px var(--at-h);
-        }
-
-        .monster-card h3 { margin: 0 0 2px; font-size: 0.9em; color: var(--text); }
-
-        .reward-item {
-            display: flex;
-            align-items: center;
-            margin-bottom: 10px;
-            padding: 10px;
-            background-color: var(--surface2);
-            border: 1px solid var(--border);
-            border-radius: 5px;
-            position: relative;
-        }
-        .reward-controls {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr 1fr;
-            gap: 10px;
-            align-items: center;
-            width: 100%;
-        }
-        .reward-item button {
-            background-color: var(--red);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            min-width: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            position: absolute;
-            right: -10px;
-            top: -10px;
-            padding: 0;
-            font-size: 14px;
-        }
-        .reward-item button:hover { background-color: var(--red-h); }
-
-        .button-group {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-            flex-wrap: wrap;
-        }
-
-        button {
-            padding: 9px 16px;
-            background-color: var(--red);
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 0.9em;
-            font-weight: 600;
-            transition: background-color 0.2s, transform 0.1s;
-        }
-        button:hover { background-color: var(--red-h); transform: translateY(-1px); }
-        button:disabled { background-color: var(--surface2); color: var(--text-dim); cursor: not-allowed; transform: none; border: 1px solid var(--border); }
-
-        button.secondary { background-color: var(--surface2); color: var(--text); border: 1px solid var(--border); }
-        button.secondary:hover { background-color: var(--border); }
-
-        button.external { background-color: var(--blue); }
-        button.external:hover { background-color: var(--blue-h); }
-
-        #searchMonster, #searchItem {
-            padding: 8px 10px;
-            margin-bottom: 15px;
-            width: 100%;
-        }
-
-        .tabs {
-            display: flex;
-            margin-bottom: 20px;
-            border-bottom: 1px solid var(--border);
-            gap: 4px;
-        }
-        .tab {
-            padding: 8px 18px;
-            cursor: pointer;
-            border: 1px solid transparent;
-            border-bottom: none;
-            border-radius: 6px 6px 0 0;
-            background-color: var(--surface2);
-            color: var(--text-dim);
-            font-size: 0.9em;
-            transition: all 0.2s;
-        }
-        .tab:hover { color: var(--text); background-color: var(--border); }
-        .tab.active {
-            background-color: var(--surface);
-            border-color: var(--border);
-            color: var(--accent);
-            margin-bottom: -1px;
-            font-weight: 600;
-        }
-
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-
-        .language-selector {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-        }
-        .language-selector select { width: auto; }
-
-        #output {
-            margin-top: 20px;
-            padding: 15px;
-            background-color: #0a0c12;
-            border: 1px solid var(--border);
-            border-radius: 5px;
-            white-space: pre-wrap;
-            max-height: 300px;
-            overflow-y: auto;
-            font-family: 'Consolas', 'Courier New', monospace;
-            font-size: 0.8em;
-            color: #8fbf8f;
-        }
-
-        .preview {
-            background-color: #131a2e;
-            padding: 15px;
-            border-radius: 5px;
-            margin-top: 20px;
-            border: 1px solid #2a3a60;
-        }
-        .preview h3 { margin-top: 0; color: var(--accent); }
-
-        .alert {
-            padding: 12px 15px;
-            margin-bottom: 20px;
-            border-radius: 5px;
-            display: none;
-            font-weight: 600;
-            font-size: 0.9em;
-        }
-
-        .tag {
-            transition: all 0.2s ease;
-        }
-        .tag:hover {
-            background-color: var(--border) !important;
-            color: var(--text) !important;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.3);
-            transform: translateY(-1px);
-        }
-
-        .badge-alpha {
-            display: inline-block;
-            font-size: 0.7em;
-            background-color: var(--alpha);
-            color: white;
-            border-radius: 3px;
-            padding: 1px 5px;
-            margin-left: 5px;
-            vertical-align: middle;
-            font-weight: bold;
-        }
-        .badge-arch-tempered {
-            display: inline-block;
-            font-size: 0.7em;
-            background-color: var(--at);
-            color: white;
-            border-radius: 3px;
-            padding: 1px 5px;
-            margin-left: 5px;
-            vertical-align: middle;
-            font-weight: bold;
-        }
-
-        .monster-controls {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-top: 6px;
-        }
-        .monster-controls label {
-            font-size: 0.8em;
-            font-weight: normal;
-            margin: 0;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            text-transform: none;
-            letter-spacing: 0;
-            color: var(--at-h);
-        }
-        .monster-controls input[type="checkbox"] {
-            width: auto;
-            margin: 0;
-            cursor: pointer;
-            accent-color: var(--at);
-        }
-
-        /* Option séquentielle */
-        .sequential-option {
-            display: none;
-            margin-top: 12px;
-            padding: 12px;
-            background: #131a2e;
-            border: 1px solid #2a3a60;
-            border-radius: 6px;
-        }
-        .sequential-option.visible { display: block; }
-        .sequential-option label {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            cursor: pointer;
-            text-transform: none;
-            letter-spacing: 0;
-            font-size: 0.95em;
-            color: var(--text);
-            font-weight: normal;
-        }
-        .sequential-option input[type="checkbox"] {
-            width: auto;
-            accent-color: var(--accent);
-        }
-        .sequential-option .hint {
-            margin-top: 6px;
-            font-size: 0.8em;
-            color: var(--text-dim);
-        }
-
-        .reward-header { color: var(--text-dim); font-size: 0.85em; text-transform: uppercase; letter-spacing: 0.04em; }
-    </style>
+    <!-- Feuille de styles principale -->
+    <link rel="stylesheet" href="assets/css/styles.css">
 </head>
 <body>
+
+    <!-- Sélecteur de langue (positionné en absolu en haut à droite) -->
     <div class="language-selector">
         <select id="language">
             <option value="fr-fr" selected>Français</option>
@@ -378,44 +30,55 @@
         </select>
     </div>
 
-    <h1>Monster Hunter Wilds - Générateur de quêtes personnalisées</h1>
-    
+    <h1>Monster Hunter Wilds – Générateur de quêtes personnalisées</h1>
+
+    <!-- Zone d'affichage des alertes (succès / erreur) -->
     <div class="alert" id="alert-message"></div>
-    
+
     <div class="container">
+
+        <!-- ── Navigation par onglets ──────────────────────── -->
         <div class="tabs">
             <div class="tab active" data-tab="quest-info">Infos de quête</div>
             <div class="tab" data-tab="monsters">Monstres</div>
             <div class="tab" data-tab="rewards">Récompenses</div>
-            <div class="tab" data-tab="generate">Générer & Exporter</div>
+            <div class="tab" data-tab="generate">Générer &amp; Exporter</div>
         </div>
-        
+
+        <!-- ══════════════════════════════════════════════════
+             Onglet 1 : Informations de base de la quête
+             ══════════════════════════════════════════════════ -->
         <div class="tab-content active" id="quest-info">
             <h2>Informations de base de la quête</h2>
 
-            <!-- Zone d'import -->
+            <!-- Zone d'import d'une quête existante -->
             <div style="margin-bottom: 20px; padding: 14px 16px; background: var(--surface2); border: 1px dashed var(--border); border-radius: 6px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
                 <span style="color: var(--text-dim); font-size: 0.9em;">Importer une quête existante&nbsp;:</span>
                 <input type="file" id="importFile" accept=".zip" style="display:none;" onchange="importQuest(this)">
                 <button class="secondary" onclick="document.getElementById('importFile').click()" style="margin:0;">📂 Charger un ZIP</button>
                 <span id="import-status" style="font-size:0.85em; color: var(--text-dim);"></span>
             </div>
+
             <div class="form-group">
                 <label for="questId">ID de la quête :</label>
                 <input type="number" id="questId" placeholder="Entrez un ID unique (ex. 10086)" value="10086">
             </div>
+
             <div class="form-group">
                 <label for="questTitle">Titre de la quête :</label>
                 <input type="text" id="questTitle" placeholder="Entrez le titre de la quête" value="Chasse personnalisée">
             </div>
+
             <div class="form-group">
                 <label for="questDescription">Description de la quête :</label>
                 <textarea id="questDescription" rows="4" style="width: 100%;" placeholder="Entrez la description de la quête">Une chasse de monstre personnalisée créée avec le Générateur de quêtes.</textarea>
             </div>
+
             <div class="form-group">
                 <label for="questClient">Nom du client :</label>
                 <input type="text" id="questClient" placeholder="Entrez le nom du client de la quête" value="Générateur de quêtes">
             </div>
+
             <div class="form-group">
                 <label for="questLevel">Niveau de quête (★) :</label>
                 <select id="questLevel" onchange="onQuestLevelChange(this.value)">
@@ -431,6 +94,7 @@
                     <option value="10">★10</option>
                 </select>
             </div>
+
             <div class="form-group">
                 <label for="questLocation">Lieu :</label>
                 <select id="questLocation" onchange="onLocationChange(this.value)">
@@ -442,6 +106,7 @@
                     <option value="544388992">Cimes gelées</option>
                     <option value="13836">Machinerie oubliée</option>
                 </select>
+
                 <!-- Option séquentielle : visible uniquement pour le Vallon meurtri -->
                 <div class="sequential-option" id="sequential-option">
                     <label>
@@ -451,1270 +116,160 @@
                     <p class="hint">Les monstres s'affrontent l'un après l'autre. Chaque monstre n'apparaît que lorsque le précédent est tué.</p>
                 </div>
             </div>
+
             <div class="form-group">
                 <label for="timeLimit">Limite de temps (minutes) :</label>
                 <input type="number" id="timeLimit" min="5" max="50" value="20">
             </div>
+
             <div class="form-group">
                 <label for="rewardMoney">Récompense en zenny :</label>
                 <input type="number" id="rewardMoney" min="1000" step="1000" value="24000">
             </div>
+
             <div class="form-group">
                 <label for="hrPoints">Points de RC :</label>
                 <input type="number" id="hrPoints" min="100" step="10" value="660">
             </div>
+
             <div class="form-group">
                 <label for="questLife">Nombre de morts autorisées :</label>
                 <input type="number" id="questLife" min="1" max="9" value="2">
             </div>
+
             <div class="form-group">
                 <label for="maxPlayers">Nombre de joueurs maximum :</label>
                 <input type="number" id="maxPlayers" min="1" max="4" value="4">
             </div>
+
             <div class="form-group">
                 <label for="minRC">RC minimum requis :</label>
                 <input type="number" id="minRC" min="1" max="999" value="21">
             </div>
+
             <div class="button-group">
                 <button onclick="goToTab('monsters')">Suivant : Sélectionner les monstres</button>
             </div>
         </div>
-        
+
+        <!-- ══════════════════════════════════════════════════
+             Onglet 2 : Sélection des monstres
+             ══════════════════════════════════════════════════ -->
         <div class="tab-content" id="monsters">
             <h2>Sélectionner les monstres</h2>
+
             <div class="button-group" style="margin-bottom: 20px;">
                 <button class="secondary" onclick="goToTab('quest-info')">Précédent</button>
                 <button onclick="goToTab('rewards')">Suivant : Définir les récompenses</button>
             </div>
-            <input type="text" id="searchMonster" placeholder="Rechercher un monstre...">
-            <div class="grid" id="monster-list">
-                <!-- Monster cards will be populated by JavaScript -->
-            </div>
+
+            <input type="text" id="searchMonster" placeholder="Rechercher un monstre…">
+
+            <!-- Grille des cartes monstres, remplie dynamiquement par JS -->
+            <div class="grid" id="monster-list"></div>
+
+            <!-- Aperçu des monstres sélectionnés -->
             <div class="preview" id="monster-preview">
                 <h3>Monstres sélectionnés :</h3>
                 <p>Aucun monstre sélectionné</p>
             </div>
         </div>
-        
+
+        <!-- ══════════════════════════════════════════════════
+             Onglet 3 : Récompenses de la quête
+             ══════════════════════════════════════════════════ -->
         <div class="tab-content" id="rewards">
             <h2>Récompenses de la quête</h2>
-            <input type="text" id="searchItem" placeholder="Rechercher un objet...">
+
+            <input type="text" id="searchItem" placeholder="Rechercher un objet…">
+
+            <!-- Tags de filtres rapides -->
             <div class="search-tags" style="margin: 5px 0 15px; display: flex; flex-wrap: wrap; gap: 8px;">
                 <span style="font-size: 0.85em; margin-right: 5px; color: var(--text-dim);">Filtres rapides :</span>
-                <a href="#" class="tag" onclick="document.getElementById('searchItem').value='orbe'; filterItems('orbe'); return false;" style="font-size: 0.85em; background: var(--surface2); border:1px solid var(--border); padding: 2px 8px; border-radius: 12px; text-decoration: none; color: var(--text);">orbe</a>
-                <a href="#" class="tag" onclick="document.getElementById('searchItem').value='fragment'; filterItems('fragment'); return false;" style="font-size: 0.85em; background: var(--surface2); border:1px solid var(--border); padding: 2px 8px; border-radius: 12px; text-decoration: none; color: var(--text);">fragment</a>
-                <a href="#" class="tag" onclick="document.getElementById('searchItem').value='symbole'; filterItems('symbole'); return false;" style="font-size: 0.85em; background: var(--surface2); border:1px solid var(--border); padding: 2px 8px; border-radius: 12px; text-decoration: none; color: var(--text);">symbole</a>
-                <a href="#" class="tag" onclick="document.getElementById('searchItem').value='sphère'; filterItems('sphère'); return false;" style="font-size: 0.85em; background: var(--surface2); border:1px solid var(--border); padding: 2px 8px; border-radius: 12px; text-decoration: none; color: var(--text);">sphère</a>
+                <a href="#" class="tag" onclick="document.getElementById('searchItem').value='orbe'; filterItems('orbe'); return false;"
+                   style="font-size: 0.85em; background: var(--surface2); border:1px solid var(--border); padding: 2px 8px; border-radius: 12px; text-decoration: none; color: var(--text);">orbe</a>
+                <a href="#" class="tag" onclick="document.getElementById('searchItem').value='fragment'; filterItems('fragment'); return false;"
+                   style="font-size: 0.85em; background: var(--surface2); border:1px solid var(--border); padding: 2px 8px; border-radius: 12px; text-decoration: none; color: var(--text);">fragment</a>
+                <a href="#" class="tag" onclick="document.getElementById('searchItem').value='symbole'; filterItems('symbole'); return false;"
+                   style="font-size: 0.85em; background: var(--surface2); border:1px solid var(--border); padding: 2px 8px; border-radius: 12px; text-decoration: none; color: var(--text);">symbole</a>
+                <a href="#" class="tag" onclick="document.getElementById('searchItem').value='sphère'; filterItems('sphère'); return false;"
+                   style="font-size: 0.85em; background: var(--surface2); border:1px solid var(--border); padding: 2px 8px; border-radius: 12px; text-decoration: none; color: var(--text);">sphère</a>
             </div>
+
+            <!-- En-tête de la liste de récompenses -->
             <div class="reward-header" style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px; margin-bottom: 10px; font-weight: bold; padding: 0 10px;">
                 <div>Nom de l'objet</div>
                 <div>Minimum</div>
                 <div>Maximum</div>
                 <div>Chance %</div>
             </div>
-            <div id="reward-items">
-                <!-- Reward items will be added here -->
-            </div>
+
+            <!-- Liste des récompenses, remplie dynamiquement par JS -->
+            <div id="reward-items"></div>
+
             <button onclick="addReward()" style="margin-top: 15px;">+ Ajouter un objet de récompense</button>
+
             <div class="button-group" style="margin-top: 20px;">
                 <button class="secondary" onclick="goToTab('monsters')">Précédent</button>
                 <button onclick="goToTab('generate')">Suivant : Générer la quête</button>
             </div>
         </div>
-        
+
+        <!-- ══════════════════════════════════════════════════
+             Onglet 4 : Génération et export
+             ══════════════════════════════════════════════════ -->
         <div class="tab-content" id="generate">
             <h2>Quête générée</h2>
+
+            <!-- Résumé affiché après génération -->
             <div class="preview" id="quest-summary">
                 <h3>Résumé de la quête</h3>
                 <p>Cliquez sur le bouton « Générer les fichiers de quête » pour créer votre quête personnalisée.</p>
             </div>
+
             <div class="button-group">
                 <button class="secondary" onclick="goToTab('rewards')">Précédent</button>
                 <button onclick="generateQuest()">Générer les fichiers de quête</button>
                 <button onclick="downloadQuest()" id="download-btn" disabled>Télécharger les fichiers de quête</button>
             </div>
+
             <h3>Sortie JSON brute :</h3>
             <pre id="output">Les données de la quête apparaîtront ici après la génération.</pre>
         </div>
 
-        <div class="button-group">  
+        <!-- Lien vers le dépôt source -->
+        <div class="button-group">
             <button class="button external" onclick="window.open('https://git.crystalyx.net/Esenjin_Asakha/WildsQuetesPerso', '_blank')">Lien du dépôt sur Gitea</button>
         </div>
-    </div>
 
+    </div><!-- /.container -->
+
+    <!-- ── Scripts JavaScript ────────────────────────────────
+         Ordre de chargement important :
+         1. app.js     – état global et utilitaires
+         2. data.js    – chargement des JSON
+         3. ui.js      – navigation et événements
+         4. monsters.js – gestion des monstres
+         5. rewards.js  – gestion des récompenses
+         6. quest.js    – génération et export
+    ─────────────────────────────────────────────────────── -->
+    <script src="assets/js/app.js"></script>
+    <script src="assets/js/data.js"></script>
+    <script src="assets/js/ui.js"></script>
+    <script src="assets/js/monsters.js"></script>
+    <script src="assets/js/rewards.js"></script>
+    <script src="assets/js/quest.js"></script>
+
+    <!-- Bibliothèque JSZip pour la création / lecture d'archives ZIP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+    <!-- Point d'entrée : initialisation de l'application au chargement du DOM -->
     <script>
-        // Store data from JSON files
-        let enemiesData = [];
-        let itemsData = [];
-        let rewardListData = {};
-        let selectedMonsters = [];
-        let rewardItems = [];
-        let currentLanguage = 'fr-fr';
-        let questData = {
-            raw: null,
-            ext: null
-        };
-
-        // Initialize the app
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             loadData();
             setupEventListeners();
         });
-
-        // Load data from JSON files
-        async function loadData() {
-            try {
-                // Load enemies data
-                const enemiesResponse = await fetch('enemies.json');
-                if (!enemiesResponse.ok) {
-                    throw new Error(`Failed to load enemies.json: ${enemiesResponse.status} ${enemiesResponse.statusText}`);
-                }
-                enemiesData = await enemiesResponse.json();
-                
-                // Load items data
-                const itemsResponse = await fetch('items.json');
-                if (!itemsResponse.ok) {
-                    throw new Error(`Failed to load items.json: ${itemsResponse.status} ${itemsResponse.statusText}`);
-                }
-                itemsData = await itemsResponse.json();
-                
-                // Load reward list data (single multilingual file)
-                const rewardResponse = await fetch(`reward_list.json`);
-                if (!rewardResponse.ok) {
-                    throw new Error(`Failed to load reward_list.json: ${rewardResponse.status} ${rewardResponse.statusText}`);
-                }
-                rewardListData = await rewardResponse.json();
-                
-                // Initialize the UI
-                populateMonsterList();
-                
-                // Add an initial reward item
-                if (rewardItems.length === 0) {
-                    addReward();
-                }
-                
-                console.log("Data loaded successfully");
-            } catch (error) {
-                showAlert("Erreur lors du chargement des données : " + error.message);
-                console.error("Error loading data:", error);
-                
-                // Provide fallback data if loading fails
-                if (enemiesData.length === 0) {
-                    console.warn("Using fallback enemy data");
-                    enemiesData = [
-                        {
-                            id: 0,
-                            fixedId: 26,
-                            label: "EM0001_00_0",
-                            name: {
-                                "fr-fr": "Rathian",
-                                "zh-cn": "雌火龙",
-                                "en-us": "Rathian",
-                                "ja-jp": "リオレイア"
-                            }
-                        }
-                    ];
-                }
-                
-                if (itemsData.length === 0) {
-                    console.warn("Using fallback item data");
-                    itemsData = [
-                        {
-                            id: 1,
-                            fixedId: 2,
-                            label: "ITEM_0000",
-                            name: {
-                                "fr-fr": "Potion",
-                                "zh-cn": "回复药",
-                                "en-us": "Potion",
-                                "ja-jp": "回復薬"
-                            }
-                        }
-                    ];
-                }
-                
-                populateMonsterList();
-            }
-        }
-
-        // Setup event listeners
-        function setupEventListeners() {
-            // Tab navigation
-            document.querySelectorAll('.tab').forEach(tab => {
-                tab.addEventListener('click', () => {
-                    const tabId = tab.dataset.tab;
-                    goToTab(tabId);
-                });
-            });
-
-            // Search functionality
-            document.getElementById('searchMonster').addEventListener('input', function() {
-                const searchTerm = this.value.toLowerCase();
-                filterMonsters(searchTerm);
-            });
-
-            document.getElementById('searchItem').addEventListener('input', function() {
-                const searchTerm = this.value.toLowerCase();
-                filterItems(searchTerm);
-            });
-
-            // Language selector
-            document.getElementById('language').addEventListener('change', function() {
-                currentLanguage = this.value;
-                
-                // Update UI elements
-                populateMonsterList();
-                updateMonsterPreview();
-                updateRewardItemNames();
-                
-                // Le fichier reward_list.json est multilingue, pas besoin de recharger
-                console.log(`Langue changée : ${currentLanguage}`);
-            });
-        }
-
-        // Tab navigation functions
-        function goToTab(tabId) {
-            // Hide all tab contents
-            document.querySelectorAll('.tab-content').forEach(content => {
-                content.classList.remove('active');
-            });
-            
-            // Deactivate all tabs
-            document.querySelectorAll('.tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            
-            // Activate the selected tab and its content
-            const tabContent = document.getElementById(tabId);
-            const tab = document.querySelector(`.tab[data-tab="${tabId}"]`);
-            
-            if (tabContent) tabContent.classList.add('active');
-            if (tab) tab.classList.add('active');
-        }
-
-        // Populate monster list
-        // Monstres ayant une version Alpha Suprême
-        const ARCH_TEMPERED_IDS = new Set([-1547364608, 1467998976, 1657778432, 746996864]);
-        // Rey Dau, Uth Duna, Nu Udra, Arkveld
-
-        function populateMonsterList() {
-            const monsterList = document.getElementById('monster-list');
-            if (!monsterList) return;
-            
-            monsterList.innerHTML = '';
-
-            enemiesData.forEach(monster => {
-                if (!monster.name || !monster.name[currentLanguage]) return;
-
-                const card = document.createElement('div');
-                card.className = 'monster-card';
-                card.dataset.monsterId = monster.fixedId;
-                card.dataset.monsterLabel = monster.label;
-
-                const existingSelection = selectedMonsters.find(m => m.fixedId === monster.fixedId);
-                const canBeAT = ARCH_TEMPERED_IDS.has(monster.fixedId);
-                // Si le monstre n'a pas d'AT et était en mode AT, on le repasse Alpha
-                if (existingSelection && existingSelection.variant === 'ARCH_TEMPERED' && !canBeAT) {
-                    existingSelection.variant = 'TEMPERED';
-                }
-                const variant = existingSelection ? (existingSelection.variant || 'TEMPERED') : 'TEMPERED';
-
-                if (existingSelection) {
-                    card.classList.add('selected');
-                    if (variant === 'ARCH_TEMPERED') card.classList.add('arch-tempered');
-                    else card.classList.add('alpha');
-                }
-
-                const checkboxId = `arch-${monster.fixedId}`;
-                const isArchTempered = variant === 'ARCH_TEMPERED';
-
-                card.innerHTML = `
-                    <h3>${monster.name[currentLanguage]}</h3>
-                    <p style="margin:2px 0;font-size:0.85em;color:var(--text-dim);">ID: ${monster.fixedId}</p>
-                    <p style="margin:2px 0;font-size:0.85em;color:var(--text-dim);">Label: ${monster.label}</p>
-                    <div class="monster-controls">
-                        ${canBeAT ? `
-                        <label for="${checkboxId}" style="color:var(--at-h);">
-                            <input type="checkbox" id="${checkboxId}" ${isArchTempered ? 'checked' : ''}>
-                            Alpha Suprême
-                        </label>` : `<span style="font-size:0.75em;color:var(--text-dim);font-style:italic;">Alpha uniquement</span>`}
-                    </div>
-                `;
-
-                // Click on card body (not checkbox) toggles selection
-                card.addEventListener('click', function(e) {
-                    if (e.target.type === 'checkbox' || e.target.tagName === 'LABEL' || e.target.closest('label')) return;
-                    const sel = selectedMonsters.find(m => m.fixedId === monster.fixedId);
-                    if (sel) {
-                        selectedMonsters.splice(selectedMonsters.indexOf(sel), 1);
-                        card.classList.remove('selected', 'alpha', 'arch-tempered');
-                        const cb2 = card.querySelector('input[type="checkbox"]');
-                        if (cb2) cb2.checked = false;
-                    } else {
-                        const cb = card.querySelector('input[type="checkbox"]');
-                        const newVariant = cb && cb.checked ? 'ARCH_TEMPERED' : 'TEMPERED';
-                        selectedMonsters.push({ ...monster, variant: newVariant });
-                        card.classList.add('selected');
-                        applyVariantClass(card, newVariant);
-                    }
-                    updateMonsterPreview();
-                });
-
-                // Checkbox toggles between TEMPERED and ARCH_TEMPERED (uniquement si disponible)
-                const cb = card.querySelector('input[type="checkbox"]');
-                if (cb) {
-                    cb.addEventListener('change', function(e) {
-                        e.stopPropagation();
-                        const newVariant = this.checked ? 'ARCH_TEMPERED' : 'TEMPERED';
-                        const sel = selectedMonsters.find(m => m.fixedId === monster.fixedId);
-                        if (sel) {
-                            sel.variant = newVariant;
-                        } else {
-                            selectedMonsters.push({ ...monster, variant: newVariant });
-                            card.classList.add('selected');
-                        }
-                        applyVariantClass(card, newVariant);
-                        updateMonsterPreview();
-                    });
-                }
-
-                monsterList.appendChild(card);
-            });
-        }
-
-        function applyVariantClass(card, variant) {
-            card.classList.remove('alpha', 'arch-tempered');
-            if (variant === 'ARCH_TEMPERED') card.classList.add('arch-tempered');
-            else card.classList.add('alpha');
-        }
-
-        // Filter monsters based on search term
-        function filterMonsters(searchTerm) {
-            const monsterCards = document.querySelectorAll('.monster-card');
-            
-            monsterCards.forEach(card => {
-                const monsterName = card.querySelector('h3').textContent.toLowerCase();
-                const monsterId = card.dataset.monsterId;
-                const monsterLabel = card.dataset.monsterLabel.toLowerCase();
-                
-                if (monsterName.includes(searchTerm) || monsterId.includes(searchTerm) || monsterLabel.includes(searchTerm)) {
-                    card.style.display = 'block';
-                } else {
-                    card.style.display = 'none';
-                }
-            });
-        }
-
-        // Toggle monster selection
-        function toggleMonsterSelection(monster) {
-            const index = selectedMonsters.findIndex(m => m.fixedId === monster.fixedId);
-            
-            if (index === -1) {
-                // Add monster if not already in the list
-                selectedMonsters.push(monster);
-            } else {
-                // Remove monster if already in the list
-                selectedMonsters.splice(index, 1);
-            }
-            
-            updateMonsterPreview();
-        }
-
-        // Update monster preview
-        function updateMonsterPreview() {
-            const preview = document.getElementById('monster-preview');
-            if (!preview) return;
-            
-            if (selectedMonsters.length === 0) {
-                preview.innerHTML = '<h3>Monstres sélectionnés :</h3><p>Aucun monstre sélectionné</p>';
-                return;
-            }
-            
-            try {
-                let html = '<h3>Monstres sélectionnés :</h3><ol>';
-                
-                selectedMonsters.forEach(monster => {
-                    const monsterName = monster.name && monster.name[currentLanguage] ? 
-                        monster.name[currentLanguage] : 'Monstre inconnu';
-                    let badge = '';
-                    if (monster.variant === 'ARCH_TEMPERED') badge = '<span class="badge-arch-tempered">Alpha Suprême</span>';
-                    html += `<li>${monsterName}${badge} <span style="color:#888;font-size:0.85em">(${monster.label})</span></li>`;
-                });
-                
-                html += '</ol>';
-                preview.innerHTML = html;
-            } catch (error) {
-                console.error("Error updating monster preview:", error);
-                preview.innerHTML = '<h3>Monstres sélectionnés :</h3><p>Erreur d\'affichage des monstres</p>';
-            }
-        }
-
-        // Add a reward item
-        function addReward() {
-            const rewardContainer = document.getElementById('reward-items');
-            if (!rewardContainer) return;
-            
-            const rewardIndex = rewardItems.length;
-            
-            // Create a new reward item object
-            const newReward = {
-                itemId: itemsData.length > 0 ? itemsData[0].id : 1,
-                itemName: itemsData.length > 0 ? (itemsData[0].name[currentLanguage] || "Objet inconnu") : "Potion",
-                minCount: 1,
-                maxCount: 1,
-                probability: 100
-            };
-            
-            rewardItems.push(newReward);
-            
-            // Create the reward item element
-            const rewardElement = document.createElement('div');
-            rewardElement.className = 'reward-item';
-            rewardElement.dataset.index = rewardIndex;
-            
-            rewardElement.innerHTML = `
-                <div class="reward-controls">
-                    <select class="item-select" title="Item Name" onchange="updateRewardItem(${rewardIndex}, 'itemId', this.value)">
-                        ${itemsData.map(item => `
-                            <option value="${item.id}" ${item.id === newReward.itemId ? 'selected' : ''}>
-                                ${item.id}: ${item.name && item.name[currentLanguage] ? item.name[currentLanguage] : '---'}
-                            </option>
-                        `).join('')}
-                    </select>
-                    <input type="number" title="Minimum Count" placeholder="Min" min="1" value="${newReward.minCount}" 
-                        onchange="updateRewardItem(${rewardIndex}, 'minCount', this.value)">
-                    <input type="number" title="Maximum Count" placeholder="Max" min="1" value="${newReward.maxCount}" 
-                        onchange="updateRewardItem(${rewardIndex}, 'maxCount', this.value)">
-                    <input type="number" title="Drop Chance Percentage" placeholder="Chance %" min="1" max="100" value="${newReward.probability}" 
-                        onchange="updateRewardItem(${rewardIndex}, 'probability', this.value)">
-                </div>
-                <button onclick="removeRewardItem(${rewardIndex})">×</button>
-            `;
-            
-            rewardContainer.appendChild(rewardElement);
-        }
-
-        // Update a reward item
-        function updateRewardItem(index, property, value) {
-            if (index >= rewardItems.length) return;
-            
-            if (property === 'itemId') {
-                const selectedItem = itemsData.find(item => item.id == value);
-                if (selectedItem) {
-                    rewardItems[index].itemId = parseInt(value);
-                    rewardItems[index].itemName = selectedItem.name && selectedItem.name[currentLanguage] ? 
-                        selectedItem.name[currentLanguage] : 'Objet inconnu';
-                }
-            } else if (property === 'minCount' || property === 'maxCount') {
-                rewardItems[index][property] = parseInt(value);
-                
-                // Ensure minCount is not greater than maxCount
-                if (rewardItems[index].minCount > rewardItems[index].maxCount) {
-                    rewardItems[index].maxCount = rewardItems[index].minCount;
-                    const rewardElement = document.querySelector(`.reward-item[data-index="${index}"]`);
-                    if (rewardElement) {
-                        const maxInput = rewardElement.querySelectorAll('input')[1];
-                        if (maxInput) maxInput.value = rewardItems[index].maxCount;
-                    }
-                }
-            } else if (property === 'probability') {
-                rewardItems[index][property] = parseInt(value);
-                
-                // Ensure probability is between 1 and 100
-                if (rewardItems[index].probability < 1) rewardItems[index].probability = 1;
-                if (rewardItems[index].probability > 100) rewardItems[index].probability = 100;
-            }
-        }
-
-        // Remove a reward item
-        function removeRewardItem(index) {
-            rewardItems.splice(index, 1);
-            
-            // Recreate all reward items to update indices
-            const rewardContainer = document.getElementById('reward-items');
-            if (!rewardContainer) return;
-            
-            rewardContainer.innerHTML = '';
-            
-            rewardItems.forEach((item, idx) => {
-                const rewardElement = document.createElement('div');
-                rewardElement.className = 'reward-item';
-                rewardElement.dataset.index = idx;
-                
-                rewardElement.innerHTML = `
-                    <div class="reward-controls">
-                        <select class="item-select" title="Item Name" onchange="updateRewardItem(${idx}, 'itemId', this.value)">
-                            ${itemsData.map(menuItem => `
-                                <option value="${menuItem.id}" ${menuItem.id === item.itemId ? 'selected' : ''}>
-                                    ${menuItem.id}: ${menuItem.name && menuItem.name[currentLanguage] ? menuItem.name[currentLanguage] : '---'}
-                                </option>
-                            `).join('')}
-                        </select>
-                        <input type="number" title="Minimum Count" placeholder="Min" min="1" value="${item.minCount}" 
-                            onchange="updateRewardItem(${idx}, 'minCount', this.value)">
-                        <input type="number" title="Maximum Count" placeholder="Max" min="1" value="${item.maxCount}" 
-                            onchange="updateRewardItem(${idx}, 'maxCount', this.value)">
-                        <input type="number" title="Drop Chance Percentage" placeholder="Chance %" min="1" max="100" value="${item.probability}" 
-                            onchange="updateRewardItem(${idx}, 'probability', this.value)">
-                    </div>
-                    <button onclick="removeRewardItem(${idx})">×</button>
-                `;
-                
-                rewardContainer.appendChild(rewardElement);
-            });
-        }
-
-        // Update reward item names when language changes
-        function updateRewardItemNames() {
-            rewardItems.forEach((item, index) => {
-                const selectedItem = itemsData.find(menuItem => menuItem.id === item.itemId);
-                if (selectedItem && selectedItem.name) {
-                    item.itemName = selectedItem.name[currentLanguage] || 'Objet inconnu';
-                    
-                    const rewardElement = document.querySelector(`.reward-item[data-index="${index}"]`);
-                    if (rewardElement) {
-                        const select = rewardElement.querySelector('select');
-                        if (select) {
-                            select.innerHTML = itemsData.map(menuItem => `
-                                <option value="${menuItem.id}" ${menuItem.id === item.itemId ? 'selected' : ''}>
-                                    ${menuItem.id}: ${menuItem.name && menuItem.name[currentLanguage] ? menuItem.name[currentLanguage] : '---'}
-                                </option>
-                            `).join('');
-                        }
-                    }
-                }
-            });
-        }
-
-        // Filter items based on search term
-        function filterItems(searchTerm) {
-            const itemSelects = document.querySelectorAll('.item-select');
-            
-            itemSelects.forEach(select => {
-                Array.from(select.options).forEach(option => {
-                    const itemName = option.textContent.toLowerCase();
-                    const itemId = option.value;
-                    
-                    if (itemName.includes(searchTerm) || itemId.includes(searchTerm)) {
-                        option.style.display = '';
-                    } else {
-                        option.style.display = 'none';
-                    }
-                });
-            });
-        }
-
-        // Show/hide sequential option based on location
-        function onLocationChange(locationId) {
-            const seqOption = document.getElementById('sequential-option');
-            if (locationId === '1181994624') {
-                seqOption.classList.add('visible');
-            } else {
-                seqOption.classList.remove('visible');
-                document.getElementById('sequentialMonsters').checked = false;
-            }
-        }
-
-        // Auto-fill suggested defaults when quest level changes
-        function onQuestLevelChange(level) {
-            const lvl = parseInt(level);
-            const cfg = getQuestLevelConfig(lvl);
-            document.getElementById('rewardMoney').value = cfg.money;
-            document.getElementById('hrPoints').value = cfg.hrPoints;
-            document.getElementById('minRC').value = cfg.orderHR;
-        }
-
-        // Returns recommended money, HR points, rewardId and OrderHR per level
-        function getQuestLevelConfig(level) {
-            // rewardId mapping derived from reward_list data:
-            // 1-4 → 201, 5-6 → 301, 7 → 450, 8 → 520, 9 → 620, 10 → 630
-            const configs = {
-                1:  { money: 2400,  hrPoints: 100, rewardId: 201, orderHR: 1  },
-                2:  { money: 4800,  hrPoints: 180, rewardId: 201, orderHR: 1  },
-                3:  { money: 7200,  hrPoints: 270, rewardId: 201, orderHR: 10  },
-                4:  { money: 9600,  hrPoints: 360, rewardId: 301, orderHR: 20  },
-                5:  { money: 12000, hrPoints: 450, rewardId: 301, orderHR: 25 },
-                6:  { money: 16800, hrPoints: 540, rewardId: 301, orderHR: 30 },
-                7:  { money: 20400, hrPoints: 600, rewardId: 450, orderHR: 40 },
-                8:  { money: 24000, hrPoints: 660, rewardId: 520, orderHR: 60 },
-                9:  { money: 36000, hrPoints: 900, rewardId: 620, orderHR: 100 },
-                10: { money: 48000, hrPoints: 1200, rewardId: 630, orderHR: 100 }
-            };
-            return configs[level] || configs[8];
-        }
-
-        // ── Import d'une quête depuis un ZIP ──────────────────────────────────
-        async function importQuest(input) {
-            const file = input.files[0];
-            if (!file) return;
-            const status = document.getElementById('import-status');
-            status.textContent = 'Chargement…';
-            status.style.color = 'var(--text-dim)';
-
-            try {
-                if (typeof JSZip === 'undefined') throw new Error('JSZip non chargé');
-
-                const zip = await JSZip.loadAsync(file);
-
-                // Cherche les fichiers .raw.json et .ext.json dans le ZIP
-                let rawFile = null, extFile = null;
-                zip.forEach((path, f) => {
-                    if (path.endsWith('.raw.json')) rawFile = f;
-                    if (path.endsWith('.ext.json')) extFile = f;
-                });
-                if (!rawFile) throw new Error('Fichier .raw.json introuvable dans le ZIP');
-                if (!extFile) throw new Error('Fichier .ext.json introuvable dans le ZIP');
-
-                const raw = JSON.parse(await rawFile.async('string'));
-                const ext = JSON.parse(await extFile.async('string'));
-
-                // ── Infos de base ────────────────────────────────────────────
-                const data = raw._DataList;
-                const msgFR = raw._MessageAssetList?.find(m => m.Language === 2);
-                const title  = msgFR?.MessageData?.find(m => m.Name?.endsWith('_100'))?.Text || '';
-                const client = msgFR?.MessageData?.find(m => m.Name?.endsWith('_101'))?.Text || '';
-                const desc   = msgFR?.MessageData?.find(m => m.Name?.endsWith('_102'))?.Text || '';
-
-                document.getElementById('questId').value        = data._MissionId?._Value ?? ext.questId ?? 10086;
-                document.getElementById('questTitle').value     = title;
-                document.getElementById('questClient').value    = client;
-                document.getElementById('questDescription').value = desc;
-                document.getElementById('timeLimit').value      = data._TimeLimit ?? 20;
-                document.getElementById('rewardMoney').value    = data._RemMoney  ?? 24000;
-                document.getElementById('hrPoints').value       = data._HRPoint   ?? 660;
-                document.getElementById('questLife').value      = data._QuestLife ?? 2;
-                document.getElementById('maxPlayers').value     = data._OrderCondition?._MaxPlayerNum ?? 4;
-                document.getElementById('minRC').value          = data._OrderCondition?._OrderHR      ?? 1;
-
-                // Niveau ★
-                const lvl = data._QuestLv ?? 8;
-                document.getElementById('questLevel').value = lvl;
-
-                // Lieu
-                const stageVal = String(data._Stage?._Value ?? '1181994624');
-                const locSelect = document.getElementById('questLocation');
-                if ([...locSelect.options].some(o => o.value === stageVal)) {
-                    locSelect.value = stageVal;
-                }
-                onLocationChange(stageVal);
-
-                // ── Monstres ─────────────────────────────────────────────────
-                selectedMonsters = [];
-                const targets = raw._BossZakoDataList?._MainTargetDataList ?? [];
-                targets.forEach(t => {
-                    const monster = enemiesData.find(m => m.fixedId === t._EmID);
-                    if (!monster) return;
-                    const isAT   = t._LegendaryID === 'KING';
-                    const canAT  = ARCH_TEMPERED_IDS.has(monster.fixedId);
-                    const variant = isAT && canAT ? 'ARCH_TEMPERED' : 'TEMPERED';
-                    // Détection spawn séquentiel
-                    selectedMonsters.push({ ...monster, variant });
-                });
-
-                // Mode séquentiel : au moins un monstre a _SpawnCondition
-                const isSeq = targets.some(t => t._SpawnCondition);
-                if (stageVal === '1181994624') {
-                    document.getElementById('sequentialMonsters').checked = isSeq;
-                }
-
-                populateMonsterList();
-                updateMonsterPreview();
-
-                // ── Récompenses ───────────────────────────────────────────────
-                rewardItems = [];
-                (ext.rewardItems ?? []).forEach(r => {
-                    const item = itemsData.find(i => i.id === r.itemId);
-                    rewardItems.push({
-                        itemId:      r.itemId,
-                        itemName:    item?.name?.[currentLanguage] ?? r.itemName ?? 'Inconnu',
-                        minCount:    r.minCount,
-                        maxCount:    r.maxCount,
-                        probability: r.probability
-                    });
-                });
-                rebuildRewardUI();
-
-                // Remettre le fichier input à zéro pour permettre un ré-import
-                input.value = '';
-
-                status.textContent = `✓ "${file.name}" importé avec succès`;
-                status.style.color = 'var(--accent)';
-                setTimeout(() => { status.textContent = ''; }, 4000);
-
-                showAlert('Quête importée ! Vérifiez et modifiez les champs, puis régénérez.', 'success');
-
-            } catch (err) {
-                console.error('Import error:', err);
-                status.textContent = '✗ ' + err.message;
-                status.style.color = '#e07070';
-                showAlert('Erreur lors de l\'import : ' + err.message);
-                input.value = '';
-            }
-        }
-
-        // Reconstruit l'UI des récompenses depuis rewardItems[]
-        function rebuildRewardUI() {
-            const container = document.getElementById('reward-items');
-            if (!container) return;
-            container.innerHTML = '';
-            if (rewardItems.length === 0) { addReward(); return; }
-            rewardItems.forEach((item, idx) => {
-                const el = document.createElement('div');
-                el.className = 'reward-item';
-                el.dataset.index = idx;
-                el.innerHTML = `
-                    <div class="reward-controls">
-                        <select class="item-select" title="Item Name" onchange="updateRewardItem(${idx}, 'itemId', this.value)">
-                            ${itemsData.map(mi => `
-                                <option value="${mi.id}" ${mi.id === item.itemId ? 'selected' : ''}>
-                                    ${mi.id}: ${mi.name?.[currentLanguage] ?? '---'}
-                                </option>`).join('')}
-                        </select>
-                        <input type="number" title="Minimum" placeholder="Min" min="1" value="${item.minCount}"
-                            onchange="updateRewardItem(${idx}, 'minCount', this.value)">
-                        <input type="number" title="Maximum" placeholder="Max" min="1" value="${item.maxCount}"
-                            onchange="updateRewardItem(${idx}, 'maxCount', this.value)">
-                        <input type="number" title="Chance %" placeholder="Chance %" min="1" max="100" value="${item.probability}"
-                            onchange="updateRewardItem(${idx}, 'probability', this.value)">
-                    </div>
-                    <button onclick="removeRewardItem(${idx})">×</button>
-                `;
-                container.appendChild(el);
-            });
-        }
-
-        // ── Génération de quête ───────────────────────────────────────────────
-        // Generate quest
-        function generateQuest() {
-            try {
-                // Validate inputs
-                if (selectedMonsters.length === 0) {
-                    showAlert("Veuillez sélectionner au moins un monstre");
-                    goToTab('monsters');
-                    return;
-                }
-                
-                if (rewardItems.length === 0) {
-                    showAlert("Veuillez ajouter au moins un objet de récompense");
-                    goToTab('rewards');
-                    return;
-                }
-                
-                // Get form values with fallbacks
-                const questIdElement = document.getElementById('questId');
-                const questTitleElement = document.getElementById('questTitle');
-                const questDescriptionElement = document.getElementById('questDescription');
-                const questLevelElement = document.getElementById('questLevel');
-                const questLocationElement = document.getElementById('questLocation');
-                const timeLimitElement = document.getElementById('timeLimit');
-                const rewardMoneyElement = document.getElementById('rewardMoney');
-                const hrPointsElement = document.getElementById('hrPoints');
-                const questLifeElement = document.getElementById('questLife');
-                
-                if (!questIdElement || !questTitleElement || !questDescriptionElement || 
-                    !questLevelElement || !questLocationElement || !timeLimitElement || 
-                    !rewardMoneyElement || !hrPointsElement) {
-                    showAlert("Certains éléments du formulaire sont manquants. Veuillez recharger la page.");
-                    return;
-                }
-                
-                const questId = parseInt(questIdElement.value) || 10086;
-                const questTitle = questTitleElement.value || "Custom Quest";
-                const questDescription = questDescriptionElement.value || "A custom monster hunt";
-                const questClient = document.getElementById('questClient')?.value || "Générateur de quêtes";
-                const questLevel = parseInt(questLevelElement.value) || 8;
-                const questLocation = questLocationElement.value || "1181994624";
-                const timeLimit = parseInt(timeLimitElement.value) || 20;
-                const rewardMoney = parseInt(rewardMoneyElement.value) || 24000;
-                const hrPoints = parseInt(hrPointsElement.value) || 660;
-                const questLife = parseInt(questLifeElement?.value) || 2;
-                const maxPlayers = Math.min(4, Math.max(1, parseInt(document.getElementById('maxPlayers')?.value) || 4));
-                const minRC = Math.min(999, Math.max(1, parseInt(document.getElementById('minRC')?.value) || levelConfig.orderHR));
-                const isArena = questLocation === '1181994624';
-                const sequential = isArena && document.getElementById('sequentialMonsters')?.checked;
-
-                // Resolve level-dependent config
-                const levelConfig = getQuestLevelConfig(questLevel);
-                
-                // Generate the raw quest data
-                const rawData = {
-                    "_ArenaDataList": {
-                        "_IsUserCamp": false,
-                        "_MissionID": null,
-                        "_SelectDatas": null,
-                        "_SelectNpcDatas": null,
-                        "_TimeRankA": null,
-                        "_TimeRankB": null,
-                        "_TimeRankS": null
-                    },
-                    "_BossZakoDataList": {
-                        "_AnimalLayoutID": {
-                            "_ID": "00000000-0000-0000-0000-000000000000",
-                            "_Resource": null
-                        },
-                        "_FieldID": {
-                            "_Name": getLocationName(questLocation),
-                            "_Value": parseInt(questLocation)
-                        },
-                        "_MainTargetDataList": selectedMonsters.map((monster, index) => ({
-                            "_AdvancedSettings": {
-                                "_IsDeepSleepCreate": index > 0 && sequential
-                            },
-                            "_AreaNo": 255,
-                            "_DifficultyAdjustRange": 0,
-                            "_DifficultyRankId": {
-                                "Name": `★${questLevel}`,
-                                "Value": (monster.variant === 'TEMPERED' || monster.variant === 'ARCH_TEMPERED')
-                                    ? "6d893ac4-5f81-4850-b1ac-a2c23845cb15"
-                                    : "aa92e87f-9a58-4a8f-8613-c00ddb9e763a"
-                            },
-                            "_EmID": monster.fixedId,
-                            "_EventTargetID": "INVALID",
-                            "_FixedSize": 100,
-                            "_GroupID": index,
-                            "_InitPos": "(-326,-28,176)",
-                            "_IsUseRandomSize": false,
-                            "_LayoutKeepID": -1,
-                            "_LegendaryID": monster.variant === 'ARCH_TEMPERED' ? "KING" : "NORMAL",
-                            "_OptionTag": {
-                                "Value": sequential && index > 0 ? index : 0
-                            },
-                            "_RandomSizeTblId": {
-                                "Name": "",
-                                "Value": "f8f74ab0-0002-0000-00000002003e203e"
-                            },
-                            "_RoleID": "NORMAL",
-                            "_RouteID": {
-                                "Name": "斗技场",
-                                "_Value": "7ae19f9f-f315-4f16-cc4fc595f9f7c483"
-                            },
-                            "_SetAreaNo": 255,
-                            "_StoryTargetID": 101 + index,
-                            ...(sequential && index > 0 ? {
-                                "_SpawnCondition": {
-                                    "_ConditionType": "EM_DEAD",
-                                    "_TargetStoryID": 101 + index - 1
-                                }
-                            } : {})
-                        })),
-                        "_SubBossLayoutID": {
-                            "_ID": "c8ed5a65-8c96-48cb-3a15eb556208668e",
-                            "_Resource": "assets:/GameDesign/Stage/st401/Layout/Loaded/Enemy/SubBoss/st401_SubBoss_Ms006025_00.pog.json"
-                        },
-                        "_ZakoLayoutID": {
-                            "_ID": "00000000-0000-0000-0000-000000000000",
-                            "_Resource": null
-                        },
-                        "_ZakoLayoutTag": {
-                            "_FieldID": {
-                                "_Name": getLocationName(questLocation),
-                                "_Value": parseInt(questLocation)
-                            },
-                            "_IsIntentionallyBlank": false,
-                            "_Value": 4
-                        }
-                    },
-                    "_DataList": {
-                        "_AddPoint": 198,
-                        "_ArenaFenceCloseTime": 60,
-                        "_ArenaFenceInitWaitTime": 60,
-                        "_ArenaFenceReuseableTime": 120,
-                        "_ArenaFenceStatus": "OPEN",
-                        "_ArenaPillarStatus": "USE",
-                        "_BattleBGM": 0,
-                        "_BossRushParams": [],
-                        "_BossRushParams=": null,
-                        "_ClearBGM": 0,
-                        "_ClearCondition": {
-                            "_TargetInfoArray": selectedMonsters.map((monster, index) => ({
-                                "_ConditionalMoveData": {
-                                    "_DestArray": [],
-                                    "_IsUse": false,
-                                    "_RevertOnCompleted": false,
-                                    "_StartAfterFirstCondition": false
-                                },
-                                "_EmTargetID": 101 + index,
-                                "_LegendaryID": monster.variant === 'ARCH_TEMPERED' ? "KING" : "NORMAL",
-                                "_RoleID": "NORMAL",
-                                "_ShowTargetGuide": true,
-                                "_TargetIDValue": monster.fixedId,
-                                "_TargetValue": 1
-                            })),
-                            "_TargetType": 1
-                        },
-                        "_EnableGuestNpc": false,
-                        "_ExOverrideID": 0,
-                        "_HRPoint": hrPoints,
-                        "_IconType": {
-                            "_Name": "app.QuestDef.QUEST_ICON_TYPE_Fixed",
-                            "_Value": 1927315328
-                        },
-                        "_Index": 0,
-                        "_IsOverrideArenaFenceParam": false,
-                        "_IsOverrideArenaPillarParam": false,
-                        "_IsSettingSupply": false,
-                        "_MissionId": {
-                            "_Name": questTitle,
-                            "_Value": questId
-                        },
-                        "_OrderCondition": {
-                            "_MaxPlayerNum": maxPlayers,
-                            "_OrderHR": minRC,
-                            "_OrderMR": 0,
-                            "_PremiseMission": {
-                                "_Name": "前置任务ID",
-                                "_Value": -282127296
-                            }
-                        },
-                        "_PartnerNpc": {
-                            "_Name": "無効値",
-                            "_Value": 4
-                        },
-                        "_QuestAttribute": 0,
-                        "_QuestLife": questLife,
-                        "_QuestLv": questLevel,
-                        "_QuestMsg": {
-                            "_ClearConditionMsg": {
-                                "_IsAuto": true,
-                                "_MsgID": "00000000-0000-0000-0000-000000000000"
-                            },
-                            "_ClientNameMsg": "9707f537-aadd-4e0e-983a-8ec7c72fc1fb",
-                            "_DetailMsg": "b15f3acb-b6ca-4e18-968b-2a5161f9679f",
-                            "_FailConditionMsg": {
-                                "_IsAuto": true,
-                                "_MsgIDs": [
-                                    "00000000-0000-0000-0000-000000000000",
-                                    "00000000-0000-0000-0000-000000000000"
-                                ]
-                            },
-                            "_FailConditionMsg_Other": "1e801eb7-04d4-4ebe-9423-62e633c1b3ee",
-                            "_OrderConditionMsg": {
-                                "_IsAuto": true,
-                                "_MsgIDs": [
-                                    "00000000-0000-0000-0000-000000000000",
-                                    "00000000-0000-0000-0000-000000000000"
-                                ]
-                            },
-                            "_OrderConditionMsg_Other": "acbf575d-58a2-46a4-bd33-af9eb4d105be",
-                            "_OrderConditionMsg_StProgress": "7d277c75-8e3e-4073-9351-072604943ce6",
-                            "_TitleMsg": "ad16cdce-1ad5-4ba9-8ac2-4cee6dd52021"
-                        },
-                        "_QuestType": 0,
-                        "_RemMoney": rewardMoney,
-                        "_Stage": {
-                            "_Name": getLocationName(questLocation),
-                            "_Value": parseInt(questLocation)
-                        },
-                        "_SubBossInfoArray": [],
-                        "_SubBossInfoArray=": null,
-                        "_SupplyID": {
-                            "_Name": "無効値",
-                            "_Value": 1966686080
-                        },
-                        "_TimeLimit": timeLimit,
-                        "_Version": 1
-                    },
-                    "_IsRecommended": false,
-                    "_MessageAssetList": [
-                        "ja-jp", "en-us", "fr-fr", "it-it", "de-de",
-                        "es-es", "es-la", "pt-br", "pl-pl", "ru-ru",
-                        "ko-kr", "zh-cn", "zh-tw", "ar-sa"
-                    ].map(lang => ({
-                        "Language": getLanguageCode(lang),
-                        "MessageData": [
-                            {"Name": "Mission600016_000", "Text": ""},
-                            {"Name": "Mission600016_001", "Text": ""},
-                            {"Name": "Mission600016_100", "Text": questTitle},
-                            {"Name": "Mission600016_101", "Text": questClient},
-                            {"Name": "Mission600016_102", "Text": questDescription},
-                            {"Name": "Mission600016_122", "Text": ""},
-                            {"Name": "Mission600016_123", "Text": ""},
-                            {"Name": "Mission600016_132", "Text": ""}
-                        ]
-                    })),
-                    "_StreamQuestData": {
-                        "_EmSetData": {
-                            "_EmSet_AnimalTag": {
-                                "_FieldID": {
-                                    "_Name": getLocationName(questLocation),
-                                    "_Value": parseInt(questLocation)
-                                },
-                                "_Value": 1
-                            },
-                            "_EmSet_BossZako": null,
-                            "_Stage": {
-                                "_Name": getLocationName(questLocation),
-                                "_Value": parseInt(questLocation)
-                            }
-                        },
-                        "_IsFixWorldTime": false,
-                        "_IsFixWorldTimeQuest": false,
-                        "_IsSetWorldTime": false,
-                        "_IsSetWorldTimeQuest": true,
-                        "_IsStopTimeTiming": false,
-                        "_IsStopTimeTimingQuest": false,
-                        "_MissionTypeSerial": {
-                            "_Name": "活动任务类型",
-                            "_Value": 1025928384
-                        },
-                        "_SetEnvironmentDataList": [
-                            {
-                                "_EnvTimeRate": 0,
-                                "_EnvType": {
-                                    "_Name": "荒廃期",
-                                    "_Value": 1961958400
-                                },
-                                "_ForcastDatas": [],
-                                "_IsFixEnv": false,
-                                "_IsTransitionEnv": false,
-                                "_StageType": {
-                                    "_Name": getLocationName(questLocation),
-                                    "_Value": parseInt(questLocation)
-                                },
-                                "_StopTiming_EnvType": {
-                                    "_Name": "無効値",
-                                    "_Value": 2110947200
-                                }
-                            }
-                        ],
-                        "_SetLGuideMsgData": {
-                            "IsSubOrder": false,
-                            "SetMsgID": "00000000-0000-0000-0000-000000000000",
-                            "gaugeSpritNum": 0,
-                            "isCanSkip": false,
-                            "isGauge": false
-                        },
-                        "_SetMoonData": {
-                            "_IsSetMoon": false,
-                            "_MoonOptionsVariationIndex": 0,
-                            "_MoonSetting": {
-                                "_Name": "無効値",
-                                "_Value": -770399616
-                            },
-                            "_MoonTextureVariationIndex": 0
-                        },
-                        "_StopTimeTimingHour": 0,
-                        "_StopTimeTimingHourQuest": 0,
-                        "_StopTimeTimingMinute": 0,
-                        "_StopTimeTimingMinuteQuest": 0,
-                        "_WorldTimeHour": 0,
-                        "_WorldTimeHourQuest": 21,
-                        "_WorldTimeMinute": 0,
-                        "_WorldTimeMinuteQuest": 0
-                    }
-                };
-                
-                // Generate the ext quest data
-                const extData = {
-                    "questId": questId,
-                    "rewardId": levelConfig.rewardId,
-                    "rewardItems": rewardItems.map(item => ({
-                        "itemId": item.itemId,
-                        "itemName": item.itemName,
-                        "minCount": item.minCount,
-                        "maxCount": item.maxCount,
-                        "probability": item.probability
-                    }))
-                };
-                
-                // Store the generated quest data
-                questData.raw = rawData;
-                questData.ext = extData;
-                
-                // Update the quest summary
-                updateQuestSummary();
-                
-                // Display the quest data in the output area
-                const outputElement = document.getElementById('output');
-                if (outputElement) {
-                    outputElement.textContent = JSON.stringify(questData, null, 4);
-                }
-                
-                // Enable the download button
-                const downloadButton = document.getElementById('download-btn');
-                if (downloadButton) {
-                    downloadButton.disabled = false;
-                }
-                
-                showAlert("Quête générée avec succès !", "success");
-            } catch (error) {
-                console.error("Error generating quest:", error);
-                showAlert("Erreur lors de la génération de la quête : " + error.message);
-            }
-        }
-
-        // Update the quest summary
-        function updateQuestSummary() {
-            try {
-                if (!questData.raw || !questData.ext) return;
-                
-                const questSummary = document.getElementById('quest-summary');
-                if (!questSummary) {
-                    console.error("Quest summary element not found");
-                    return;
-                }
-                
-                const quest = questData.raw;
-                const rewards = questData.ext.rewardItems;
-                
-                let monstersList = '';
-                quest._BossZakoDataList._MainTargetDataList.forEach(target => {
-                    const monster = enemiesData.find(m => m.fixedId === target._EmID);
-                    const monsterName = monster && monster.name && monster.name[currentLanguage] ? 
-                        monster.name[currentLanguage] : 'Monstre inconnu';
-                    const badge = target._LegendaryID === 'KING'
-                        ? '<span class="badge-arch-tempered">Alpha Suprême</span>'
-                        : '';
-                    monstersList += `<li>${monsterName}${badge} <span style="color:#888;font-size:0.85em">(${monster ? monster.label : 'Inconnu'})</span></li>`;
-                });
-                
-                let rewardsList = '';
-                rewards.forEach(reward => {
-                    rewardsList += `<li>${reward.itemName} (x${reward.minCount}-${reward.maxCount}) - ${reward.probability}%</li>`;
-                });
-                
-                let html = `
-                    <h3>Résumé de la quête</h3>
-                    <div>
-                        <div><strong>Titre :</strong> ${quest._MessageAssetList.find(m => m.Language === getLanguageCode(currentLanguage)).MessageData[2].Text}</div>
-                        <div><strong>Client :</strong> ${quest._MessageAssetList.find(m => m.Language === getLanguageCode(currentLanguage)).MessageData[3].Text}</div>
-                        <div><strong>ID :</strong> ${quest._DataList._MissionId._Value}</div>
-                        <div><strong>Niveau :</strong> ★${quest._DataList._QuestLv}</div>
-                        <div><strong>Lieu :</strong> ${quest._DataList._Stage._Name}</div>
-                        ${quest._BossZakoDataList._MainTargetDataList.some(t => t._SpawnCondition) ? '<div><strong>Mode :</strong> <span style="color:var(--accent)">⚔ Séquentiel</span></div>' : ''}
-                        <div><strong>Limite de temps :</strong> ${quest._DataList._TimeLimit} minutes</div>
-                        <div><strong>Morts autorisées :</strong> ${quest._DataList._QuestLife}</div>
-                        <div><strong>Joueurs max :</strong> ${quest._DataList._OrderCondition._MaxPlayerNum}</div>
-                        <div><strong>RC minimum :</strong> ${quest._DataList._OrderCondition._OrderHR}</div>
-                        <div><strong>Récompense en zenny :</strong> ${quest._DataList._RemMoney}</div>
-                        <div><strong>Points de RC :</strong> ${quest._DataList._HRPoint}</div>
-                        <div><strong>ID de récompenses :</strong> ${questData.ext.rewardId}</div>
-                        <div><strong>Monstres :</strong></div>
-                        <ul>${monstersList}</ul>
-                        <div><strong>Récompenses :</strong></div>
-                        <ul>${rewardsList}</ul>
-                    </div>
-                `;
-                
-                questSummary.innerHTML = html;
-            } catch (error) {
-                console.error("Error updating quest summary:", error);
-                showAlert("Erreur lors de la mise à jour du résumé : " + error.message);
-            }
-        }
-
-        // Download the quest files
-        function downloadQuest() {
-            try {
-                if (!questData.raw || !questData.ext) {
-                    showAlert("Aucune donnée de quête à télécharger");
-                    return;
-                }
-                
-                const questId = questData.ext.questId;
-                
-                // Check if JSZip is available
-                if (typeof JSZip === 'undefined') {
-                    showAlert("La bibliothèque JSZip n'est pas chargée. Vérifiez votre connexion internet et réessayez.");
-                    return;
-                }
-                
-                // Create a zip file with both quest files
-                const zip = new JSZip();
-                zip.file(`${questId}.raw.json`, JSON.stringify(questData.raw, null, 4));
-                zip.file(`${questId}.ext.json`, JSON.stringify(questData.ext, null, 4));
-                
-                // Generate the zip file
-                zip.generateAsync({type: "blob"})
-                    .then(function(content) {
-                        // Create a download link
-                        const link = document.createElement('a');
-                        link.href = URL.createObjectURL(content);
-                        link.download = `quest_${questId}.zip`;
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
-                        
-                        showAlert("Fichiers de quête téléchargés avec succès !", "success");
-                    })
-                    .catch(function(error) {
-                        console.error("Error creating zip file:", error);
-                        showAlert("Erreur lors de la création du fichier ZIP : " + error.message);
-                    });
-            } catch (error) {
-                console.error("Error downloading quest:", error);
-                showAlert("Erreur lors du téléchargement de la quête : " + error.message);
-            }
-        }
-
-        // Helper functions
-        function getLocationName(locationId) {
-            const locations = {
-                "1181994624": "st401",
-                "1198037248": "st001",
-                "1180946048": "st101",
-                "1179897472": "st201",
-                "1182777600": "st301",
-                "544388992":  "st402",
-                "13836":      "st405"
-            };
-            return locations[locationId] || "st401";
-        }
-
-        function getLanguageCode(language) {
-            const codes = {
-                "ja-jp":  0,
-                "en-us":  1,
-                "fr-fr":  2,
-                "it-it":  3,
-                "de-de":  4,
-                "es-es":  5,
-                "es-la":  6,
-                "pt-br":  7,
-                "pl-pl":  8,
-                "ru-ru":  9,
-                "ko-kr": 10,
-                "zh-cn": 11,
-                "zh-tw": 12,
-                "ar-sa": 13
-            };
-            return codes[language] ?? 2;
-        }
-
-        function showAlert(message, type = 'error') {
-            try {
-                const alert = document.getElementById('alert-message');
-                if (!alert) {
-                    console.error("Alert element not found");
-                    console.log(message);
-                    return;
-                }
-                
-                alert.textContent = message;
-                alert.style.display = 'block';
-                
-                // Change color based on alert type
-                if (type === 'success') {
-                    alert.style.backgroundColor = '#0d2b1a';
-                    alert.style.borderColor = '#1a5c32';
-                    alert.style.color = '#4caf82';
-                } else {
-                    alert.style.backgroundColor = '#2b0d0d';
-                    alert.style.borderColor = '#5c1a1a';
-                    alert.style.color = '#e07070';
-                }
-                
-                setTimeout(() => {
-                    alert.style.display = 'none';
-                }, 5000);
-            } catch (error) {
-                console.error("Error showing alert:", error);
-                console.log(message);
-            }
-        }
     </script>
-    
-    <!-- Include JSZip for quest file download -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
 </body>
 </html>

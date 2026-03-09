@@ -1,0 +1,422 @@
+/* ============================================================
+   Monster Hunter Wilds – Générateur de quêtes personnalisées
+   Feuille de styles principale
+   ============================================================ */
+
+/* ── Variables CSS (palette de couleurs) ──────────────────── */
+:root {
+    --bg:        #0f1117;   /* Fond général de la page */
+    --surface:   #181c27;   /* Surface des conteneurs */
+    --surface2:  #1f2435;   /* Surface secondaire (champs, cartes) */
+    --border:    #2e3450;   /* Couleur des bordures */
+    --text:      #d4cfc8;   /* Texte principal */
+    --text-dim:  #7a7d94;   /* Texte secondaire / atténué */
+    --accent:    #c8872a;   /* Couleur d'accentuation (or) */
+    --accent-h:  #e09a38;   /* Accentuation au survol */
+    --red:       #b83232;   /* Rouge principal (boutons danger) */
+    --red-h:     #d43a3a;   /* Rouge au survol */
+    --blue:      #2d6fb5;   /* Bleu (liens externes) */
+    --blue-h:    #3a82cc;   /* Bleu au survol */
+    --alpha:     #7b3fa0;   /* Violet (monstres Alpha) */
+    --alpha-h:   #9b59b6;   /* Violet au survol */
+    --at:        #b01566;   /* Rose (monstres Alpha Suprême) */
+    --at-h:      #d4256e;   /* Rose au survol */
+}
+
+/* ── Reset & base ─────────────────────────────────────────── */
+* { box-sizing: border-box; }
+
+body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: var(--bg);
+    color: var(--text);
+}
+
+/* ── Titres ───────────────────────────────────────────────── */
+h1 {
+    color: var(--accent);
+    font-size: 1.4em;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 12px;
+    margin-bottom: 20px;
+}
+
+h2 { color: var(--accent); font-size: 1.1em; margin-top: 0; }
+h3 { color: var(--text); font-size: 1em; }
+
+/* ── Conteneur principal ──────────────────────────────────── */
+.container {
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+/* ── Formulaires ──────────────────────────────────────────── */
+.form-group { margin-bottom: 15px; }
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+    font-size: 0.9em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+input, select, textarea {
+    width: 100%;
+    padding: 8px 10px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text);
+    font-size: 0.95em;
+    transition: border-color 0.2s;
+}
+
+input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+}
+
+select option { background: var(--surface2); }
+
+/* ── Grille de cartes monstres ────────────────────────────── */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+}
+
+/* ── Cartes monstres ──────────────────────────────────────── */
+.monster-card {
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+    background-color: var(--surface2);
+}
+
+.monster-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--accent);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+}
+
+/* État : monstre sélectionné (normal / trempé) */
+.monster-card.selected {
+    background-color: #1a2240;
+    border-color: var(--blue);
+    box-shadow: 0 0 0 1px var(--blue);
+}
+
+/* État : monstre Alpha */
+.monster-card.alpha {
+    background-color: #1e1430;
+    border-color: var(--alpha);
+}
+
+.monster-card.alpha.selected {
+    background-color: #231540;
+    border-color: var(--alpha-h);
+    box-shadow: 0 0 0 1px var(--alpha-h);
+}
+
+/* État : monstre Alpha Suprême */
+.monster-card.arch-tempered {
+    background-color: #200d1a;
+    border-color: var(--at);
+}
+
+.monster-card.arch-tempered.selected {
+    background-color: #280d20;
+    border-color: var(--at-h);
+    box-shadow: 0 0 0 1px var(--at-h);
+}
+
+.monster-card h3 { margin: 0 0 2px; font-size: 0.9em; color: var(--text); }
+
+/* ── Contrôles Alpha Suprême dans la carte ────────────────── */
+.monster-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 6px;
+}
+
+.monster-controls label {
+    font-size: 0.8em;
+    font-weight: normal;
+    margin: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    text-transform: none;
+    letter-spacing: 0;
+    color: var(--at-h);
+}
+
+.monster-controls input[type="checkbox"] {
+    width: auto;
+    margin: 0;
+    cursor: pointer;
+    accent-color: var(--at);
+}
+
+/* ── Option séquentielle (Vallon meurtri) ─────────────────── */
+.sequential-option {
+    display: none;
+    margin-top: 12px;
+    padding: 12px;
+    background: #131a2e;
+    border: 1px solid #2a3a60;
+    border-radius: 6px;
+}
+
+.sequential-option.visible { display: block; }
+
+.sequential-option label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    text-transform: none;
+    letter-spacing: 0;
+    font-size: 0.95em;
+    color: var(--text);
+    font-weight: normal;
+}
+
+.sequential-option input[type="checkbox"] {
+    width: auto;
+    accent-color: var(--accent);
+}
+
+.sequential-option .hint {
+    margin-top: 6px;
+    font-size: 0.8em;
+    color: var(--text-dim);
+}
+
+/* ── Récompenses ──────────────────────────────────────────── */
+.reward-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    padding: 10px;
+    background-color: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    position: relative;
+}
+
+.reward-controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 10px;
+    align-items: center;
+    width: 100%;
+}
+
+/* Bouton de suppression d'une récompense */
+.reward-item button {
+    background-color: var(--red);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    min-width: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: absolute;
+    right: -10px;
+    top: -10px;
+    padding: 0;
+    font-size: 14px;
+}
+
+.reward-item button:hover { background-color: var(--red-h); }
+
+.reward-header {
+    color: var(--text-dim);
+    font-size: 0.85em;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+/* ── Boutons ──────────────────────────────────────────────── */
+.button-group {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+
+button {
+    padding: 9px 16px;
+    background-color: var(--red);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9em;
+    font-weight: 600;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+button:hover { background-color: var(--red-h); transform: translateY(-1px); }
+
+button:disabled {
+    background-color: var(--surface2);
+    color: var(--text-dim);
+    cursor: not-allowed;
+    transform: none;
+    border: 1px solid var(--border);
+}
+
+/* Bouton secondaire (neutre) */
+button.secondary { background-color: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+button.secondary:hover { background-color: var(--border); }
+
+/* Bouton lien externe */
+button.external { background-color: var(--blue); }
+button.external:hover { background-color: var(--blue-h); }
+
+/* ── Champs de recherche ──────────────────────────────────── */
+#searchMonster, #searchItem {
+    padding: 8px 10px;
+    margin-bottom: 15px;
+    width: 100%;
+}
+
+/* ── Onglets de navigation ────────────────────────────────── */
+.tabs {
+    display: flex;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+    gap: 4px;
+}
+
+.tab {
+    padding: 8px 18px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    border-bottom: none;
+    border-radius: 6px 6px 0 0;
+    background-color: var(--surface2);
+    color: var(--text-dim);
+    font-size: 0.9em;
+    transition: all 0.2s;
+}
+
+.tab:hover { color: var(--text); background-color: var(--border); }
+
+.tab.active {
+    background-color: var(--surface);
+    border-color: var(--border);
+    color: var(--accent);
+    margin-bottom: -1px;
+    font-weight: 600;
+}
+
+/* Contenu d'onglet (masqué par défaut, affiché si actif) */
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* ── Sélecteur de langue ──────────────────────────────────── */
+.language-selector {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+}
+
+.language-selector select { width: auto; }
+
+/* ── Zone de sortie JSON brute ────────────────────────────── */
+#output {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #0a0c12;
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    white-space: pre-wrap;
+    max-height: 300px;
+    overflow-y: auto;
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 0.8em;
+    color: #8fbf8f;
+}
+
+/* ── Prévisualisation / résumé de quête ───────────────────── */
+.preview {
+    background-color: #131a2e;
+    padding: 15px;
+    border-radius: 5px;
+    margin-top: 20px;
+    border: 1px solid #2a3a60;
+}
+
+.preview h3 { margin-top: 0; color: var(--accent); }
+
+/* ── Alertes (succès / erreur) ────────────────────────────── */
+.alert {
+    padding: 12px 15px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    display: none;
+    font-weight: 600;
+    font-size: 0.9em;
+}
+
+/* ── Tags de filtres rapides ──────────────────────────────── */
+.tag {
+    transition: all 0.2s ease;
+}
+
+.tag:hover {
+    background-color: var(--border) !important;
+    color: var(--text) !important;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+    transform: translateY(-1px);
+}
+
+/* ── Badges de variantes monstres ─────────────────────────── */
+
+/* Badge Alpha (monstre trempé violet) */
+.badge-alpha {
+    display: inline-block;
+    font-size: 0.7em;
+    background-color: var(--alpha);
+    color: white;
+    border-radius: 3px;
+    padding: 1px 5px;
+    margin-left: 5px;
+    vertical-align: middle;
+    font-weight: bold;
+}
+
+/* Badge Alpha Suprême (monstre trempé rose) */
+.badge-arch-tempered {
+    display: inline-block;
+    font-size: 0.7em;
+    background-color: var(--at);
+    color: white;
+    border-radius: 3px;
+    padding: 1px 5px;
+    margin-left: 5px;
+    vertical-align: middle;
+    font-weight: bold;
+}
