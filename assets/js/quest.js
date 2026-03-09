@@ -91,9 +91,11 @@ function generateQuest() {
                 },
                 "_MainTargetDataList": expandedMonsters.map((monster, index) => ({
                     "_AdvancedSettings": {
-                        "_IsDeepSleepCreate": index > 0 && sequential
+                        // En mode BossRush (séquentiel), les monstres ne dorment pas — gérés par _BossRushParams
+                        "_IsDeepSleepCreate": false
                     },
-                    "_AreaNo": 255,
+                    // En mode séquentiel : le premier monstre spawne en zone 1, les suivants en 255
+                    "_AreaNo": (sequential && index === 0) ? 1 : 255,
                     "_DifficultyAdjustRange": 0,
                     "_DifficultyRankId": {
                         "Name": `★${questLevel}`,
@@ -104,7 +106,7 @@ function generateQuest() {
                     "_EmID": monster.fixedId,
                     "_EventTargetID": "INVALID",
                     "_FixedSize": 100,
-                    "_GroupID": index,
+                    "_GroupID": 0,
                           // Position initiale : (0,0,0) pour toutes les zones (confirmé depuis les quêtes officielles)
                     "_InitPos": "(0,0,0)",
                     "_IsUseRandomSize": false,
@@ -112,7 +114,8 @@ function generateQuest() {
                     // KING = Alpha Suprême, NORMAL = Alpha/Trempé, NONE = monstre standard
                     "_LegendaryID": monster.variant === 'ARCH_TEMPERED' ? "KING" : (monster.variant === 'TEMPERED' ? "NORMAL" : "NONE"),
                     "_OptionTag": {
-                        "Value": sequential && index > 0 ? index : 0
+                        // En mode séquentiel : le premier monstre a Value:1 (actif dès le début), les suivants 0
+                        "Value": (sequential && index === 0) ? 1 : 0
                     },
                     // Table de taille aléatoire : UUID spécifique à l'arène, nul pour les zones ouvertes (confirmé)
                     "_RandomSizeTblId": {
@@ -129,14 +132,7 @@ function generateQuest() {
                     // Zone de spawn : valeur spécifique à chaque zone (confirmé depuis les quêtes officielles)
                     // 2 = arène (Vallon meurtri), 15 = Ruines de Wyveria, 17 = toutes les autres zones ouvertes
                     "_SetAreaNo": isArena ? 2 : (questLocation === '327401792' ? 15 : 17),
-                    "_StoryTargetID": 101 + index,
-                    // Condition d'apparition séquentielle : le monstre attend la mort du précédent
-                    ...(sequential && index > 0 ? {
-                        "_SpawnCondition": {
-                            "_ConditionType": "EM_DEAD",
-                            "_TargetStoryID": 101 + index - 1
-                        }
-                    } : {})
+                    "_StoryTargetID": 101 + index
                 })),
                 // Layout du sous-boss : ressource spécifique à l'arène (st401), vide pour les autres zones
                 "_SubBossLayoutID": {
@@ -167,14 +163,26 @@ function generateQuest() {
                 "_ArenaFenceStatus": "OPEN",
                 "_ArenaPillarStatus": "USE",
                 "_BattleBGM": 0,
-                "_BossRushParams": [],
+                // En mode séquentiel (BossRush) : définit l'ordre et la condition d'apparition des monstres
+                // _PopType 0 = spawn initial du premier monstre
+                // _PopType 2 = spawn déclenché quand le monstre précédent est bas en vie (tête de mort)
+                // _ConditionValue_1 = index du monstre qui déclenche le spawn suivant (0-based)
+                // _ConditionValue_2 = 1 (activé)
+                "_BossRushParams": sequential ? [
+                    { "_PopType": 0, "_ConditionValue_1": -1, "_ConditionValue_2": -1 },
+                    ...expandedMonsters.slice(1).map((_, i) => ({
+                        "_PopType": 2,
+                        "_ConditionValue_1": i,
+                        "_ConditionValue_2": 1
+                    }))
+                ] : [],
                 "_BossRushParams=": null,
                 "_ClearBGM": 0,
                 "_ClearCondition": {
                     // Un objectif par entrée dans la liste développée (respecte les doublons dus au count)
                     "_TargetInfoArray": expandedMonsters.map((monster, index) => ({
                         "_ConditionalMoveData": {
-                            "_DestArray": [],
+                            "_DestArray": null,
                             "_IsUse": false,
                             "_RevertOnCompleted": false,
                             "_StartAfterFirstCondition": false
@@ -187,7 +195,8 @@ function generateQuest() {
                         "_TargetIDValue": monster.fixedId,
                         "_TargetValue": 1
                     })),
-                    "_TargetType": 1
+                    // _TargetType 2 = mode BossRush (séquentiel), 1 = mode normal
+                    "_TargetType": sequential ? 2 : 1
                 },
                 "_EnableGuestNpc": false,
                 "_ExOverrideID": 0,
@@ -586,8 +595,9 @@ async function importQuest(input) {
             selectedMonsters.push({ ...monster, variant });
         });
 
-        // Détecter le mode séquentiel (au moins un monstre a _SpawnCondition)
-        const isSeq = targets.some(t => t._SpawnCondition);
+        // Détecter le mode séquentiel : présence de _BossRushParams avec au moins un PopType 2
+        const bossRushParams = raw._DataList?._BossRushParams ?? [];
+        const isSeq = bossRushParams.some(p => p._PopType === 2);
         if (stageVal === '1181994624') {
             document.getElementById('sequentialMonsters').checked = isSeq;
         }
