@@ -6,7 +6,7 @@
  * IDs des monstres disposant d'une version Alpha Suprême (LegendaryID = KING).
  * Rey Dau, Uth Duna, Nu Udra, Arkveld.
  */
-const ARCH_TEMPERED_IDS = new Set([-1547364608, 1467998976, 1657778432, 746996864]);
+const ARCH_TEMPERED_IDS = new Set([-1547364608, 1467998976, 1657778432, 746996864, 1553456768]);
 
 /* ── Affichage de la liste ────────────────────────────────── */
 
