@@ -104,7 +104,8 @@ function generateQuest() {
                     "_EventTargetID": "INVALID",
                     "_FixedSize": 100,
                     "_GroupID": index,
-                    "_InitPos": "(-326,-28,176)",
+                    // Position initiale : fixe dans l'arène, nulle pour les zones ouvertes
+                    "_InitPos": isArena ? "(-326,-28,176)" : null,
                     "_IsUseRandomSize": false,
                     "_LayoutKeepID": -1,
                     "_LegendaryID": monster.variant === 'ARCH_TEMPERED' ? "KING" : "NORMAL",
@@ -116,10 +117,10 @@ function generateQuest() {
                         "Value": "f8f74ab0-0002-0000-00000002003e203e"
                     },
                     "_RoleID": "NORMAL",
-                    "_RouteID": {
-                        "Name": "斗技场",
-                        "_Value": "7ae19f9f-f315-4f16-cc4fc595f9f7c483"
-                    },
+                    // Route de déplacement : spécifique à l'arène, nulle pour les autres zones
+                    "_RouteID": isArena
+                        ? { "Name": "斗技场", "_Value": "7ae19f9f-f315-4f16-cc4fc595f9f7c483" }
+                        : { "Name": "", "_Value": "00000000-0000-0000-0000-000000000000" },
                     "_SetAreaNo": 255,
                     "_StoryTargetID": 101 + index,
                     // Condition d'apparition séquentielle : le monstre attend la mort du précédent
@@ -130,9 +131,12 @@ function generateQuest() {
                         }
                     } : {})
                 })),
+                // Layout du sous-boss : ressource spécifique à l'arène (st401), vide pour les autres zones
                 "_SubBossLayoutID": {
-                    "_ID": "c8ed5a65-8c96-48cb-3a15eb556208668e",
-                    "_Resource": "assets:/GameDesign/Stage/st401/Layout/Loaded/Enemy/SubBoss/st401_SubBoss_Ms006025_00.pog.json"
+                    "_ID": isArena ? "c8ed5a65-8c96-48cb-3a15eb556208668e" : "00000000-0000-0000-0000-000000000000",
+                    "_Resource": isArena
+                        ? "assets:/GameDesign/Stage/st401/Layout/Loaded/Enemy/SubBoss/st401_SubBoss_Ms006025_00.pog.json"
+                        : null
                 },
                 "_ZakoLayoutID": {
                     "_ID": "00000000-0000-0000-0000-000000000000",
