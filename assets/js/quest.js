@@ -43,7 +43,8 @@ function generateQuest() {
 
         const questId       = parseInt(questIdEl.value) || 10086;
         const questTitle    = questTitleEl.value || "Custom Quest";
-        const questDesc     = questDescriptionEl.value || "A custom monster hunt";
+        // Convertir les sauts de ligne en \r\n pour l'affichage en jeu dans la description
+        const questDesc     = (questDescriptionEl.value || "A custom monster hunt").replace(/\r\n|\r|\n/g, '\r\n');
         const questClient   = document.getElementById('questClient')?.value || "Générateur de quêtes";
         const questLevel    = parseInt(questLevelEl.value) || 8;
         const questLocation = questLocationEl.value || "1181994624";
