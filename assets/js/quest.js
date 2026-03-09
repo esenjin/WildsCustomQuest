@@ -577,8 +577,12 @@ async function importQuest(input) {
             const monster = enemiesData.find(m => m.fixedId === t._EmID);
             if (!monster) return;
             const isAT    = t._LegendaryID === 'KING';
+            const isAlpha = t._LegendaryID === 'NORMAL';
             const canAT   = ARCH_TEMPERED_IDS.has(monster.fixedId);
-            const variant = isAT && canAT ? 'ARCH_TEMPERED' : 'TEMPERED';
+            let variant;
+            if (isAT && canAT)  variant = 'ARCH_TEMPERED';
+            else if (isAlpha)   variant = 'TEMPERED';
+            else                variant = 'NONE';
             selectedMonsters.push({ ...monster, variant });
         });
 
