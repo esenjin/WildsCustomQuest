@@ -70,7 +70,8 @@ function generateQuest() {
 
         // ── Construction du fichier .raw.json ───────────────
         const rawData = {
-            "_ArenaDataList": {
+            // Données d'arène : remplies uniquement pour le Vallon meurtri, null pour les zones ouvertes
+            "_ArenaDataList": isArena ? {
                 "_IsUserCamp": false,
                 "_MissionID": null,
                 "_SelectDatas": null,
@@ -78,7 +79,7 @@ function generateQuest() {
                 "_TimeRankA": null,
                 "_TimeRankB": null,
                 "_TimeRankS": null
-            },
+            } : null,
             "_BossZakoDataList": {
                 "_AnimalLayoutID": {
                     "_ID": "00000000-0000-0000-0000-000000000000",
@@ -104,24 +105,30 @@ function generateQuest() {
                     "_EventTargetID": "INVALID",
                     "_FixedSize": 100,
                     "_GroupID": index,
-                    // Position initiale : fixe dans l'arène, nulle pour les zones ouvertes
-                    "_InitPos": isArena ? "(-326,-28,176)" : null,
+                          // Position initiale : (0,0,0) pour toutes les zones (confirmé depuis les quêtes officielles)
+                    "_InitPos": "(0,0,0)",
                     "_IsUseRandomSize": false,
                     "_LayoutKeepID": -1,
-                    "_LegendaryID": monster.variant === 'ARCH_TEMPERED' ? "KING" : "NORMAL",
+                    // KING = Alpha Suprême, NORMAL = Alpha/Trempé, NONE = monstre standard
+                    "_LegendaryID": monster.variant === 'ARCH_TEMPERED' ? "KING" : (monster.variant === 'TEMPERED' ? "NORMAL" : "NONE"),
                     "_OptionTag": {
                         "Value": sequential && index > 0 ? index : 0
                     },
+                    // Table de taille aléatoire : UUID spécifique à l'arène, nul pour les zones ouvertes (confirmé)
                     "_RandomSizeTblId": {
                         "Name": "",
-                        "Value": "f8f74ab0-0002-0000-00000002003e203e"
+                        "Value": isArena
+                            ? "f8f74ab0-0002-0000-00000002003e203e"
+                            : "00000000-0000-0000-0000-000000000000"
                     },
                     "_RoleID": "NORMAL",
                     // Route de déplacement : spécifique à l'arène, nulle pour les autres zones
                     "_RouteID": isArena
                         ? { "Name": "斗技场", "_Value": "7ae19f9f-f315-4f16-cc4fc595f9f7c483" }
                         : { "Name": "", "_Value": "00000000-0000-0000-0000-000000000000" },
-                    "_SetAreaNo": 255,
+                    // Zone de spawn : valeur spécifique à chaque zone (confirmé depuis les quêtes officielles)
+                    // 2 = arène (Vallon meurtri), 15 = Ruines de Wyveria, 17 = toutes les autres zones ouvertes
+                    "_SetAreaNo": isArena ? 2 : (questLocation === '327401792' ? 15 : 17),
                     "_StoryTargetID": 101 + index,
                     // Condition d'apparition séquentielle : le monstre attend la mort du précédent
                     ...(sequential && index > 0 ? {
@@ -148,7 +155,8 @@ function generateQuest() {
                         "_Value": parseInt(questLocation)
                     },
                     "_IsIntentionallyBlank": false,
-                    "_Value": 4
+                    // 0 = arène, 1 = zones ouvertes (confirmé depuis les quêtes officielles)
+                    "_Value": isArena ? 0 : 1
                 }
             },
             "_DataList": {
@@ -172,7 +180,8 @@ function generateQuest() {
                             "_StartAfterFirstCondition": false
                         },
                         "_EmTargetID": 101 + index,
-                        "_LegendaryID": monster.variant === 'ARCH_TEMPERED' ? "KING" : "NORMAL",
+                        // KING = Alpha Suprême, NORMAL = Alpha/Trempé, NONE = monstre standard
+                    "_LegendaryID": monster.variant === 'ARCH_TEMPERED' ? "KING" : (monster.variant === 'TEMPERED' ? "NORMAL" : "NONE"),
                         "_RoleID": "NORMAL",
                         "_ShowTargetGuide": true,
                         "_TargetIDValue": monster.fixedId,

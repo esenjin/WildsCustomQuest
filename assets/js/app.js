@@ -36,12 +36,13 @@ let questData = {
  * @returns {string} Le code court du stage (ex. "st401").
  */
 function getLocationName(locationId) {
+    // Noms de stage exacts tels qu'ils apparaissent dans les quêtes officielles du jeu.
     const locations = {
-        "-1226157568": "st101",  // Plaines venteuses
-        "-859829056":  "st102",  // Forêt écarlate
-        "-1251081216": "st103",  // Bassin pétrolier
-        "327401792":   "st105",  // Ruines de Wyveria
-        "1181994624":  "st401"   // Vallon meurtri
+        "-1226157568": "st101_砂",    // Plaines venteuses
+        "-859829056":  "st102_森",    // Forêt écarlate
+        "-1251081216": "st103_油田",  // Bassin pétrolier
+        "327401792":   "st105_炉心",  // Ruines de Wyveria
+        "1181994624":  "st401_闘技場" // Vallon meurtri (arène)
     };
     return locations[locationId] || "st401";
 }
