@@ -50,6 +50,37 @@ function getLocationName(locationId) {
 }
 
 /**
+ * Zones de spawn disponibles par région.
+ * Les régions sans choix (Vallon meurtri, Cimes gelées) ont une valeur null
+ * pour indiquer qu'aucun sélecteur ne doit être affiché.
+ *
+ * Clé   : ID numérique de la région (string)
+ * Valeur: tableau de zones disponibles, ou null si zone fixe
+ */
+const LOCATION_SPAWN_ZONES = {
+    "-1226157568": [8, 13, 17],   // Plaines venteuses
+    "-859829056":  [6, 12, 15],   // Forêt écarlate
+    "-1251081216": [2, 9, 15],    // Bassin pétrolier
+    "1182228864":  [3, 8, 12],    // Falaises de glace
+    "327401792":   [2, 5, 12],    // Ruines de Wyveria
+    "1181994624":  null,          // Vallon meurtri — zone fixe (2)
+    "544388992":   null           // Cimes gelées — zone fixe (255)
+};
+
+/**
+ * Retourne la zone de spawn par défaut pour une région donnée.
+ * @param {string} locationId - L'ID de la région.
+ * @returns {number} La zone de spawn par défaut.
+ */
+function getDefaultSpawnZone(locationId) {
+    const zones = LOCATION_SPAWN_ZONES[locationId];
+    if (zones && zones.length > 0) return zones[0];
+    if (locationId === '1181994624') return 2;   // Vallon meurtri
+    if (locationId === '544388992')  return 255;  // Cimes gelées
+    return 17; // fallback
+}
+
+/**
  * Retourne l'index numérique d'une langue utilisé dans les assets de messages.
  * @param {string} language - Le code de langue BCP-47 (ex. "fr-fr").
  * @returns {number} L'index correspondant (par défaut 2 = français).

@@ -132,10 +132,15 @@ function generateQuest() {
                           ][Math.min(index, 4)] }
                         : { "Name": "", "_Value": "00000000-0000-0000-0000-000000000000" },
                     // Zone de spawn : en séquentiel arène → monstre 1 en zone 3 (attente porte), autres → 255
-                    // En mode normal arène : 2, Ruines de Wyveria : 15, Cimes gelées : 255, autres : 17
+                    // En mode séquentiel arène non-0 : 255
+                    // En mode normal : utilise la zone choisie par monstre (spawnZone), ou les défauts selon la région
                     "_SetAreaNo": sequential
                         ? (index === 1 ? 3 : 255)
-                        : isArena ? 2 : (questLocation === '327401792' ? 15 : (questLocation === '544388992' ? 255 : 17)),
+                        : isArena ? 2 : (
+                            monster.spawnZone !== undefined
+                                ? monster.spawnZone
+                                : (questLocation === '327401792' ? 15 : (questLocation === '544388992' ? 255 : 17))
+                          ),
                     "_StoryTargetID": 101 + index
                 })),
                 // Layout du sous-boss : null en mode séquentiel, ressource spécifique en mode normal arène
@@ -631,7 +636,9 @@ async function importQuest(input) {
             if (isAT && canAT)  variant = 'ARCH_TEMPERED';
             else if (isAlpha)   variant = 'TEMPERED';
             else                variant = 'NONE';
-            selectedMonsters.push({ ...monster, variant });
+            // Récupérer la zone de spawn stockée dans _SetAreaNo
+            const spawnZone = t._SetAreaNo !== undefined ? t._SetAreaNo : undefined;
+            selectedMonsters.push({ ...monster, variant, spawnZone });
         });
 
         // Détecter le mode séquentiel : présence de _BossRushParams avec au moins un PopType 2

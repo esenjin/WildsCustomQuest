@@ -414,6 +414,39 @@ button.external:hover { background-color: var(--blue-h); }
 
 .monster-count-control.visible { display: flex; }
 
+/* ── Sélecteur de zone de spawn ───────────────────────────── */
+.spawn-zone-control {
+    display: none;
+    align-items: center;
+    gap: 6px;
+    margin-top: 8px;
+}
+
+.spawn-zone-control.visible { display: flex; }
+
+.spawn-zone-label {
+    font-size: 0.8em;
+    color: var(--text-dim);
+    white-space: nowrap;
+}
+
+.spawn-zone-select {
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 4px;
+    padding: 2px 6px;
+    font-size: 0.82em;
+    cursor: pointer;
+    transition: border-color 0.15s;
+}
+
+.spawn-zone-select:hover,
+.spawn-zone-select:focus {
+    border-color: var(--accent);
+    outline: none;
+}
+
 .count-btn {
     padding: 0;
     width: 22px;

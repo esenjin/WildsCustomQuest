@@ -77,6 +77,13 @@ function populateMonsterList() {
         const isAlpha        = variant === 'TEMPERED';
         const isArchTempered = variant === 'ARCH_TEMPERED';
 
+        // ── Zone de spawn ──────────────────────────────────
+        // Déterminer les zones disponibles pour la région courante
+        const spawnZones      = LOCATION_SPAWN_ZONES[currentLocation] ?? null;
+        const hasSpawnChoice  = spawnZones && spawnZones.length > 1;
+        // Zone déjà stockée sur ce monstre, ou zone par défaut de la région
+        const currentSpawnZone = existingSelection?.spawnZone ?? getDefaultSpawnZone(currentLocation);
+
         // Récupérer les étoiles stockées sur ce monstre (défaut : 5 pour les variants)
         card.innerHTML = `
             <h3>${monster.name[currentLanguage]}</h3>
@@ -98,6 +105,14 @@ function populateMonsterList() {
                     : ''
                 }
             </div>
+            ${hasSpawnChoice ? `
+            <div class="spawn-zone-control ${isSelected ? 'visible' : ''}" id="spawn-ctrl-${monster.fixedId}">
+                <label class="spawn-zone-label" for="spawn-${monster.fixedId}">Zone de départ :</label>
+                <select class="spawn-zone-select" id="spawn-${monster.fixedId}">
+                    ${spawnZones.map(z => `<option value="${z}" ${z === currentSpawnZone ? 'selected' : ''}>${z}</option>`).join('')}
+                </select>
+            </div>
+            ` : ''}
             <div class="monster-count-control ${isSelected ? 'visible' : ''}">
                 <button class="count-btn count-minus" type="button">−</button>
                 <span class="count-value" id="${counterId}">${currentCount}</span>
@@ -140,14 +155,18 @@ function populateMonsterList() {
                 if (cbA)  { cbA.checked  = false; }
                 if (cbAT) { cbAT.checked = false; cbAT.disabled = true; }
                 _setCountControlVisible(card, false);
+                _setSpawnZoneVisible(card, false);
                 _setCountDisplay(card, monster.fixedId, 1);
             } else {
                 // Sélectionner le monstre avec la variante lue depuis les cases
                 const newVariant = _getVariantFromCheckboxes(card);
-                selectedMonsters.push({ ...monster, variant: newVariant, count: 1 });
+                const spawnSel   = card.querySelector('.spawn-zone-select');
+                const spawnZone  = spawnSel ? parseInt(spawnSel.value) : getDefaultSpawnZone(document.getElementById('questLocation')?.value ?? '');
+                selectedMonsters.push({ ...monster, variant: newVariant, count: 1, spawnZone });
                 card.classList.add('selected');
                 applyVariantClass(card, newVariant);
                 _setCountControlVisible(card, true);
+                _setSpawnZoneVisible(card, true);
             }
             updateMonsterPreview();
         });
@@ -194,6 +213,21 @@ function populateMonsterList() {
                 }
                 applyVariantClass(card, newVariant);
                 updateMonsterPreview();
+            });
+        }
+
+        // Sélecteur de zone de spawn : mémorise la zone choisie sur le monstre
+        const spawnSelect = card.querySelector('.spawn-zone-select');
+        if (spawnSelect) {
+            // Bloquer la propagation du clic pour ne pas déclencher le toggle de la carte
+            spawnSelect.addEventListener('click', e => e.stopPropagation());
+            spawnSelect.addEventListener('change', function (e) {
+                e.stopPropagation();
+                const sel = selectedMonsters.find(m => m.fixedId === monster.fixedId);
+                const zone = parseInt(this.value);
+                if (sel) {
+                    sel.spawnZone = zone;
+                }
             });
         }
 
@@ -246,6 +280,16 @@ function applyVariantClass(card, variant) {
  */
 function _setCountControlVisible(card, visible) {
     const ctrl = card.querySelector('.monster-count-control');
+    if (ctrl) ctrl.classList.toggle('visible', visible);
+}
+
+/**
+ * Affiche ou masque le contrôle de zone de spawn d'une carte.
+ * @param {HTMLElement} card    - La carte monstre.
+ * @param {boolean}     visible - true pour afficher, false pour masquer.
+ */
+function _setSpawnZoneVisible(card, visible) {
+    const ctrl = card.querySelector('.spawn-zone-control');
     if (ctrl) ctrl.classList.toggle('visible', visible);
 }
 
