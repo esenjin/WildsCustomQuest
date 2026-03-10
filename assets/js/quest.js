@@ -94,8 +94,10 @@ function generateQuest() {
                         // En mode BossRush (séquentiel), les monstres ne dorment pas — gérés par _BossRushParams
                         "_IsDeepSleepCreate": false
                     },
-                    // En mode séquentiel : le premier monstre spawne en zone 1, les suivants en 255
-                    "_AreaNo": (sequential && index === 0) ? 1 : 255,
+                    // En mode séquentiel : monstre 0 en zone 1 (actif), monstre 1 en zone 255 (en attente derrière porte)
+                    // les suivants (2+) en zone 1 mais avec _OptionTag:0 (inactifs jusqu'à leur tour)
+                    // En mode normal arène : tous en zone 1
+                    "_AreaNo": sequential ? (index === 1 ? 255 : 1) : (isArena ? 1 : 255),
                     "_DifficultyAdjustRange": 0,
                     "_DifficultyRankId": {
                         "Name": `★${questLevel}`,
@@ -130,8 +132,11 @@ function generateQuest() {
                         ? { "Name": "斗技场", "_Value": "7ae19f9f-f315-4f16-cc4fc595f9f7c483" }
                         : { "Name": "", "_Value": "00000000-0000-0000-0000-000000000000" },
                     // Zone de spawn : valeur spécifique à chaque zone (confirmé depuis les quêtes officielles)
-                    // 2 = arène (Vallon meurtri), 15 = Ruines de Wyveria, 17 = toutes les autres zones ouvertes et 255 Cimes gelées
-                    "_SetAreaNo": isArena ? 2 : (questLocation === '327401792' ? 15 : (questLocation === '544388992' ? 255 : 17)),
+                    // En mode séquentiel arène : monstre 0 → 255 (zone active), monstre 1 → 3 (zone d'attente derrière porte), suivants → 255
+                    // En mode normal arène : 2, Ruines de Wyveria : 15, Cimes gelées : 255, autres : 17
+                    "_SetAreaNo": sequential ? (index === 1 ? 3 : 255)
+                        : isArena ? 2
+                        : (questLocation === '327401792' ? 15 : (questLocation === '544388992' ? 255 : 17)),
                     "_StoryTargetID": 101 + index
                 })),
                 // Layout du sous-boss : ressource spécifique à l'arène (st401), vide pour les autres zones
@@ -175,7 +180,7 @@ function generateQuest() {
                         "_ConditionValue_1": i,
                         "_ConditionValue_2": 1
                     }))
-                ] : [],
+                ] : null,
                 "_BossRushParams=": null,
                 "_ClearBGM": 0,
                 "_ClearCondition": {
