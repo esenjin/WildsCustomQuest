@@ -188,9 +188,12 @@ function populateMonsterList() {
                 if (sel) {
                     sel.variant = newVariant;
                 } else {
-                    selectedMonsters.push({ ...monster, variant: newVariant, count: 1 });
+                    const spawnSel  = card.querySelector('.spawn-zone-select');
+                    const spawnZone = spawnSel ? parseInt(spawnSel.value) : getDefaultSpawnZone(document.getElementById('questLocation')?.value ?? '');
+                    selectedMonsters.push({ ...monster, variant: newVariant, count: 1, spawnZone });
                     card.classList.add('selected');
                     _setCountControlVisible(card, true);
+                    _setSpawnZoneVisible(card, true);
                 }
                 applyVariantClass(card, newVariant);
                 updateMonsterPreview();
@@ -207,9 +210,12 @@ function populateMonsterList() {
                 if (sel) {
                     sel.variant = newVariant;
                 } else {
-                    selectedMonsters.push({ ...monster, variant: newVariant, count: 1, stars: 5 });
+                    const spawnSel  = card.querySelector('.spawn-zone-select');
+                    const spawnZone = spawnSel ? parseInt(spawnSel.value) : getDefaultSpawnZone(document.getElementById('questLocation')?.value ?? '');
+                    selectedMonsters.push({ ...monster, variant: newVariant, count: 1, spawnZone });
                     card.classList.add('selected');
                     _setCountControlVisible(card, true);
+                    _setSpawnZoneVisible(card, true);
                 }
                 applyVariantClass(card, newVariant);
                 updateMonsterPreview();
