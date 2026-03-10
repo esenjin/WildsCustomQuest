@@ -78,7 +78,7 @@ $isAdmin = !empty($_SESSION['admin']);
                     <label class="filter-label" for="filterLevel">Niveau</label>
                     <select id="filterLevel" class="filter-select">
                         <option value="">Tous</option>
-                        <?php foreach ([4,5,6,7,8,9,10] as $l): ?>
+                        <?php foreach ([1,2,3,4,5,6,7,8,9,10] as $l): ?>
                             <option value="<?= $l ?>"><?= str_repeat('★',$l) ?> (<?= $l ?>)</option>
                         <?php endforeach; ?>
                     </select>
@@ -96,7 +96,7 @@ $isAdmin = !empty($_SESSION['admin']);
                         <option value="1">Solo</option>
                         <option value="2">Duo</option>
                         <option value="3">Trio</option>
-                        <option value="4">×4</option>
+                        <option value="4">Quatuor</option>
                     </select>
                 </div>
                 <div class="filter-group">
@@ -108,7 +108,7 @@ $isAdmin = !empty($_SESSION['admin']);
                     <input type="number" id="filterMaxDeaths" class="filter-input" placeholder="Ex : 3" min="1">
                 </div>
                 <div class="filter-group">
-                    <label class="filter-label" for="filterMaxTime">⏱ max (min)</label>
+                    <label class="filter-label" for="filterMaxTime">⏱ max (minutes)</label>
                     <input type="number" id="filterMaxTime" class="filter-input" placeholder="Ex : 50" min="1">
                 </div>
             </div>
