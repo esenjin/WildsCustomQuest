@@ -3,7 +3,7 @@
 Outil communautaire pour créer, partager et découvrir des quêtes personnalisées pour Monster Hunter Wilds.
 
 - **Accès création de quêtes : [concepts.esenjin.xyz/mhwilds-qp](https://concepts.esenjin.xyz/mhwilds-qp)**
-- **Accès hub communautaire : [concepts.esenjin.xyz/mhwilds-qp](https://concepts.esenjin.xyz/mhwilds-qp/partage)**
+- **Accès hub communautaire : [concepts.esenjin.xyz/mhwilds-qp/partage](https://concepts.esenjin.xyz/mhwilds-qp/partage)**
 
 ---
 
