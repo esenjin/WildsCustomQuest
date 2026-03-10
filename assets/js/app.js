@@ -41,6 +41,7 @@ function getLocationName(locationId) {
         "-1226157568": "st101_砂",       // Plaines venteuses
         "-859829056":  "st102_森",       // Forêt écarlate
         "-1251081216": "st103_油田",     // Bassin pétrolier
+        "1182228864":  "st104_壁",       // Falaises de glace
         "327401792":   "st105_炉心",     // Ruines de Wyveria
         "1181994624":  "st401_闘技場",   // Vallon meurtri (arène)
         "544388992":  "st402_壁ヌシ戦闘" // Cimes gelées

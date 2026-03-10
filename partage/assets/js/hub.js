@@ -9,6 +9,7 @@ const ZONES = {
     'st101_砂':     'Plaines venteuses',
     'st102_森':     'Forêt écarlate',
     'st103_油田':   'Bassin pétrolier',
+    'st104_壁':     'Falaises de glace',
     'st105_炉心':   'Ruines de Wyveria',
     'st401_闘技場': 'Vallon meurtri',
     'st402_壁ヌシ戦闘': 'Cimes gelées',
