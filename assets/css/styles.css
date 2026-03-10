@@ -515,6 +515,19 @@ button.external:hover { background-color: var(--blue-h); }
     font-weight: bold;
 }
 
+/* Badge Alpha (monstre violet) */
+.badge-alpha {
+    display: inline-block;
+    font-size: 0.7em;
+    background-color: var(--alpha);
+    color: white;
+    border-radius: 3px;
+    padding: 1px 5px;
+    margin-left: 5px;
+    vertical-align: middle;
+    font-weight: bold;
+}
+
 /* Badge Alpha Suprême (monstre trempé rose) */
 .badge-arch-tempered {
     display: inline-block;
