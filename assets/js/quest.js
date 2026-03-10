@@ -94,9 +94,9 @@ function generateQuest() {
                         // En mode BossRush (séquentiel), les monstres ne dorment pas — gérés par _BossRushParams
                         "_IsDeepSleepCreate": false
                     },
-                    // En mode séquentiel : monstre 0→zone 1 (actif), monstre 1→zone 255 (attente porte), suivants→zone 1
-                    // En mode normal : premier monstre en zone 1, les autres en 255
-                    "_AreaNo": sequential ? (index === 1 ? 255 : 1) : (index === 0 ? 1 : 255),
+                    // En mode séquentiel : monstre 0→zone 1 (actif), monstre 1→zone 255 (attente derrière porte), monstres 2+→zone 1 (inactifs via OptionTag=0)
+                    // En mode normal : 255 pour tous
+                    "_AreaNo": sequential ? (index === 1 ? 255 : 1) : 255,
                     "_DifficultyAdjustRange": 0,
                     "_DifficultyRankId": {
                         "Name": `★${questLevel}`,
@@ -118,17 +118,22 @@ function generateQuest() {
                         // En mode séquentiel : le premier monstre a Value:1 (actif dès le début), les suivants 0
                         "Value": (sequential && index === 0) ? 1 : 0
                     },
-                    // Table de taille aléatoire : UUID spécifique à l'arène, nul pour les zones ouvertes (confirmé)
+                    // Table de taille aléatoire : toujours null UUID
                     "_RandomSizeTblId": {
                         "Name": "",
-                        "Value": isArena
-                            ? "f8f74ab0-0002-0000-00000002003e203e"
-                            : "00000000-0000-0000-0000-000000000000"
+                        "Value": "00000000-0000-0000-0000-000000000000"
                     },
                     "_RoleID": "NORMAL",
-                    // Route de déplacement : spécifique à l'arène, nulle pour les autres zones
-                    "_RouteID": isArena
-                        ? { "Name": "斗技场", "_Value": "7ae19f9f-f315-4f16-cc4fc595f9f7c483" }
+                    // Routes prédéfinies de l'arène st401 (une par slot de monstre)
+                    // En dehors de l'arène ou en mode non-séquentiel : UUID null
+                    "_RouteID": (isArena && sequential)
+                        ? { "Name": "", "_Value": [
+                            "6935fb34-4ae2-4d4e-979a-b88b52c65a4e",
+                            "3e8f391d-883d-434e-a262-9598d7cd27df",
+                            "3e8f391d-883d-434e-a262-9598d7cd27df",
+                            "20af651f-185d-4026-b73e-6da31b428bae",
+                            "00b32f39-5c63-44b6-8f99-bd593e48a524"
+                          ][Math.min(index, 4)] }
                         : { "Name": "", "_Value": "00000000-0000-0000-0000-000000000000" },
                     // Zone de spawn : en séquentiel arène → monstre 1 en zone 3 (attente porte), autres → 255
                     // En mode normal arène : 2, Ruines de Wyveria : 15, Cimes gelées : 255, autres : 17
@@ -137,10 +142,10 @@ function generateQuest() {
                         : isArena ? 2 : (questLocation === '327401792' ? 15 : (questLocation === '544388992' ? 255 : 17)),
                     "_StoryTargetID": 101 + index
                 })),
-                // Layout du sous-boss : ressource spécifique à l'arène (st401), vide pour les autres zones
+                // Layout du sous-boss : null en mode séquentiel, ressource spécifique en mode normal arène
                 "_SubBossLayoutID": {
-                    "_ID": isArena ? "c8ed5a65-8c96-48cb-3a15eb556208668e" : "00000000-0000-0000-0000-000000000000",
-                    "_Resource": isArena
+                    "_ID": (isArena && !sequential) ? "c8ed5a65-8c96-48cb-3a15eb556208668e" : "00000000-0000-0000-0000-000000000000",
+                    "_Resource": (isArena && !sequential)
                         ? "assets:/GameDesign/Stage/st401/Layout/Loaded/Enemy/SubBoss/st401_SubBoss_Ms006025_00.pog.json"
                         : null
                 },
@@ -150,11 +155,13 @@ function generateQuest() {
                 },
                 "_ZakoLayoutTag": {
                     "_FieldID": {
-                        "_Name": getLocationName(questLocation),
-                        "_Value": parseInt(questLocation)
+                        // En mode séquentiel arène : INVALID
+                        "_Name": (isArena && sequential) ? "INVALID" : getLocationName(questLocation),
+                        "_Value": (isArena && sequential) ? 1044114240 : parseInt(questLocation)
                     },
-                    "_IsIntentionallyBlank": false,
-                    // 0 = arène, 1 = zones ouvertes (confirmé depuis les quêtes officielles)
+                    // En mode séquentiel arène : true
+                    "_IsIntentionallyBlank": (isArena && sequential) ? true : false,
+                    // 0 = arène, 1 = zones ouvertes
                     "_Value": isArena ? 0 : 1
                 }
             },
@@ -178,7 +185,7 @@ function generateQuest() {
                         "_ConditionValue_1": i,
                         "_ConditionValue_2": 1
                     }))
-                ] : null,
+                ] : [],
                 "_BossRushParams=": null,
                 "_ClearBGM": 0,
                 "_ClearCondition": {
@@ -258,7 +265,8 @@ function generateQuest() {
                     "_OrderConditionMsg_StProgress": "7d277c75-8e3e-4073-9351-072604943ce6",
                     "_TitleMsg": "ad16cdce-1ad5-4ba9-8ac2-4cee6dd52021"
                 },
-                "_QuestType": 0,
+                // 6 = BossRush (séquentiel), 0 = normal (confirmé depuis les quêtes officielles)
+                "_QuestType": sequential ? 6 : 0,
                 "_RemMoney": rewardMoney,
                 "_Stage": {
                     "_Name": getLocationName(questLocation),
