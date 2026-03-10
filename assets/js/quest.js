@@ -107,8 +107,8 @@ function generateQuest() {
                     "_EventTargetID": "INVALID",
                     "_FixedSize": 100,
                     "_GroupID": 0,
-                          // Position initiale : (0,0,0) pour toutes les zones (confirmé depuis les quêtes officielles)
-                    "_InitPos": "(0,0,0)",
+                          // Position initiale : (0,0,0) pour toutes les zones (sauf Cimes gelées à (-529,87,701))
+                    "_InitPos": (questLocation === '544388992') ? "(-529,87,701)" : "(0,0,0)",
                     "_IsUseRandomSize": false,
                     "_LayoutKeepID": -1,
                     // KING = Alpha Suprême, NORMAL = Alpha/Trempé, NONE = monstre standard
@@ -130,8 +130,8 @@ function generateQuest() {
                         ? { "Name": "斗技场", "_Value": "7ae19f9f-f315-4f16-cc4fc595f9f7c483" }
                         : { "Name": "", "_Value": "00000000-0000-0000-0000-000000000000" },
                     // Zone de spawn : valeur spécifique à chaque zone (confirmé depuis les quêtes officielles)
-                    // 2 = arène (Vallon meurtri), 15 = Ruines de Wyveria, 17 = toutes les autres zones ouvertes
-                    "_SetAreaNo": isArena ? 2 : (questLocation === '327401792' ? 15 : 17),
+                    // 2 = arène (Vallon meurtri), 15 = Ruines de Wyveria, 17 = toutes les autres zones ouvertes et 255 Cimes gelées
+                    "_SetAreaNo": isArena ? 2 : (questLocation === '327401792' ? 15 : (questLocation === '544388992' ? 255 : 17)),
                     "_StoryTargetID": 101 + index
                 })),
                 // Layout du sous-boss : ressource spécifique à l'arène (st401), vide pour les autres zones

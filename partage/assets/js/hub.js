@@ -11,6 +11,7 @@ const ZONES = {
     'st103_油田':   'Bassin pétrolier',
     'st105_炉心':   'Ruines de Wyveria',
     'st401_闘技場': 'Vallon meurtri',
+    'st402_壁ヌシ戦闘': 'Cimes gelées',
 };
 
 function getZoneName(stageVal, stageName) {
