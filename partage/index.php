@@ -153,6 +153,22 @@ $isAdmin = !empty($_SESSION['admin']);
 
 </div><!-- /hub-wrapper -->
 
+<!-- ── Pied de page ─────────────────────────────────────────── -->
+<footer class="hub-footer">
+    <span class="hub-footer-label">Ressources</span>
+    <nav class="hub-footer-links">
+        <a href="https://git.crystalyx.net/Esenjin_Asakha/WildsQuetesPerso/wiki/Hub-communautaire"
+           target="_blank" rel="noopener" class="hub-footer-link">
+            📖 Infos &amp; Guide
+        </a>
+        <span class="hub-footer-sep">·</span>
+        <a href="https://git.crystalyx.net/Esenjin_Asakha/WildsQuetesPerso/wiki/FAQ"
+           target="_blank" rel="noopener" class="hub-footer-link">
+            ❓ FAQ
+        </a>
+    </nav>
+</footer>
+
 <!-- ════════════════════════════════════════════════════════
      MODAL DÉTAIL DE QUÊTE
      ════════════════════════════════════════════════════════ -->

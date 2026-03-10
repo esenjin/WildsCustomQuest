@@ -102,6 +102,46 @@ body {
     border-radius: 20px;
 }
 
+/* ── Pied de page ─────────────────────────────────────────── */
+.hub-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    padding: 9px 20px;
+    background: rgba(15, 17, 23, 0.92);
+    backdrop-filter: blur(8px);
+    border-top: 1px solid #2e3450;
+    font-size: .82em;
+}
+.hub-footer-label {
+    color: #7a7d94;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    font-size: .9em;
+}
+.hub-footer-sep {
+    color: #2e3450;
+}
+.hub-footer-link {
+    color: #7a7d94;
+    text-decoration: none;
+    transition: color .18s;
+}
+.hub-footer-link:hover {
+    color: #c8872a;
+}
+/* Compenser la hauteur du footer pour éviter que le contenu passe dessous */
+.hub-wrapper {
+    padding-bottom: 42px;
+}
+
 /* ── Tabs principaux ──────────────────────────────────────── */
 .main-tabs {
     display: flex;
