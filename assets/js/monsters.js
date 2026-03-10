@@ -71,12 +71,13 @@ function populateMonsterList() {
             applyVariantClass(card, variant);
         }
 
-        const cbAlphaId = `alpha-${monster.fixedId}`;
-        const cbATId    = `arch-${monster.fixedId}`;
-        const counterId = `count-${monster.fixedId}`;
+        const cbAlphaId  = `alpha-${monster.fixedId}`;
+        const cbATId     = `arch-${monster.fixedId}`;
+        const counterId  = `count-${monster.fixedId}`;
         const isAlpha        = variant === 'TEMPERED';
         const isArchTempered = variant === 'ARCH_TEMPERED';
 
+        // Récupérer les étoiles stockées sur ce monstre (défaut : 5 pour les variants)
         card.innerHTML = `
             <h3>${monster.name[currentLanguage]}</h3>
             <p style="margin:2px 0;font-size:0.85em;color:var(--text-dim);">ID : ${monster.fixedId}</p>
@@ -187,7 +188,7 @@ function populateMonsterList() {
                 if (sel) {
                     sel.variant = newVariant;
                 } else {
-                    selectedMonsters.push({ ...monster, variant: newVariant, count: 1 });
+                    selectedMonsters.push({ ...monster, variant: newVariant, count: 1, stars: 5 });
                     card.classList.add('selected');
                     _setCountControlVisible(card, true);
                 }
