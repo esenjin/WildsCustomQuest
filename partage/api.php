@@ -276,6 +276,11 @@ function readQuestDir(string $dir, bool $skipSubdirs = false): array {
             ];
         }
 
+        // Déduire le nombre d'étoiles roses depuis le DifficultyRankId du premier monstre
+        $diffUuid = $targets[0]['_DifficultyRankId']['Value'] ?? '';
+        $diffName = $targets[0]['_DifficultyRankId']['Name']  ?? '';
+        $monsterStars = resolveDifficultyStars($diffUuid, $diffName);
+
         $bossRushParams = $data['_BossRushParams'] ?? [];
         $isSequential   = is_array($bossRushParams) && array_reduce(
             $bossRushParams,
@@ -299,6 +304,7 @@ function readQuestDir(string $dir, bool $skipSubdirs = false): array {
             'stageVal'   => (int)($data['_Stage']['_Value']                 ?? 0),
             'stageName'  => $data['_Stage']['_Name'] ?? '',
             'sequential' => $isSequential,
+            'monsterStars' => $monsterStars,
             'monsters'   => $monsters,
             'rewards'    => $ext['rewardItems'] ?? [],
             'addedAt'    => filemtime($path),
@@ -413,6 +419,24 @@ function findQuestTexts(array $raw): array {
         $desc   = findMsg($msgEN, '_102');
     }
     return [$title, $client, $desc];
+}
+
+/**
+ * Résout le nombre d'étoiles roses à partir de l'UUID et/ou du nom du DifficultyRankId.
+ * UUIDs confirmés par analyse de quêtes officielles MHWilds.
+ */
+function resolveDifficultyStars(string $uuid, string $name): int {
+    $knownUuids = [
+        '14627cdc-9c1a-43e6-ab18-d01c45120a4b' => 3, // ★N-3, standard (confirmé ★8)
+        '6d893ac4-5f81-4850-b1ac-a2c23845cb15' => 3, // ★N-3, Alpha trempé
+        '64938e94-d384-4567-8ed5-af922379600d' => 5, // ★N-5, Extrême (confirmé ★10 AS)
+    ];
+    if (isset($knownUuids[$uuid])) return $knownUuids[$uuid];
+
+    // Fallback : lire le nombre dans le nom (format ★N-X)
+    if (preg_match('/★\d+-(\d+)/', $name, $m)) return (int)$m[1];
+
+    return 3; // valeur par défaut
 }
 
 /** Nettoie un nom de fichier pour éviter les traversées de chemin. */

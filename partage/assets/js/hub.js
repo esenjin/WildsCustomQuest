@@ -264,6 +264,10 @@ function openModal(quest, isPending = false) {
     const seqEl = document.getElementById('modalSequential');
     if (seqEl) seqEl.style.display = quest.sequential ? 'inline-flex' : 'none';
     setEl('modalMoney',   (quest.money ?? 0).toLocaleString('fr-FR') + ' z');
+
+    // Puissance des monstres (étoiles roses)
+    const starsLabels = { 3: '⚔️ Normal (3 étoiles)', 5: '☠️ Extrême (5 étoiles)' };
+    setEl('modalMonsterStars', starsLabels[quest.monsterStars] ?? `${quest.monsterStars ?? '?'} étoile(s)`);
     setEl('modalRC',      `RC ${quest.minRC ?? 1} ou plus`);
     setEl('modalPlayers', `Jusqu'à ${quest.maxPlayers ?? 4} joueur(s)`);
     setEl('modalDeaths',  `S'évanouir ${quest.questLife ?? 3} fois`);
