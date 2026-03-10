@@ -1,0 +1,6 @@
+# Config sensible — ne jamais versionner
+config.php
+
+# ZIPs de quêtes (gérés séparément)
+base/*.zip
+base/attente/*.zip
