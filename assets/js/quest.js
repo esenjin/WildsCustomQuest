@@ -425,7 +425,9 @@ function updateQuestSummary() {
                 : 'Monstre inconnu';
             const badge = target._LegendaryID === 'KING'
                 ? '<span class="badge-arch-tempered">Alpha Suprême</span>'
-                : '';
+                : target._LegendaryID === 'NORMAL'
+                    ? '<span class="badge-alpha">Alpha</span>'
+                    : '<span style="display:inline-block;font-size:0.7em;background:#2a2e3e;color:#888;border-radius:3px;padding:1px 5px;margin-left:5px;vertical-align:middle;font-weight:bold;">Standard</span>';
             monstersList += `<li>${monsterName}${badge} <span style="color:#888;font-size:0.85em">(${monster ? monster.label : 'Inconnu'})</span></li>`;
         });
 
