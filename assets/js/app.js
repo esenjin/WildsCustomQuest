@@ -98,7 +98,52 @@ function getQuestLevelConfig(level) {
     return configs[level] || configs[8];
 }
 
-/* ── Alertes ──────────────────────────────────────────────── */
+/* ── Difficulté des monstres ──────────────────────────────── */
+
+/**
+ * Table des UUIDs de DifficultyRankId extraits des quêtes officielles.
+ * Format : { `${questLv}-${stars}`: { normal: uuid, tempered: uuid } }
+ *
+ * Sources confirmées par analyse de quêtes officielles :
+ *   ★8-3  → 14627cdc-9c1a-43e6-ab18-d01c45120a4b  (Gogmazios, LegendaryID: NONE)
+ *   ★10-5 → 64938e94-d384-4567-8ed5-af922379600d  (Jin Dahaad, LegendaryID: KING)
+ *
+ * Les autres entrées utilisent les valeurs génériques connues du générateur
+ * (aa92e87f = standard 5★, 6d893ac4 = Alpha trempé).
+ */
+const DIFFICULTY_RANK_IDS = {
+    // 3 étoiles – Normal (confirmé depuis quêtes officielles ★8)
+    "3": {
+        normal:   "14627cdc-9c1a-43e6-ab18-d01c45120a4b",
+        tempered: "6d893ac4-5f81-4850-b1ac-a2c23845cb15"
+    },
+    // 5 étoiles – Extrême (confirmé depuis quêtes officielles ★10 Alpha Suprême)
+    "5": {
+        normal:   "64938e94-d384-4567-8ed5-af922379600d",
+        tempered: "64938e94-d384-4567-8ed5-af922379600d"
+    }
+};
+
+/**
+ * Retourne le _DifficultyRankId complet pour un monstre donné.
+ * @param {number} questLevel      - Niveau de la quête (1–10).
+ * @param {number} stars           - Nombre d'étoiles roses (0, 3, 4, 5).
+ * @param {string} variant         - Variante du monstre : 'NONE', 'TEMPERED', 'ARCH_TEMPERED'.
+ * @returns {{ Name: string, Value: string }}
+ */
+function getDifficultyRankId(questLevel, stars, variant) {
+    const isTempered = variant === 'TEMPERED' || variant === 'ARCH_TEMPERED';
+    const key = String(stars);
+    const entry = DIFFICULTY_RANK_IDS[key] || DIFFICULTY_RANK_IDS["3"];
+    const uuid = isTempered ? entry.tempered : entry.normal;
+
+    // Le nom suit le format des quêtes officielles : ★{niveau}-{étoiles}
+    const starLabel = stars === 0 ? `★${questLevel}-0` : `★${questLevel}-${stars}`;
+
+    return { "Name": starLabel, "Value": uuid };
+}
+
+
 
 /**
  * Affiche un message d'alerte temporaire en haut de page.

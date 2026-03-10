@@ -212,7 +212,8 @@ select option { background: var(--surface2); }
     accent-color: var(--accent);
 }
 
-.sequential-option .hint {
+.sequential-option .hint,
+.hint {
     margin-top: 6px;
     font-size: 0.8em;
     color: var(--text-dim);
@@ -470,7 +471,6 @@ button.external:hover { background-color: var(--blue-h); }
     margin: 8px 0 2px;
     font-size: 0.8em;
     color: var(--red-h);
-}
     display: inline-block;
     font-size: 0.7em;
     background-color: var(--alpha);

@@ -51,7 +51,8 @@ function generateQuest() {
         const timeLimit     = parseInt(timeLimitEl.value) || 20;
         const rewardMoney   = parseInt(rewardMoneyEl.value) || 24000;
         const hrPoints      = parseInt(hrPointsEl.value) || 660;
-        const questLife     = parseInt(questLifeEl?.value) || 2;
+        const questLife        = parseInt(questLifeEl?.value) || 2;
+        const monsterDifficulty = parseInt(document.getElementById('monsterDifficulty')?.value ?? '3') || 3;
         const maxPlayers    = Math.min(4, Math.max(1, parseInt(document.getElementById('maxPlayers')?.value) || 4));
 
         // Configuration dépendante du niveau
@@ -98,12 +99,7 @@ function generateQuest() {
                     // En mode normal : 255 pour tous
                     "_AreaNo": sequential ? (index === 1 ? 255 : 1) : 255,
                     "_DifficultyAdjustRange": 0,
-                    "_DifficultyRankId": {
-                        "Name": `★${questLevel}`,
-                        "Value": (monster.variant === 'TEMPERED' || monster.variant === 'ARCH_TEMPERED')
-                            ? "6d893ac4-5f81-4850-b1ac-a2c23845cb15"
-                            : "aa92e87f-9a58-4a8f-8613-c00ddb9e763a"
-                    },
+                    "_DifficultyRankId": getDifficultyRankId(questLevel, monsterDifficulty, monster.variant),
                     "_EmID": monster.fixedId,
                     "_EventTargetID": "INVALID",
                     "_FixedSize": 100,
@@ -458,6 +454,13 @@ function updateQuestSummary() {
                 <div><strong>Client :</strong> ${msgEntry.MessageData[3].Text}</div>
                 <div><strong>ID :</strong> ${quest._DataList._MissionId._Value}</div>
                 <div><strong>Niveau :</strong> ★${quest._DataList._QuestLv}</div>
+                <div><strong>Puissance des monstres :</strong> ${(() => {
+                    const rankId = quest._BossZakoDataList._MainTargetDataList?.[0]?._DifficultyRankId;
+                    const nameMatch = rankId?.Name?.match(/★\d+-(\d+)/);
+                    const stars = nameMatch ? parseInt(nameMatch[1]) : 3;
+                    const labels = { 3: '⚔️ Normal (3 étoiles)', 5: '☠️ Extrême (5 étoiles)' };
+                    return labels[stars] ?? `${stars} étoile(s)`;
+                })()}</div>
                 <div><strong>Lieu :</strong> ${quest._DataList._Stage._Name}</div>
                 ${(quest._DataList._BossRushParams ?? []).some(p => p._PopType === 2)
                     ? '<div><strong>Mode :</strong> <span style="color:var(--accent)">⚔ Séquentiel</span></div>'
@@ -583,6 +586,29 @@ async function importQuest(input) {
         document.getElementById('maxPlayers').value       = data._OrderCondition?._MaxPlayerNum ?? 4;
         document.getElementById('minRC').value            = data._OrderCondition?._OrderHR      ?? 1;
         document.getElementById('questLevel').value       = data._QuestLv ?? 8;
+
+        // ── Difficulté des monstres ─────────────────────────
+        // Lire le DifficultyRankId du premier monstre principal pour déduire les étoiles
+        const firstTarget = raw._BossZakoDataList?._MainTargetDataList?.[0];
+        if (firstTarget?._DifficultyRankId?.Value) {
+            const uuid = firstTarget._DifficultyRankId.Value;
+            // Chercher dans notre table de correspondance
+            let detectedStars = 3; // défaut : normal
+            for (const [stars, entry] of Object.entries(DIFFICULTY_RANK_IDS)) {
+                if (entry.normal === uuid || entry.tempered === uuid) {
+                    detectedStars = parseInt(stars);
+                    break;
+                }
+            }
+            // Fallback : lire le nom (format ★N-X)
+            if (detectedStars === 3) {
+                const nameMatch = firstTarget._DifficultyRankId.Name?.match(/★\d+-(\d+)/);
+                if (nameMatch) detectedStars = parseInt(nameMatch[1]);
+            }
+            const diffEl = document.getElementById('monsterDifficulty');
+            if (diffEl) diffEl.value = String(detectedStars);
+        }
+
 
         // ── Lieu ────────────────────────────────────────────
         const stageVal  = String(data._Stage?._Value ?? '1181994624');

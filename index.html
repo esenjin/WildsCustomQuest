@@ -100,6 +100,15 @@
             </div>
 
             <div class="form-group">
+                <label for="monsterDifficulty">Puissance des monstres :</label>
+                <select id="monsterDifficulty">
+                    <option value="3" selected>⚔️ Normal (3 étoiles roses)</option>
+                    <option value="5">☠️ Extrême (5 étoiles roses)</option>
+                </select>
+                <p class="hint">Détermine la force intrinsèque des monstres, indépendamment du niveau de la quête.</p>
+            </div>
+
+            <div class="form-group">
                 <label for="questLocation">Lieu :</label>
                 <select id="questLocation" onchange="onLocationChange(this.value)">
                     <option value="-1226157568">Plaines venteuses</option>
