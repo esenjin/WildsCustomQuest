@@ -276,6 +276,13 @@ function readQuestDir(string $dir, bool $skipSubdirs = false): array {
             ];
         }
 
+        $bossRushParams = $data['_BossRushParams'] ?? [];
+        $isSequential   = is_array($bossRushParams) && array_reduce(
+            $bossRushParams,
+            fn($carry, $p) => $carry || (($p['_PopType'] ?? -1) === 2),
+            false
+        );
+
         $quests[] = [
             'filename'   => $filename,
             'id'         => $questId,
@@ -291,6 +298,7 @@ function readQuestDir(string $dir, bool $skipSubdirs = false): array {
             'minRC'      => (int)($data['_OrderCondition']['_OrderHR']      ?? 1),
             'stageVal'   => (int)($data['_Stage']['_Value']                 ?? 0),
             'stageName'  => $data['_Stage']['_Name'] ?? '',
+            'sequential' => $isSequential,
             'monsters'   => $monsters,
             'rewards'    => $ext['rewardItems'] ?? [],
             'addedAt'    => filemtime($path),

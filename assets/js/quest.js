@@ -446,7 +446,7 @@ function updateQuestSummary() {
                 <div><strong>ID :</strong> ${quest._DataList._MissionId._Value}</div>
                 <div><strong>Niveau :</strong> ★${quest._DataList._QuestLv}</div>
                 <div><strong>Lieu :</strong> ${quest._DataList._Stage._Name}</div>
-                ${quest._BossZakoDataList._MainTargetDataList.some(t => t._SpawnCondition)
+                ${(quest._DataList._BossRushParams ?? []).some(p => p._PopType === 2)
                     ? '<div><strong>Mode :</strong> <span style="color:var(--accent)">⚔ Séquentiel</span></div>'
                     : ''}
                 <div><strong>Limite de temps :</strong> ${quest._DataList._TimeLimit} minutes</div>

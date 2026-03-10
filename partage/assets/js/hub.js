@@ -259,6 +259,10 @@ function openModal(quest, isPending = false) {
     setEl('modalStars',   buildStars(quest.level));
     setEl('modalZone',    getZoneName(quest.stageVal, quest.stageName));
     setEl('modalTime',    quest.timeLimit + ' minutes');
+
+    // Badge séquentiel (visible uniquement si actif)
+    const seqEl = document.getElementById('modalSequential');
+    if (seqEl) seqEl.style.display = quest.sequential ? 'inline-flex' : 'none';
     setEl('modalMoney',   (quest.money ?? 0).toLocaleString('fr-FR') + ' z');
     setEl('modalRC',      `RC ${quest.minRC ?? 1} ou plus`);
     setEl('modalPlayers', `Jusqu'à ${quest.maxPlayers ?? 4} joueur(s)`);

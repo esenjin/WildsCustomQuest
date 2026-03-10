@@ -189,6 +189,11 @@ $isAdmin = !empty($_SESSION['admin']);
                         <div class="modal-info-cell-value accent" id="modalMoney"></div>
                     </div>
                 </div>
+                <div id="modalSequential" style="display:none; margin-top:10px;">
+                    <span style="display:inline-flex; align-items:center; gap:6px; padding:4px 10px; background:rgba(var(--accent-rgb,200,140,60),0.12); border:1px solid rgba(var(--accent-rgb,200,140,60),0.35); border-radius:6px; color:var(--accent); font-size:.88em; font-weight:600;">
+                        ⚔ Mode séquentiel — les monstres apparaissent l'un après l'autre
+                    </span>
+                </div>
             </div>
             <div class="modal-section">
                 <div class="modal-section-title">Conditions &amp; Échec</div>
