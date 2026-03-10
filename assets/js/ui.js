@@ -44,6 +44,27 @@ function onLocationChange(locationId) {
         seqOption.classList.remove('visible');
         document.getElementById('sequentialMonsters').checked = false;
     }
+
+    // Désélectionner les monstres incompatibles avec la nouvelle zone
+    const removedNames = [];
+    selectedMonsters = selectedMonsters.filter(m => {
+        if (FROZEN_PEAKS_ONLY_IDS.has(m.fixedId) && locationId !== FROZEN_PEAKS_LOCATION) {
+            removedNames.push(m.name?.[currentLanguage] ?? m.label);
+            return false;
+        }
+        return true;
+    });
+
+    if (removedNames.length > 0) {
+        showAlert(
+            `${removedNames.join(', ')} ${removedNames.length > 1 ? 'ont été retirés' : 'a été retiré'} — uniquement disponible${removedNames.length > 1 ? 's' : ''} en zone Cimes gelées.`,
+            'error'
+        );
+    }
+
+    // Rafraîchir la liste pour appliquer / lever les verrous visuels
+    populateMonsterList();
+    updateMonsterPreview();
 }
 
 /**

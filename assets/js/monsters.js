@@ -8,6 +8,15 @@
  */
 const ARCH_TEMPERED_IDS = new Set([-1547364608, 1467998976, 1657778432, 746996864, 1553456768]);
 
+/**
+ * IDs des monstres exclusifs aux Cimes gelées (st402).
+ * Jin Dahaad et Oméga Planetikos ne fonctionnent que dans cette zone.
+ */
+const FROZEN_PEAKS_ONLY_IDS = new Set([1553456768, 21849]);
+
+/** Valeur de l'ID de zone pour les Cimes gelées. */
+const FROZEN_PEAKS_LOCATION = '544388992';
+
 /** Nombre maximum d'exemplaires d'un même monstre autorisé par quête. */
 const MAX_MONSTER_COUNT = 5;
 
@@ -23,14 +32,24 @@ function populateMonsterList() {
 
     monsterList.innerHTML = '';
 
+    const currentLocation = document.getElementById('questLocation')?.value ?? '';
+
     enemiesData.forEach(monster => {
         // Ignorer les monstres sans nom dans la langue courante
         if (!monster.name || !monster.name[currentLanguage]) return;
+
+        // Vérifier si ce monstre est réservé aux Cimes gelées
+        const isFrozenOnly  = FROZEN_PEAKS_ONLY_IDS.has(monster.fixedId);
+        const isZoneInvalid = isFrozenOnly && currentLocation !== FROZEN_PEAKS_LOCATION;
 
         const card = document.createElement('div');
         card.className = 'monster-card';
         card.dataset.monsterId    = monster.fixedId;
         card.dataset.monsterLabel = monster.label;
+
+        if (isZoneInvalid) {
+            card.classList.add('zone-locked');
+        }
 
         // Récupérer la sélection existante pour ce monstre
         const existingSelection = selectedMonsters.find(m => m.fixedId === monster.fixedId);
@@ -62,6 +81,9 @@ function populateMonsterList() {
             <h3>${monster.name[currentLanguage]}</h3>
             <p style="margin:2px 0;font-size:0.85em;color:var(--text-dim);">ID : ${monster.fixedId}</p>
             <p style="margin:2px 0;font-size:0.85em;color:var(--text-dim);">Label : ${monster.label}</p>
+            ${isZoneInvalid ? `
+            <p class="zone-locked-msg">⛔ Uniquement disponible en zone <strong>Cimes gelées</strong></p>
+            ` : `
             <div class="monster-controls">
                 <label for="${cbAlphaId}" style="color:var(--alpha-h);">
                     <input type="checkbox" id="${cbAlphaId}" class="cb-alpha" ${isAlpha || isArchTempered ? 'checked' : ''}>
@@ -81,6 +103,7 @@ function populateMonsterList() {
                 <button class="count-btn count-plus" type="button">+</button>
                 <span class="count-label">/ ${MAX_MONSTER_COUNT}</span>
             </div>
+            `}
         `;
 
         /**
@@ -97,6 +120,9 @@ function populateMonsterList() {
 
         // Clic sur la carte (hors contrôles interactifs) : toggle de la sélection
         card.addEventListener('click', function (e) {
+            // Bloquer si le monstre est incompatible avec la zone sélectionnée
+            if (isZoneInvalid) return;
+
             // Ignorer si le clic vient d'un contrôle interactif
             if (e.target.type === 'checkbox'
                 || e.target.tagName === 'LABEL'
@@ -170,8 +196,8 @@ function populateMonsterList() {
             });
         }
 
-        // Bouton « − » : décrémenter le compteur (minimum 1)
-        card.querySelector('.count-minus').addEventListener('click', function (e) {
+        // Bouton « − » : décrémenter le compteur (minimum 1) — absent sur les cartes zone-locked
+        card.querySelector('.count-minus')?.addEventListener('click', function (e) {
             e.stopPropagation();
             const sel = selectedMonsters.find(m => m.fixedId === monster.fixedId);
             if (!sel) return;
@@ -182,8 +208,8 @@ function populateMonsterList() {
             }
         });
 
-        // Bouton « + » : incrémenter le compteur (maximum MAX_MONSTER_COUNT)
-        card.querySelector('.count-plus').addEventListener('click', function (e) {
+        // Bouton « + » : incrémenter le compteur (maximum MAX_MONSTER_COUNT) — absent sur les cartes zone-locked
+        card.querySelector('.count-plus')?.addEventListener('click', function (e) {
             e.stopPropagation();
             const sel = selectedMonsters.find(m => m.fixedId === monster.fixedId);
             if (!sel) return;

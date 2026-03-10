@@ -453,7 +453,24 @@ button.external:hover { background-color: var(--blue-h); }
 /* ── Badges de variantes monstres ─────────────────────────── */
 
 /* Badge Alpha (monstre trempé violet) */
-.badge-alpha {
+/* Carte monstre verrouillée par incompatibilité de zone */
+.monster-card.zone-locked {
+    opacity: 0.45;
+    cursor: not-allowed;
+    filter: grayscale(60%);
+}
+
+.monster-card.zone-locked:hover {
+    border-color: var(--border);
+    transform: none;
+    box-shadow: none;
+}
+
+.zone-locked-msg {
+    margin: 8px 0 2px;
+    font-size: 0.8em;
+    color: var(--red-h);
+}
     display: inline-block;
     font-size: 0.7em;
     background-color: var(--alpha);
