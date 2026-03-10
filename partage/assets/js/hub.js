@@ -314,7 +314,7 @@ function openModal(quest, isPending = false) {
                 const row = document.createElement('div');
                 row.className = 'reward-row';
                 const qty  = r.minCount === r.maxCount ? `×${r.minCount}` : `×${r.minCount}–${r.maxCount}`;
-                const prob = Math.round((r.probability ?? 0) * 100);
+                const prob = Math.round(r.probability ?? 0);
                 row.innerHTML = `
                     <span class="reward-name">${esc(r.itemName ?? '?')}</span>
                     <span class="reward-qty">${qty}</span>
