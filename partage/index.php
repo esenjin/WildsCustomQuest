@@ -90,6 +90,12 @@ $isAdmin = !empty($_SESSION['admin']);
                     </select>
                 </div>
                 <div class="filter-group">
+                    <label class="filter-label" for="filterZone">Zone</label>
+                    <select id="filterZone" class="filter-select">
+                        <option value="">Toutes</option>
+                    </select>
+                </div>
+                <div class="filter-group">
                     <label class="filter-label" for="filterPlayers">Joueurs</label>
                     <select id="filterPlayers" class="filter-select">
                         <option value="">Tous</option>

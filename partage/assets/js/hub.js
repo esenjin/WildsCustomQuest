@@ -61,6 +61,7 @@ async function loadQuests() {
         const data = await api('list_quests');
         allQuests = data.quests ?? [];
         populateMonsterFilter();
+        populateZoneFilter();
         applyFilters();
     } catch(e) {
         setGridState('error', 'Impossible de charger les quêtes : ' + e.message);
@@ -87,12 +88,30 @@ function populateMonsterFilter() {
     }
 }
 
-/* ══════════════════════════════════════════════════════════
-   FILTRES
-   ══════════════════════════════════════════════════════════ */
+/* ── Filtre Zone (peuplé dynamiquement) ─────────────────── */
+function populateZoneFilter() {
+    const sel = document.getElementById('filterZone');
+    if (!sel) return;
+    const seen = new Set();
+    for (const q of allQuests) {
+        const zoneName = getZoneName(q.stageVal, q.stageName);
+        if (q.stageName && !seen.has(q.stageName)) {
+            seen.add(q.stageName);
+            const o = document.createElement('option');
+            o.value = q.stageName;
+            o.textContent = zoneName;
+            sel.appendChild(o);
+        }
+    }
+    // Tri alphabétique des options (hors la première "Toutes")
+    const opts = [...sel.options].slice(1).sort((a, b) => a.text.localeCompare(b.text, 'fr'));
+    while (sel.options.length > 1) sel.remove(1);
+    opts.forEach(o => sel.appendChild(o));
+}
 function bindFilters() {
     document.getElementById('searchInput')?.addEventListener('input', debounce(applyFilters, 220));
     document.getElementById('filterLevel')?.addEventListener('change', applyFilters);
+    document.getElementById('filterZone')?.addEventListener('change', applyFilters);
     document.getElementById('filterMonster')?.addEventListener('change', applyFilters);
     document.getElementById('filterPlayers')?.addEventListener('change', applyFilters);
     document.getElementById('filterAuthor')?.addEventListener('input', debounce(applyFilters, 280));
@@ -105,6 +124,7 @@ function bindFilters() {
 function applyFilters() {
     const q       = (document.getElementById('searchInput')?.value ?? '').toLowerCase().trim();
     const level   = document.getElementById('filterLevel')?.value ?? '';
+    const zone    = document.getElementById('filterZone')?.value ?? '';
     const mId     = parseInt(document.getElementById('filterMonster')?.value ?? '0');
     const players = document.getElementById('filterPlayers')?.value ?? '';
     const author  = (document.getElementById('filterAuthor')?.value ?? '').toLowerCase().trim();
@@ -119,6 +139,7 @@ function applyFilters() {
             if (!hay.includes(q)) return false;
         }
         if (level   && String(quest.level)      !== level)   return false;
+        if (zone    && quest.stageName          !== zone)    return false;
         if (mId     && !(quest.monsters ?? []).some(m => m.fixedId === mId)) return false;
         if (players && String(quest.maxPlayers) !== players) return false;
         if (author  && !(quest.pseudo ?? '').toLowerCase().includes(author)) return false;
@@ -143,7 +164,7 @@ function resetFilters() {
     ['searchInput','filterAuthor','filterMaxDeaths','filterMaxTime'].forEach(id => {
         const el = document.getElementById(id); if (el) el.value = '';
     });
-    ['filterLevel','filterMonster','filterPlayers','sortSelect'].forEach(id => {
+    ['filterLevel','filterZone','filterMonster','filterPlayers','sortSelect'].forEach(id => {
         const el = document.getElementById(id); if (el) el.selectedIndex = 0;
     });
     applyFilters();
