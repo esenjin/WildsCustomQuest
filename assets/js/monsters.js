@@ -86,25 +86,38 @@ function populateMonsterList() {
 
         // Récupérer les étoiles stockées sur ce monstre (défaut : 5 pour les variants)
         card.innerHTML = `
-            <h3>${monster.name[currentLanguage]}</h3>
-            <p style="margin:2px 0;font-size:0.85em;color:var(--text-dim);">ID : ${monster.fixedId}</p>
-            <p style="margin:2px 0;font-size:0.85em;color:var(--text-dim);">Label : ${monster.label}</p>
-            ${isZoneInvalid ? `
-            <p class="zone-locked-msg">⛔ Uniquement disponible en zone <strong>Cimes gelées</strong></p>
-            ` : `
-            <div class="monster-controls">
-                <label for="${cbAlphaId}" style="color:var(--alpha-h);">
-                    <input type="checkbox" id="${cbAlphaId}" class="cb-alpha" ${isAlpha || isArchTempered ? 'checked' : ''}>
-                    Alpha
-                </label>
-                ${canBeAT
-                    ? `<label for="${cbATId}" style="color:var(--at-h);">
-                           <input type="checkbox" id="${cbATId}" class="cb-at" ${isArchTempered ? 'checked' : ''} ${isAlpha || isArchTempered ? '' : 'disabled'}>
-                           Alpha Suprême
-                       </label>`
-                    : ''
-                }
+            <div class="monster-card-inner">
+                <div class="monster-card-img-wrap">
+                    <img
+                        class="monster-card-img"
+                        src="partage/assets/img/monsters/${monster.fixedId}.png"
+                        alt="${monster.name[currentLanguage]}"
+                        loading="lazy"
+                        onerror="this.style.display='none';this.parentElement.classList.add('no-img')"
+                    >
+                </div>
+                <div class="monster-card-body">
+                    <h3>${monster.name[currentLanguage]}</h3>
+                    ${isZoneInvalid ? `
+                    <p class="zone-locked-msg">⛔ Uniquement disponible en zone <strong>Cimes gelées</strong></p>
+                    ` : `
+                    <div class="monster-controls">
+                        <label for="${cbAlphaId}" style="color:var(--alpha-h);">
+                            <input type="checkbox" id="${cbAlphaId}" class="cb-alpha" ${isAlpha || isArchTempered ? 'checked' : ''}>
+                            Alpha
+                        </label>
+                        ${canBeAT
+                            ? `<label for="${cbATId}" style="color:var(--at-h);">
+                                   <input type="checkbox" id="${cbATId}" class="cb-at" ${isArchTempered ? 'checked' : ''} ${isAlpha || isArchTempered ? '' : 'disabled'}>
+                                   Alpha Suprême
+                               </label>`
+                            : ''
+                        }
+                    </div>
+                    `}
+                </div>
             </div>
+            ${isZoneInvalid ? '' : `
             ${hasSpawnChoice ? `
             <div class="spawn-zone-control ${isSelected ? 'visible' : ''}" id="spawn-ctrl-${monster.fixedId}">
                 <label class="spawn-zone-label" for="spawn-${monster.fixedId}">Zone de départ :</label>

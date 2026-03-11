@@ -286,7 +286,7 @@ function openModal(quest, isPending = false) {
     if (seqEl) seqEl.style.display = quest.sequential ? 'inline-flex' : 'none';
     setEl('modalMoney', (quest.money ?? 0).toLocaleString('fr-FR') + ' z');
 
-    const starsLabels = { 3: '⚔️ Normal (3 étoiles)', 5: '☠️ Extrême (5 étoiles)' };
+    const starsLabels = { 3: '⚔️ Normal (3✦)', 5: '☠️ Extrême (5✦)' };
     setEl('modalMonsterStars', starsLabels[quest.monsterStars] ?? `${quest.monsterStars ?? '?'} étoile(s)`);
     setEl('modalRC',      `RC ${quest.minRC ?? 1} ou plus`);
     setEl('modalPlayers', `Jusqu'à ${quest.maxPlayers ?? 4} joueur(s)`);

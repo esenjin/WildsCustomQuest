@@ -70,7 +70,7 @@ body {
 .hub-header-left { flex: 1; min-width: 200px; }
 
 .hub-breadcrumb {
-    font-size: 0.82em;
+    font-size: 0.9em;
     color: var(--text-dim);
     margin-bottom: 6px;
 }
