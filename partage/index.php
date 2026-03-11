@@ -339,6 +339,12 @@ $displayName = $_SESSION['displayName'] ?? $_SESSION['login'] ?? '';
         </div>
         <div class="modal-body">
             <div class="form-group">
+                <label class="form-label" for="profileNewLogin">Identifiant <span style="opacity:.6;font-weight:400">(laisser vide = inchangé)</span></label>
+                <input type="text" id="profileNewLogin" class="form-input"
+                       placeholder="<?= htmlspecialchars($_SESSION['login']) ?>" maxlength="30" autocomplete="off">
+                <div style="font-size:.8em;color:var(--text-muted);margin-top:4px">Lettres, chiffres, - et _ (2–30 car.)</div>
+            </div>
+            <div class="form-group">
                 <label class="form-label" for="profileDisplayName">Nom d'affichage</label>
                 <input type="text" id="profileDisplayName" class="form-input"
                        value="<?= htmlspecialchars($displayName) ?>" maxlength="30" autocomplete="off">

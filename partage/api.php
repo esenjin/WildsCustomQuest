@@ -291,15 +291,31 @@ function actionUpdateProfile(): void {
     requireAuth();
 
     $currentLogin = $_SESSION['login'];
+    $newLogin     = trim($_POST['newLogin'] ?? '');
     $newDisplay   = trim($_POST['displayName'] ?? '');
     $newPass      = $_POST['password'] ?? '';
     $currentPass  = $_POST['currentPassword'] ?? '';
 
     if ($currentPass === '') fail('Le mot de passe actuel est requis.');
 
+    // Validation du nouvel identifiant si fourni
+    if ($newLogin !== '') {
+        if (!preg_match('/^[a-zA-Z0-9_-]{2,30}$/', $newLogin))
+            fail('Identifiant invalide (2–30 caractères alphanumériques, - ou _).');
+        if ($newLogin === $currentLogin) $newLogin = ''; // inchangé, on ignore
+    }
+
     $users    = loadUsers();
     $newUsers = [];
     $found    = false;
+
+    // Vérifier que le nouvel identifiant n'est pas déjà pris
+    if ($newLogin !== '') {
+        foreach ($users as $u) {
+            if ($u['login'] === $newLogin)
+                fail('Cet identifiant est déjà utilisé.');
+        }
+    }
 
     // Reconstruction du tableau sans références — copie de chaque entrée
     foreach ($users as $u) {
@@ -309,6 +325,7 @@ function actionUpdateProfile(): void {
             if (!password_verify($currentPass, $u['password']))
                 fail('Mot de passe actuel incorrect.');
 
+            if ($newLogin !== '')    $u['login']       = $newLogin;
             if ($newDisplay !== '') {
                 if (strlen($newDisplay) > 30) fail('Nom d\'affichage trop long (30 max).');
                 $u['displayName'] = $newDisplay;
@@ -326,13 +343,13 @@ function actionUpdateProfile(): void {
     // On sauvegarde d'abord, on met à jour la session ensuite
     saveUsers($newUsers);
 
-    if ($newDisplay !== '') {
-        $_SESSION['displayName'] = $newDisplay;
-    }
+    if ($newLogin !== '')   $_SESSION['login']       = $newLogin;
+    if ($newDisplay !== '') $_SESSION['displayName'] = $newDisplay;
 
     ok([
         'message'     => 'Profil mis à jour.',
-        'displayName' => $_SESSION['displayName'] ?? $currentLogin,
+        'login'       => $_SESSION['login'],
+        'displayName' => $_SESSION['displayName'] ?? $_SESSION['login'],
     ]);
 }
 

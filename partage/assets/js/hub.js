@@ -706,6 +706,7 @@ async function saveProfile() {
     errEl.style.display = 'none';
     okEl.style.display  = 'none';
 
+    const newLogin      = document.getElementById('profileNewLogin')?.value.trim() ?? '';
     const displayName   = document.getElementById('profileDisplayName')?.value.trim() ?? '';
     const newPass       = document.getElementById('profileNewPass')?.value ?? '';
     const currentPass   = document.getElementById('profileCurrentPass')?.value ?? '';
@@ -717,17 +718,27 @@ async function saveProfile() {
     }
 
     try {
-        const res = await api('update_profile', { displayName, password: newPass, currentPassword: currentPass });
+        const res = await api('update_profile', {
+            newLogin,
+            displayName,
+            password: newPass,
+            currentPassword: currentPass,
+        });
         okEl.textContent = res.message ?? 'Profil mis à jour.';
         okEl.style.display = 'block';
 
-        // Mettre à jour le bouton profil avec le nouveau displayName
+        // Mettre à jour le bouton profil
         if (res.displayName) {
             const btn = document.getElementById('btnProfile');
             if (btn) btn.textContent = '👤 ' + res.displayName;
         }
+        // Si l'identifiant a changé, on recharge pour que PHP reflète la nouvelle session
+        if (newLogin !== '') {
+            setTimeout(() => window.location.reload(), 800);
+        }
         document.getElementById('profileCurrentPass').value = '';
         document.getElementById('profileNewPass').value     = '';
+        document.getElementById('profileNewLogin').value    = '';
     } catch(e) {
         errEl.textContent = e.message;
         errEl.style.display = 'block';
