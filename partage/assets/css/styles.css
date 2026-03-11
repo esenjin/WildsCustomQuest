@@ -361,6 +361,165 @@ body {
 
 .pending-actions { display: flex; gap: 8px; flex-shrink: 0; flex-wrap: wrap; }
 
+/* Onglet modérateurs */
+.moderator-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 4px 0 24px;
+}
+
+.moderator-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    background: var(--card-bg, rgba(255,255,255,.04));
+    border: 1px solid var(--border, rgba(255,255,255,.08));
+    border-radius: 10px;
+    padding: 14px 18px;
+    transition: border-color .18s;
+}
+.moderator-row:hover {
+    border-color: rgba(255,255,255,.16);
+}
+
+.moderator-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+
+.moderator-name {
+    font-weight: 600;
+    font-size: 1em;
+    color: var(--text, #e8e0d5);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.moderator-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.moderator-login {
+    font-size: .8em;
+    opacity: .55;
+    background: rgba(255,255,255,.05);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-family: monospace;
+}
+
+.moderator-role-badge {
+    font-size: .78em;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 20px;
+    letter-spacing: .02em;
+}
+.role-admin {
+    background: rgba(200, 140, 60, .15);
+    border: 1px solid rgba(200, 140, 60, .35);
+    color: var(--accent, #c8882a);
+}
+.role-modo {
+    background: rgba(45, 111, 181, .15);
+    border: 1px solid rgba(45, 111, 181, .35);
+    color: #5b9fd6;
+}
+
+.moderator-actions {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+/* Onglet historique des actions */
+.logs-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 4px 0 24px;
+}
+
+.log-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: var(--card-bg, rgba(255,255,255,.04));
+    border: 1px solid var(--border, rgba(255,255,255,.08));
+    border-radius: 8px;
+    padding: 10px 16px;
+    flex-wrap: wrap;
+}
+
+.log-action-badge {
+    flex-shrink: 0;
+    font-size: .78em;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 20px;
+    letter-spacing: .03em;
+    min-width: 100px;
+    text-align: center;
+}
+.log-validate {
+    background: rgba(42, 138, 74, .15);
+    border: 1px solid rgba(42, 138, 74, .35);
+    color: #5fbe85;
+}
+.log-refuse {
+    background: rgba(180, 50, 50, .15);
+    border: 1px solid rgba(180, 50, 50, .35);
+    color: #e07070;
+}
+.log-delete {
+    background: rgba(200, 100, 30, .15);
+    border: 1px solid rgba(200, 100, 30, .35);
+    color: #e0a060;
+}
+
+.log-info {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    flex-wrap: wrap;
+}
+
+.log-user {
+    font-weight: 600;
+    font-size: .9em;
+    color: var(--text, #e8e0d5);
+    white-space: nowrap;
+}
+
+.log-filename {
+    font-size: .8em;
+    color: var(--text-muted, rgba(232,224,213,.45));
+    font-family: monospace;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 280px;
+}
+
+.log-date {
+    flex-shrink: 0;
+    font-size: .78em;
+    color: var(--text-muted, rgba(232,224,213,.45));
+    white-space: nowrap;
+}
+
 /* ══════════════════════════════════════════════════════════
    MODAL
    ══════════════════════════════════════════════════════════ */
@@ -659,3 +818,11 @@ body {
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--border-h); }
+
+/* Animation fade-out (réutilisée depuis pending-row) */
+.row-fade-out {
+    animation: rowFadeOut .35s ease forwards;
+}
+@keyframes rowFadeOut {
+    to { opacity: 0; transform: translateX(20px); }
+}
