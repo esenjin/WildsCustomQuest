@@ -49,7 +49,7 @@ $isAdmin = !empty($_SESSION['admin']);
         <button class="main-tab active" data-tab="quests">Quêtes communautaires</button>
         <?php if ($isAdmin): ?>
             <button class="main-tab" data-tab="pending">
-                En attente
+                Quêtes en attente
                 <span class="pending-badge" id="pendingBadge" style="display:none"></span>
             </button>
         <?php endif; ?>
