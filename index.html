@@ -132,7 +132,7 @@
 
             <div class="form-group">
                 <label for="timeLimit">Limite de temps (minutes) :</label>
-                <input type="number" id="timeLimit" min="5" max="50" value="20">
+                <input type="number" id="timeLimit" min="5" value="20">
             </div>
 
             <div class="form-group">
@@ -141,18 +141,23 @@
             </div>
 
             <div class="form-group">
-                <label for="hrPoints">Points de RC :</label>
+                <label for="hrPoints">Points de RC (~2400/1 niveau):</label>
                 <input type="number" id="hrPoints" min="100" step="10" value="660">
             </div>
 
             <div class="form-group">
                 <label for="questLife">Nombre de morts autorisées :</label>
-                <input type="number" id="questLife" min="1" max="9" value="2">
+                <input type="number" id="questLife" min="1" value="2">
             </div>
 
             <div class="form-group">
                 <label for="maxPlayers">Nombre de joueurs maximum :</label>
-                <input type="number" id="maxPlayers" min="1" max="4" value="4">
+                <select id="maxPlayers">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4" selected>4</option>
+                </select>
             </div>
 
             <div class="form-group">
