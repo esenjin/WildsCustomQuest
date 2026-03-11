@@ -18,8 +18,12 @@ Le mod **[Custom Quest Loader](https://www.nexusmods.com/monsterhunterwilds/mods
 ### Générateur de quêtes (`/`)
 Interface web pour créer des quêtes personnalisées : choix des monstres, récompenses, paramètres, export ZIP.
 
+![capturegenerateur](https://concepts.esenjin.xyz/cyla/fichiers/69b1ba6f86d0b_1773255279.png)
+
 ### Hub communautaire (`/partage/`)
 Plateforme pour soumettre et parcourir les quêtes partagées par la communauté. Les soumissions sont vérifiées automatiquement puis validées par un modérateur avant publication.
+
+![capturehub](https://concepts.esenjin.xyz/cyla/fichiers/69b1ba6f93e0b_1773255279.png)
 
 ---
 
