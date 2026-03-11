@@ -40,6 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (IS_ADMIN) {
             bindAdmin();
             loadModerators();
+            loadLogs();
         }
     }
 });
@@ -377,6 +378,10 @@ function closeModal() {
 function bindAdmin() {
     document.getElementById('btnRefreshPending')?.addEventListener('click', loadPending);
     document.getElementById('btnNewModo')?.addEventListener('click', () => openModoModal(null));
+    document.getElementById('btnRefreshLogs')?.addEventListener('click', loadLogs);
+    document.getElementById('btnClearLogs')?.addEventListener('click', clearLogs);
+    document.getElementById('logsFilterUser')?.addEventListener('change', renderLogs);
+    document.getElementById('logsFilterAction')?.addEventListener('change', renderLogs);
 }
 
 async function loadPending() {
@@ -685,6 +690,110 @@ async function deleteModerator(login, rowEl) {
                     '<div class="state-message"><span class="state-icon">👤</span>Aucun utilisateur.</div>';
             }
         }, 400);
+    } catch(e) {
+        showToast('Erreur : ' + e.message, 'error');
+    }
+}
+
+/* ══════════════════════════════════════════════════════════
+   LOGS
+   ══════════════════════════════════════════════════════════ */
+
+let allLogs = [];
+
+async function loadLogs() {
+    const list = document.getElementById('logsList');
+    if (!list) return;
+    list.innerHTML = '<div class="state-message"><span class="spinner"></span>Chargement…</div>';
+    try {
+        const data = await api('list_logs');
+        allLogs = data.logs ?? [];
+        populateLogsFilters();
+        renderLogs();
+    } catch(e) {
+        list.innerHTML = `<div class="state-message">Erreur : ${esc(e.message)}</div>`;
+    }
+}
+
+function populateLogsFilters() {
+    const sel = document.getElementById('logsFilterUser');
+    if (!sel) return;
+    // Conserver la sélection courante
+    const current = sel.value;
+    // Vider sauf la première option
+    while (sel.options.length > 1) sel.remove(1);
+    const seen = new Set();
+    for (const l of allLogs) {
+        if (!seen.has(l.login)) {
+            seen.add(l.login);
+            const o = document.createElement('option');
+            o.value = l.login;
+            o.textContent = l.displayName || l.login;
+            sel.appendChild(o);
+        }
+    }
+    sel.value = current;
+}
+
+function renderLogs() {
+    const list        = document.getElementById('logsList');
+    if (!list) return;
+    const filterUser   = document.getElementById('logsFilterUser')?.value   ?? '';
+    const filterAction = document.getElementById('logsFilterAction')?.value ?? '';
+
+    const filtered = allLogs.filter(l => {
+        if (filterUser   && l.login  !== filterUser)   return false;
+        if (filterAction && l.action !== filterAction) return false;
+        return true;
+    });
+
+    if (!filtered.length) {
+        list.innerHTML = '<div class="state-message"><span class="state-icon">📋</span>Aucun log à afficher.</div>';
+        return;
+    }
+
+    list.innerHTML = '';
+    filtered.forEach(l => list.appendChild(buildLogRow(l)));
+}
+
+const LOG_META = {
+    validate: { label: 'Validation',  icon: '✓', cls: 'log-validate' },
+    refuse:   { label: 'Refus',       icon: '✗', cls: 'log-refuse'   },
+    delete:   { label: 'Suppression', icon: '🗑', cls: 'log-delete'   },
+};
+
+function buildLogRow(log) {
+    const row  = document.createElement('div');
+    row.className = 'log-row';
+
+    const meta = LOG_META[log.action] ?? { label: log.action, icon: '?', cls: '' };
+    const date = new Date(log.at * 1000);
+    const dateStr = date.toLocaleDateString('fr-FR', {
+        day: '2-digit', month: '2-digit', year: 'numeric',
+        hour: '2-digit', minute: '2-digit',
+    });
+
+    row.innerHTML = `
+        <span class="log-action-badge ${meta.cls}">${meta.icon} ${meta.label}</span>
+        <div class="log-info">
+            <span class="log-user">${esc(log.displayName || log.login)}</span>
+            <span class="log-filename">${esc(log.filename)}</span>
+        </div>
+        <span class="log-date">${dateStr}</span>`;
+    return row;
+}
+
+async function clearLogs() {
+    const confirmed = await showConfirm(
+        'Vider l\'historique',
+        'Supprimer <strong>tous les logs</strong> ? Cette action est irréversible.'
+    );
+    if (!confirmed) return;
+    try {
+        await api('clear_logs');
+        allLogs = [];
+        renderLogs();
+        showToast('Historique vidé.', 'success');
     } catch(e) {
         showToast('Erreur : ' + e.message, 'error');
     }

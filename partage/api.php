@@ -139,6 +139,8 @@ match ($action) {
     'update_moderator'  => actionUpdateModerator(),
     'delete_moderator'  => actionDeleteModerator(),
     'update_profile'    => actionUpdateProfile(),
+    'list_logs'         => actionListLogs(),
+    'clear_logs'        => actionClearLogs(),
     'check_duplicate'   => actionCheckDuplicate(),
     'check_monsters'    => actionCheckMonsters(),
     default             => fail('Action inconnue.', 400),
@@ -369,8 +371,73 @@ function actionUpdateProfile(): void {
 }
 
 /* ══════════════════════════════════════════════════════════
-   UPLOAD
+   LOGS DE MODÉRATION
    ══════════════════════════════════════════════════════════ */
+
+/**
+ * Ajoute une entrée dans logs.json.
+ * @param string $action   'validate' | 'refuse' | 'delete'
+ * @param string $filename Nom du fichier de quête concerné
+ */
+function appendLog(string $action, string $filename): void {
+    // Extraire questId depuis le nom de fichier (quest_<id>_<pseudo>.zip)
+    $questId = null;
+    if (preg_match('/^quest_(\d+)_/', $filename, $m)) {
+        $questId = (int)$m[1];
+    }
+
+    $entry = [
+        'at'          => time(),
+        'login'       => $_SESSION['login']       ?? '?',
+        'displayName' => $_SESSION['displayName'] ?? $_SESSION['login'] ?? '?',
+        'action'      => $action,
+        'filename'    => $filename,
+        'questId'     => $questId,
+    ];
+
+    // Lecture avec verrou pour éviter les race conditions
+    $fp = fopen(LOGS_FILE, 'c+');
+    if (!$fp) return; // silencieux — le log ne doit jamais bloquer une action
+    flock($fp, LOCK_EX);
+
+    $raw  = stream_get_contents($fp);
+    $logs = [];
+    if ($raw !== '') {
+        $decoded = json_decode($raw, true);
+        if (is_array($decoded)) $logs = $decoded;
+    }
+
+    array_unshift($logs, $entry); // entrées les plus récentes en premier
+
+    // Limiter à 500 entrées pour ne pas faire grossir le fichier indéfiniment
+    if (count($logs) > 500) $logs = array_slice($logs, 0, 500);
+
+    ftruncate($fp, 0);
+    rewind($fp);
+    fwrite($fp, json_encode($logs, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
+    flock($fp, LOCK_UN);
+    fclose($fp);
+}
+
+function actionListLogs(): void {
+    requireAdmin();
+
+    if (!file_exists(LOGS_FILE)) {
+        ok(['logs' => []]);
+    }
+
+    $raw  = file_get_contents(LOGS_FILE);
+    $logs = $raw ? (json_decode($raw, true) ?? []) : [];
+    ok(['logs' => $logs]);
+}
+
+function actionClearLogs(): void {
+    requireAdmin();
+    if (file_exists(LOGS_FILE)) unlink(LOGS_FILE);
+    ok(['message' => 'Historique vidé.']);
+}
+
+
 
 function actionUpload(): void {
     $pseudo = trim($_POST['pseudo'] ?? '');
@@ -445,6 +512,7 @@ function actionAdminValidate(): void {
     if (!file_exists($src)) fail('Fichier introuvable en attente.');
     if (!rename($src, $dst)) fail('Impossible de déplacer le fichier.');
 
+    appendLog('validate', $filename);
     ok(['message' => "Quête « {$filename} » validée."]);
 }
 
@@ -457,6 +525,7 @@ function actionAdminRefuse(): void {
     if (!file_exists($path)) fail('Fichier introuvable.');
     unlink($path);
 
+    appendLog('refuse', $filename);
     ok(['message' => "Quête « {$filename} » refusée et supprimée."]);
 }
 
@@ -472,6 +541,7 @@ function actionAdminDelete(): void {
     if (!file_exists($path)) fail('Fichier introuvable.');
     unlink($path);
 
+    appendLog('delete', $filename);
     ok(['message' => "Quête « {$filename} » supprimée."]);
 }
 

@@ -9,6 +9,11 @@
 // Structure : [{ "login": "...", "password": "<bcrypt>", "role": "admin"|"modo", "displayName": "..." }]
 define('USERS_FILE', __DIR__ . '/users.json');
 
+/* ── Fichier de logs de modération ───────────────────────── */
+// logs.json est créé automatiquement à la première action loggée
+// Structure : [{ "at": <timestamp>, "login": "...", "displayName": "...", "action": "...", "filename": "...", "questId": ... }]
+define('LOGS_FILE', __DIR__ . '/logs.json');
+
 /* ── Compte admin par défaut (premier lancement uniquement) ─ */
 // Ces valeurs ne servent qu'à initialiser users.json s'il n'existe pas encore.
 // Une fois créé, modifiez votre profil via l'interface.

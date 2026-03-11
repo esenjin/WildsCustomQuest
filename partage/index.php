@@ -60,6 +60,7 @@ $displayName = $_SESSION['displayName'] ?? $_SESSION['login'] ?? '';
         <?php endif; ?>
         <?php if ($isAdmin): ?>
             <button class="main-tab" data-tab="moderators">Gestion des modérateurs</button>
+            <button class="main-tab" data-tab="logs">Historique des actions</button>
         <?php endif; ?>
     </div>
 
@@ -175,6 +176,33 @@ $displayName = $_SESSION['displayName'] ?? $_SESSION['login'] ?? '';
             <button class="btn btn-primary btn-sm" id="btnNewModo">＋ Nouveau modérateur</button>
         </div>
         <div id="moderatorList" class="moderator-list">
+            <div class="state-message"><span class="spinner"></span>Chargement…</div>
+        </div>
+    </div>
+    <?php endif; ?>
+
+    <?php if ($isAdmin): ?>
+    <!-- ══════════════════════════════════════════════════════
+         ONGLET : HISTORIQUE DES LOGS (admin uniquement)
+         ══════════════════════════════════════════════════════ -->
+    <div class="tab-panel" id="tab-logs">
+        <div class="admin-panel-header">
+            <h2 class="admin-panel-title">📋 Historique des actions</h2>
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+                <select id="logsFilterUser" class="filter-select" style="min-width:140px">
+                    <option value="">Tous les utilisateurs</option>
+                </select>
+                <select id="logsFilterAction" class="filter-select" style="min-width:150px">
+                    <option value="">Toutes les actions</option>
+                    <option value="validate">Validation</option>
+                    <option value="refuse">Refus</option>
+                    <option value="delete">Suppression</option>
+                </select>
+                <button class="btn btn-secondary btn-sm" id="btnRefreshLogs">↺ Actualiser</button>
+                <button class="btn btn-danger btn-sm" id="btnClearLogs">🗑 Vider</button>
+            </div>
+        </div>
+        <div id="logsList" class="logs-list">
             <div class="state-message"><span class="spinner"></span>Chargement…</div>
         </div>
     </div>
