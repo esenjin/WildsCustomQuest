@@ -89,6 +89,17 @@ input:focus, select:focus, textarea:focus {
 
 select option { background: var(--surface2); }
 
+/* ── Message de succès (formulaire profil) ───────────────── */
+.login-success {
+    background: rgba(42, 138, 74, 0.12);
+    border: 1px solid rgba(42, 138, 74, 0.35);
+    color: #5fbe85;
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: .9em;
+    margin-top: 8px;
+}
+
 /* ── Grille de cartes monstres ────────────────────────────── */
 .grid {
     display: grid;
@@ -347,6 +358,87 @@ button.external:hover { background-color: var(--blue-h); }
 .tab-content { display: none; }
 .tab-content.active { display: block; }
 
+/* Onglet modérateurs */
+.moderator-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 4px 0 24px;
+}
+
+.moderator-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    background: var(--card-bg, rgba(255,255,255,.04));
+    border: 1px solid var(--border, rgba(255,255,255,.08));
+    border-radius: 10px;
+    padding: 14px 18px;
+    transition: border-color .18s;
+}
+.moderator-row:hover {
+    border-color: rgba(255,255,255,.16);
+}
+
+.moderator-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+
+.moderator-name {
+    font-weight: 600;
+    font-size: 1em;
+    color: var(--text, #e8e0d5);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.moderator-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.moderator-login {
+    font-size: .8em;
+    opacity: .55;
+    background: rgba(255,255,255,.05);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-family: monospace;
+}
+
+.moderator-role-badge {
+    font-size: .78em;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 20px;
+    letter-spacing: .02em;
+}
+.role-admin {
+    background: rgba(200, 140, 60, .15);
+    border: 1px solid rgba(200, 140, 60, .35);
+    color: var(--accent, #c8882a);
+}
+.role-modo {
+    background: rgba(45, 111, 181, .15);
+    border: 1px solid rgba(45, 111, 181, .35);
+    color: #5b9fd6;
+}
+
+.moderator-actions {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
 /* ── Sélecteur de langue ──────────────────────────────────── */
 .language-selector {
     position: absolute;
@@ -539,4 +631,12 @@ button.external:hover { background-color: var(--blue-h); }
     margin-left: 5px;
     vertical-align: middle;
     font-weight: bold;
+}
+
+/* Animation fade-out (réutilisée depuis pending-row) */
+.row-fade-out {
+    animation: rowFadeOut .35s ease forwards;
+}
+@keyframes rowFadeOut {
+    to { opacity: 0; transform: translateX(20px); }
 }

@@ -1,13 +1,17 @@
 <?php
 /* ============================================================
    index.php – Hub de partage de quêtes MHWilds
-   Page principale : liste des quêtes + interface admin
+   Page principale : liste des quêtes + interface admin/modo
    ============================================================ */
 
 require_once __DIR__ . '/config.php';
 session_name(SESSION_NAME);
 session_start();
-$isAdmin = !empty($_SESSION['admin']);
+
+$isAuth  = !empty($_SESSION['login']);
+$isAdmin = $isAuth && ($_SESSION['role'] ?? '') === 'admin';
+$role    = $_SESSION['role'] ?? '';
+$displayName = $_SESSION['displayName'] ?? $_SESSION['login'] ?? '';
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -17,7 +21,7 @@ $isAdmin = !empty($_SESSION['admin']);
     <title>Hub de quêtes – Monster Hunter Wilds</title>
     <link rel="icon" type="image/x-icon" href="../favicon.ico">
     <meta name="description" content="Regarde et télécharge les quêtes personnalisées créées par la communauté pour Monster Hunter Wilds. Partage ta propre quête et découvre celles des autres chasseurs !">
-	<meta property="og:image" content="../logo.png">
+    <meta property="og:image" content="../logo.png">
     <link rel="stylesheet" href="assets/css/styles.css">
 </head>
 <body>
@@ -34,8 +38,9 @@ $isAdmin = !empty($_SESSION['admin']);
             <p class="hub-subtitle">Quêtes personnalisées partagées par la communauté</p>
         </div>
         <div class="hub-header-actions">
-            <?php if ($isAdmin): ?>
-                <span class="admin-badge">⚙ Admin</span>
+            <?php if ($isAuth): ?>
+                <span class="admin-badge"><?= $isAdmin ? '⚙ Admin' : '🛡 Modo' ?></span>
+                <button class="btn btn-secondary btn-sm" id="btnProfile" title="Mon profil">👤 <?= htmlspecialchars($displayName) ?></button>
                 <button class="btn btn-secondary btn-sm" id="btnLogout">Déconnexion</button>
             <?php else: ?>
                 <button class="btn btn-ghost btn-sm" id="btnShowLogin" title="Accès administrateur">⚙</button>
@@ -47,11 +52,14 @@ $isAdmin = !empty($_SESSION['admin']);
     <!-- ── Tabs principaux ─────────────────────────────────── -->
     <div class="main-tabs">
         <button class="main-tab active" data-tab="quests">Quêtes communautaires</button>
-        <?php if ($isAdmin): ?>
+        <?php if ($isAuth): ?>
             <button class="main-tab" data-tab="pending">
                 Quêtes en attente
                 <span class="pending-badge" id="pendingBadge" style="display:none"></span>
             </button>
+        <?php endif; ?>
+        <?php if ($isAdmin): ?>
+            <button class="main-tab" data-tab="moderators">Modérateurs</button>
         <?php endif; ?>
     </div>
 
@@ -142,9 +150,9 @@ $isAdmin = !empty($_SESSION['admin']);
 
     </div><!-- /tab-quests -->
 
-    <?php if ($isAdmin): ?>
+    <?php if ($isAuth): ?>
     <!-- ══════════════════════════════════════════════════════
-         ONGLET ADMIN : EN ATTENTE
+         ONGLET : EN ATTENTE
          ══════════════════════════════════════════════════════ -->
     <div class="tab-panel" id="tab-pending">
         <div class="admin-panel-header">
@@ -152,6 +160,21 @@ $isAdmin = !empty($_SESSION['admin']);
             <button class="btn btn-secondary btn-sm" id="btnRefreshPending">↺ Actualiser</button>
         </div>
         <div id="pendingList" class="pending-list">
+            <div class="state-message"><span class="spinner"></span>Chargement…</div>
+        </div>
+    </div>
+    <?php endif; ?>
+
+    <?php if ($isAdmin): ?>
+    <!-- ══════════════════════════════════════════════════════
+         ONGLET : MODÉRATEURS (admin uniquement)
+         ══════════════════════════════════════════════════════ -->
+    <div class="tab-panel" id="tab-moderators">
+        <div class="admin-panel-header">
+            <h2 class="admin-panel-title">🛡 Gestion des modérateurs</h2>
+            <button class="btn btn-primary btn-sm" id="btnNewModo">＋ Nouveau modérateur</button>
+        </div>
+        <div id="moderatorList" class="moderator-list">
             <div class="state-message"><span class="spinner"></span>Chargement…</div>
         </div>
     </div>
@@ -252,7 +275,7 @@ $isAdmin = !empty($_SESSION['admin']);
                 <span>Proposée par <span class="modal-author-name" id="modalAuthor"></span></span>
                 <a id="modalDownload" href="#" class="btn btn-primary" download>⬇ Télécharger</a>
             </div>
-            <?php if ($isAdmin): ?>
+            <?php if ($isAuth): ?>
             <div class="modal-admin-actions" id="modalAdminActions" style="display:none">
                 <hr style="border-color:var(--border);margin:0">
                 <div style="display:flex;gap:10px;padding-top:4px;flex-wrap:wrap">
@@ -265,9 +288,9 @@ $isAdmin = !empty($_SESSION['admin']);
 </div>
 
 <!-- ════════════════════════════════════════════════════════
-     MODAL LOGIN ADMIN
+     MODAL LOGIN
      ════════════════════════════════════════════════════════ -->
-<?php if (!$isAdmin): ?>
+<?php if (!$isAuth): ?>
 <div id="loginOverlay" class="modal-overlay" role="dialog" aria-modal="true">
     <div class="modal" style="max-width:380px">
         <div class="modal-banner" style="background:linear-gradient(90deg,var(--blue),var(--blue-h))"></div>
@@ -296,9 +319,95 @@ $isAdmin = !empty($_SESSION['admin']);
 </div>
 <?php endif; ?>
 
+<!-- ════════════════════════════════════════════════════════
+     MODAL PROFIL
+     ════════════════════════════════════════════════════════ -->
+<?php if ($isAuth): ?>
+<div id="profileOverlay" class="modal-overlay" role="dialog" aria-modal="true">
+    <div class="modal" style="max-width:420px">
+        <div class="modal-banner" style="background:linear-gradient(90deg,var(--blue),var(--blue-h))"></div>
+        <div class="modal-header">
+            <div class="modal-header-left">
+                <div class="modal-type-badge">👤 Mon profil</div>
+                <h2 class="modal-title"><?= htmlspecialchars($displayName) ?></h2>
+                <div style="font-size:.85em;color:var(--text-muted);margin-top:2px">
+                    <?= $isAdmin ? '⚙ Administrateur' : '🛡 Modérateur' ?>
+                    &nbsp;·&nbsp; <code style="font-size:.9em;opacity:.7"><?= htmlspecialchars($_SESSION['login']) ?></code>
+                </div>
+            </div>
+            <button class="modal-close" id="profileClose">✕</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label class="form-label" for="profileDisplayName">Nom d'affichage</label>
+                <input type="text" id="profileDisplayName" class="form-input"
+                       value="<?= htmlspecialchars($displayName) ?>" maxlength="30" autocomplete="off">
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="profileNewPass">Nouveau mot de passe <span style="opacity:.6;font-weight:400">(laisser vide = inchangé)</span></label>
+                <input type="password" id="profileNewPass" class="form-input" autocomplete="new-password">
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="profileCurrentPass">Mot de passe actuel <span style="color:var(--red);font-size:.85em">*</span></label>
+                <input type="password" id="profileCurrentPass" class="form-input" autocomplete="current-password">
+            </div>
+            <div id="profileError"   class="login-error"   style="display:none"></div>
+            <div id="profileSuccess" class="login-success" style="display:none"></div>
+            <div style="margin-top:16px">
+                <button class="btn btn-primary" id="btnSaveProfile" style="width:100%">💾 Enregistrer</button>
+            </div>
+        </div>
+    </div>
+</div>
+<?php endif; ?>
+
+<!-- ════════════════════════════════════════════════════════
+     MODAL MODÉRATEUR (créer / éditer)
+     ════════════════════════════════════════════════════════ -->
+<?php if ($isAdmin): ?>
+<div id="modoOverlay" class="modal-overlay" role="dialog" aria-modal="true">
+    <div class="modal" style="max-width:420px">
+        <div class="modal-banner" style="background:linear-gradient(90deg,#2d6fb5,#3a82cc)"></div>
+        <div class="modal-header">
+            <div class="modal-header-left">
+                <div class="modal-type-badge">🛡 Modérateur</div>
+                <h2 class="modal-title" id="modoModalTitle">Nouveau modérateur</h2>
+            </div>
+            <button class="modal-close" id="modoClose">✕</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group" id="modoLoginGroup">
+                <label class="form-label" for="modoLogin">Identifiant</label>
+                <input type="text" id="modoLogin" class="form-input" maxlength="30" autocomplete="off">
+                <div style="font-size:.8em;color:var(--text-muted);margin-top:4px">Lettres, chiffres, - et _ uniquement (2–30 car.)</div>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="modoDisplayName">Nom d'affichage</label>
+                <input type="text" id="modoDisplayName" class="form-input" maxlength="30" autocomplete="off">
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="modoPass">
+                    Mot de passe
+                    <span id="modoPassHint" style="opacity:.6;font-weight:400"></span>
+                </label>
+                <input type="password" id="modoPass" class="form-input" autocomplete="new-password">
+            </div>
+            <div id="modoError" class="login-error" style="display:none"></div>
+            <div style="margin-top:16px;display:flex;gap:10px">
+                <button class="btn btn-primary" id="btnSaveModo" style="flex:1">💾 Enregistrer</button>
+            </div>
+        </div>
+    </div>
+</div>
+<?php endif; ?>
+
 <!-- ── Scripts ─────────────────────────────────────────────── -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-<script>const IS_ADMIN = <?= $isAdmin ? 'true' : 'false' ?>;</script>
+<script>
+    const IS_ADMIN = <?= $isAdmin ? 'true' : 'false' ?>;
+    const IS_AUTH  = <?= $isAuth  ? 'true' : 'false' ?>;
+    const USER_ROLE = <?= json_encode($role) ?>;
+</script>
 <script src="assets/js/hub.js"></script>
 
 </body>

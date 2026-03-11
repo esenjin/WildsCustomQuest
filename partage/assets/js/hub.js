@@ -1,17 +1,16 @@
 /* ============================================================
    hub.js – Page principale du hub (index.php)
-   Gestion : grille de quêtes, filtres, modal, admin, login
+   Gestion : grille de quêtes, filtres, modal, admin, moderators
    ============================================================ */
 
 /* ── Zones connues ────────────────────────────────────────── */
-// Mapping stageName (identifiant interne) → nom FR
 const ZONES = {
-    'st101_砂':     'Plaines venteuses',
-    'st102_森':     'Forêt écarlate',
-    'st103_油田':   'Bassin pétrolier',
-    'st104_壁':     'Falaises de glace',
-    'st105_炉心':   'Ruines de Wyveria',
-    'st401_闘技場': 'Vallon meurtri',
+    'st101_砂':         'Plaines venteuses',
+    'st102_森':         'Forêt écarlate',
+    'st103_油田':       'Bassin pétrolier',
+    'st104_壁':         'Falaises de glace',
+    'st105_炉心':       'Ruines de Wyveria',
+    'st401_闘技場':     'Vallon meurtri',
     'st402_壁ヌシ戦闘': 'Cimes gelées',
 };
 
@@ -30,11 +29,18 @@ document.addEventListener('DOMContentLoaded', () => {
     loadQuests();
     bindFilters();
     bindModal();
-    if (!IS_ADMIN) bindLogin();
-    if (IS_ADMIN) {
-        bindAdmin();
+
+    if (!IS_AUTH) {
+        bindLogin();
+    } else {
+        bindProfile();
         loadPending();
         document.getElementById('btnLogout')?.addEventListener('click', doLogout);
+
+        if (IS_ADMIN) {
+            bindAdmin();
+            loadModerators();
+        }
     }
 });
 
@@ -68,7 +74,7 @@ async function loadQuests() {
     }
 }
 
-/* ── Filtre Monstre (peuplé dynamiquement) ──────────────── */
+/* ── Filtre Monstre ─────────────────────────────────────── */
 function populateMonsterFilter() {
     const sel = document.getElementById('filterMonster');
     if (!sel) return;
@@ -88,7 +94,7 @@ function populateMonsterFilter() {
     }
 }
 
-/* ── Filtre Zone (peuplé dynamiquement) ─────────────────── */
+/* ── Filtre Zone ────────────────────────────────────────── */
 function populateZoneFilter() {
     const sel = document.getElementById('filterZone');
     if (!sel) return;
@@ -103,11 +109,11 @@ function populateZoneFilter() {
             sel.appendChild(o);
         }
     }
-    // Tri alphabétique des options (hors la première "Toutes")
     const opts = [...sel.options].slice(1).sort((a, b) => a.text.localeCompare(b.text, 'fr'));
     while (sel.options.length > 1) sel.remove(1);
     opts.forEach(o => sel.appendChild(o));
 }
+
 function bindFilters() {
     document.getElementById('searchInput')?.addEventListener('input', debounce(applyFilters, 220));
     document.getElementById('filterLevel')?.addEventListener('change', applyFilters);
@@ -149,11 +155,11 @@ function applyFilters() {
     });
 
     filtered.sort((a, b) => ({
-        recent:  () => b.addedAt - a.addedAt,
-        oldest:  () => a.addedAt - b.addedAt,
+        recent:    () => b.addedAt - a.addedAt,
+        oldest:    () => a.addedAt - b.addedAt,
         'level-d': () => b.level - a.level,
         'level-a': () => a.level - b.level,
-        title:   () => (a.title ?? '').localeCompare(b.title ?? '', 'fr'),
+        title:     () => (a.title ?? '').localeCompare(b.title ?? '', 'fr'),
     }[sort]?.() ?? 0));
 
     renderGrid();
@@ -196,17 +202,14 @@ function buildCard(quest) {
     card.className = 'quest-card';
     card.addEventListener('click', () => openModal(quest, false));
 
-    // Bandeau niveau
     const banner = document.createElement('div');
     banner.className = 'quest-card-banner';
     banner.style.background = levelGradient(quest.level);
     card.appendChild(banner);
 
-    // Corps
     const body = document.createElement('div');
     body.className = 'quest-card-body';
 
-    // Header : titre + étoiles
     const header = document.createElement('div');
     header.className = 'quest-card-header';
     header.innerHTML = `
@@ -214,7 +217,6 @@ function buildCard(quest) {
         <div class="quest-stars">${buildStars(quest.level)}</div>`;
     body.appendChild(header);
 
-    // Illustrations monstres uniquement (pas de texte dans la liste)
     if (quest.monsters?.length) {
         const row = document.createElement('div');
         row.className = 'quest-monster-icons';
@@ -229,7 +231,6 @@ function buildCard(quest) {
             img.alt     = m.name;
             img.loading = 'lazy';
             img.onerror = () => {
-                // Fallback : initiales
                 wrap.innerHTML = `<span class="monster-icon-fallback">${esc(m.name.slice(0,2))}</span>`;
             };
             wrap.appendChild(img);
@@ -240,7 +241,6 @@ function buildCard(quest) {
 
     card.appendChild(body);
 
-    // Footer
     const footer = document.createElement('div');
     footer.className = 'quest-card-footer';
     footer.innerHTML = `
@@ -275,18 +275,16 @@ function openModal(quest, isPending = false) {
     const overlay = document.getElementById('modalOverlay');
     if (!overlay) return;
 
-    setEl('modalTitle',   quest.title  || 'Sans titre');
-    setEl('modalClient',  quest.client ? `Client : ${esc(quest.client)}` : '');
-    setEl('modalStars',   buildStars(quest.level));
-    setEl('modalZone',    getZoneName(quest.stageVal, quest.stageName));
-    setEl('modalTime',    quest.timeLimit + ' minutes');
+    setEl('modalTitle',  quest.title  || 'Sans titre');
+    setEl('modalClient', quest.client ? `Client : ${esc(quest.client)}` : '');
+    setEl('modalStars',  buildStars(quest.level));
+    setEl('modalZone',   getZoneName(quest.stageVal, quest.stageName));
+    setEl('modalTime',   quest.timeLimit + ' minutes');
 
-    // Badge séquentiel (visible uniquement si actif)
     const seqEl = document.getElementById('modalSequential');
     if (seqEl) seqEl.style.display = quest.sequential ? 'inline-flex' : 'none';
-    setEl('modalMoney',   (quest.money ?? 0).toLocaleString('fr-FR') + ' z');
+    setEl('modalMoney', (quest.money ?? 0).toLocaleString('fr-FR') + ' z');
 
-    // Puissance des monstres (étoiles roses)
     const starsLabels = { 3: '⚔️ Normal (3 étoiles)', 5: '☠️ Extrême (5 étoiles)' };
     setEl('modalMonsterStars', starsLabels[quest.monsterStars] ?? `${quest.monsterStars ?? '?'} étoile(s)`);
     setEl('modalRC',      `RC ${quest.minRC ?? 1} ou plus`);
@@ -298,7 +296,6 @@ function openModal(quest, isPending = false) {
     const banner = document.getElementById('modalBanner');
     if (banner) banner.style.background = levelGradient(quest.level);
 
-    // Monstres (avec nom FR dans le modal)
     const monstersEl = document.getElementById('modalMonsters');
     if (monstersEl) {
         monstersEl.innerHTML = '';
@@ -328,7 +325,6 @@ function openModal(quest, isPending = false) {
         });
     }
 
-    // Récompenses
     const rewardsEl = document.getElementById('modalRewards');
     if (rewardsEl) {
         rewardsEl.innerHTML = '';
@@ -349,7 +345,6 @@ function openModal(quest, isPending = false) {
         }
     }
 
-    // Téléchargement
     const dlBtn = document.getElementById('modalDownload');
     if (dlBtn) {
         const dir = isPending ? 'base/attente/' : 'base/';
@@ -357,10 +352,9 @@ function openModal(quest, isPending = false) {
         dlBtn.download = quest.filename;
     }
 
-    // Actions admin
     const adminActions = document.getElementById('modalAdminActions');
     if (adminActions) {
-        adminActions.style.display = IS_ADMIN && !isPending ? 'block' : 'none';
+        adminActions.style.display = IS_AUTH && !isPending ? 'block' : 'none';
         const btnDel = document.getElementById('btnAdminDelete');
         if (btnDel) {
             btnDel.onclick = () => adminDeleteQuest(quest.filename);
@@ -382,6 +376,7 @@ function closeModal() {
    ══════════════════════════════════════════════════════════ */
 function bindAdmin() {
     document.getElementById('btnRefreshPending')?.addEventListener('click', loadPending);
+    document.getElementById('btnNewModo')?.addEventListener('click', () => openModoModal(null));
 }
 
 async function loadPending() {
@@ -392,7 +387,6 @@ async function loadPending() {
         const data = await api('list_pending');
         const quests = data.quests ?? [];
 
-        // Badge sur l'onglet
         const badge = document.getElementById('pendingBadge');
         if (badge) {
             badge.textContent = quests.length;
@@ -419,14 +413,13 @@ function buildPendingRow(quest) {
     const info = document.createElement('div');
     info.className = 'pending-info';
 
-    // Icônes monstres
     const icons = document.createElement('div');
     icons.className = 'pending-monsters';
     (quest.monsters ?? []).forEach(m => {
         const img = document.createElement('img');
-        img.src   = `assets/img/monsters/${m.fixedId}.png`;
-        img.alt   = m.name;
-        img.title = m.name;
+        img.src       = `assets/img/monsters/${m.fixedId}.png`;
+        img.alt       = m.name;
+        img.title     = m.name;
         img.className = 'pending-monster-icon';
         img.onerror   = () => { img.style.display='none'; };
         icons.appendChild(img);
@@ -478,7 +471,6 @@ async function adminAction(action, filename, rowEl, successMsg) {
         setTimeout(() => {
             rowEl.remove();
             showToast(successMsg, 'success');
-            // Rafraîchir badge + grille si validation
             if (action === 'admin_validate') loadQuests();
             const remaining = document.querySelectorAll('.pending-row').length;
             const badge = document.getElementById('pendingBadge');
@@ -512,13 +504,241 @@ async function adminDeleteQuest(filename) {
     }
 }
 
-/**
- * Modale de confirmation stylisée — remplace window.confirm().
- * Retourne une Promise<boolean>.
- */
+/* ══════════════════════════════════════════════════════════
+   GESTION DES MODÉRATEURS (admin uniquement)
+   ══════════════════════════════════════════════════════════ */
+async function loadModerators() {
+    const list = document.getElementById('moderatorList');
+    if (!list) return;
+    list.innerHTML = '<div class="state-message"><span class="spinner"></span>Chargement…</div>';
+    try {
+        const data = await api('list_moderators');
+        const users = data.users ?? [];
+
+        if (!users.length) {
+            list.innerHTML = '<div class="state-message"><span class="state-icon">👤</span>Aucun utilisateur.</div>';
+            return;
+        }
+
+        list.innerHTML = '';
+        users.forEach(u => list.appendChild(buildModoRow(u)));
+    } catch(e) {
+        list.innerHTML = `<div class="state-message">Erreur : ${esc(e.message)}</div>`;
+    }
+}
+
+function buildModoRow(user) {
+    const row = document.createElement('div');
+    row.className = 'moderator-row';
+    row.id = 'modo-' + user.login;
+
+    const info = document.createElement('div');
+    info.className = 'moderator-info';
+    info.innerHTML = `
+        <div class="moderator-name">${esc(user.displayName || user.login)}</div>
+        <div class="moderator-meta">
+            <code class="moderator-login">${esc(user.login)}</code>
+            <span class="moderator-role-badge ${user.role === 'admin' ? 'role-admin' : 'role-modo'}">
+                ${user.role === 'admin' ? '⚙ Admin' : '🛡 Modo'}
+            </span>
+        </div>`;
+    row.appendChild(info);
+
+    const actions = document.createElement('div');
+    actions.className = 'moderator-actions';
+
+    if (user.role !== 'admin') {
+        const btnEdit = document.createElement('button');
+        btnEdit.className = 'btn btn-secondary btn-sm';
+        btnEdit.textContent = '✏ Modifier';
+        btnEdit.addEventListener('click', () => openModoModal(user));
+        actions.appendChild(btnEdit);
+
+        const btnDel = document.createElement('button');
+        btnDel.className = 'btn btn-danger btn-sm';
+        btnDel.textContent = '🗑 Supprimer';
+        btnDel.addEventListener('click', () => deleteModerator(user.login, row));
+        actions.appendChild(btnDel);
+    } else {
+        const tag = document.createElement('span');
+        tag.style.cssText = 'font-size:.8em;opacity:.5;font-style:italic';
+        tag.textContent = 'Compte principal';
+        actions.appendChild(tag);
+    }
+
+    row.appendChild(actions);
+    return row;
+}
+
+/* ── Modal créer / éditer modérateur ─────────────────────── */
+let currentModoEdit = null; // null = création, string login = édition
+
+function openModoModal(user) {
+    const overlay = document.getElementById('modoOverlay');
+    if (!overlay) return;
+
+    currentModoEdit = user ? user.login : null;
+
+    // Titre
+    document.getElementById('modoModalTitle').textContent =
+        user ? `Modifier « ${user.displayName || user.login} »` : 'Nouveau modérateur';
+
+    // Champ login : visible seulement en création
+    const loginGroup = document.getElementById('modoLoginGroup');
+    if (loginGroup) loginGroup.style.display = user ? 'none' : '';
+
+    document.getElementById('modoLogin').value       = '';
+    document.getElementById('modoDisplayName').value = user?.displayName ?? '';
+    document.getElementById('modoPass').value        = '';
+
+    // Indice mot de passe
+    const hint = document.getElementById('modoPassHint');
+    if (hint) hint.textContent = user ? '(laisser vide = inchangé)' : '';
+
+    const errEl = document.getElementById('modoError');
+    if (errEl) errEl.style.display = 'none';
+
+    overlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+
+    // Sauvegarder
+    const btnSave = document.getElementById('btnSaveModo');
+    // Supprimer l'ancien listener pour éviter les doublons
+    btnSave.replaceWith(btnSave.cloneNode(true));
+    document.getElementById('btnSaveModo').addEventListener('click', saveModerator);
+
+    // Fermer
+    document.getElementById('modoClose').onclick = closeModoModal;
+    overlay.onclick = e => { if (e.target === overlay) closeModoModal(); };
+}
+
+function closeModoModal() {
+    document.getElementById('modoOverlay')?.classList.remove('open');
+    document.body.style.overflow = '';
+    currentModoEdit = null;
+}
+
+async function saveModerator() {
+    const errEl  = document.getElementById('modoError');
+    errEl.style.display = 'none';
+
+    const displayName = document.getElementById('modoDisplayName')?.value.trim() ?? '';
+    const pass        = document.getElementById('modoPass')?.value ?? '';
+
+    try {
+        if (currentModoEdit) {
+            // Édition
+            await api('update_moderator', {
+                login: currentModoEdit,
+                displayName,
+                password: pass,
+            });
+            showToast('Modérateur mis à jour.', 'success');
+        } else {
+            // Création
+            const login = document.getElementById('modoLogin')?.value.trim() ?? '';
+            await api('create_moderator', { login, displayName, password: pass });
+            showToast('Modérateur créé.', 'success');
+        }
+        closeModoModal();
+        loadModerators();
+    } catch(e) {
+        errEl.textContent = e.message;
+        errEl.style.display = 'block';
+    }
+}
+
+async function deleteModerator(login, rowEl) {
+    const confirmed = await showConfirm(
+        'Supprimer le modérateur',
+        `Supprimer le compte <strong>${esc(login)}</strong> ? Cette action est irréversible.`
+    );
+    if (!confirmed) return;
+    try {
+        await api('delete_moderator', { login });
+        rowEl.classList.add('row-fade-out');
+        setTimeout(() => {
+            rowEl.remove();
+            showToast('Modérateur supprimé.', 'success');
+            const remaining = document.querySelectorAll('.moderator-row').length;
+            if (!remaining) {
+                document.getElementById('moderatorList').innerHTML =
+                    '<div class="state-message"><span class="state-icon">👤</span>Aucun utilisateur.</div>';
+            }
+        }, 400);
+    } catch(e) {
+        showToast('Erreur : ' + e.message, 'error');
+    }
+}
+
+/* ══════════════════════════════════════════════════════════
+   PROFIL
+   ══════════════════════════════════════════════════════════ */
+function bindProfile() {
+    const overlay = document.getElementById('profileOverlay');
+    if (!overlay) return;
+
+    document.getElementById('btnProfile')?.addEventListener('click', () => {
+        const errEl = document.getElementById('profileError');
+        const okEl  = document.getElementById('profileSuccess');
+        if (errEl) errEl.style.display = 'none';
+        if (okEl)  okEl.style.display  = 'none';
+        document.getElementById('profileCurrentPass').value = '';
+        document.getElementById('profileNewPass').value     = '';
+        overlay.classList.add('open');
+        document.body.style.overflow = 'hidden';
+    });
+
+    document.getElementById('profileClose')?.addEventListener('click', closeProfileModal);
+    overlay.addEventListener('click', e => { if (e.target === overlay) closeProfileModal(); });
+
+    document.getElementById('btnSaveProfile')?.addEventListener('click', saveProfile);
+}
+
+function closeProfileModal() {
+    document.getElementById('profileOverlay')?.classList.remove('open');
+    document.body.style.overflow = '';
+}
+
+async function saveProfile() {
+    const errEl = document.getElementById('profileError');
+    const okEl  = document.getElementById('profileSuccess');
+    errEl.style.display = 'none';
+    okEl.style.display  = 'none';
+
+    const displayName   = document.getElementById('profileDisplayName')?.value.trim() ?? '';
+    const newPass       = document.getElementById('profileNewPass')?.value ?? '';
+    const currentPass   = document.getElementById('profileCurrentPass')?.value ?? '';
+
+    if (!currentPass) {
+        errEl.textContent = 'Le mot de passe actuel est requis.';
+        errEl.style.display = 'block';
+        return;
+    }
+
+    try {
+        const res = await api('update_profile', { displayName, password: newPass, currentPassword: currentPass });
+        okEl.textContent = res.message ?? 'Profil mis à jour.';
+        okEl.style.display = 'block';
+
+        // Mettre à jour le bouton profil avec le nouveau displayName
+        if (res.displayName) {
+            const btn = document.getElementById('btnProfile');
+            if (btn) btn.textContent = '👤 ' + res.displayName;
+        }
+        document.getElementById('profileCurrentPass').value = '';
+        document.getElementById('profileNewPass').value     = '';
+    } catch(e) {
+        errEl.textContent = e.message;
+        errEl.style.display = 'block';
+    }
+}
+
+/* ══════════════════════════════════════════════════════════
+   MODAL CONFIRMATION
+   ══════════════════════════════════════════════════════════ */
 function showConfirm(title, message) {
     return new Promise(resolve => {
-        // Réutiliser ou créer la modale de confirmation
         let overlay = document.getElementById('confirmOverlay');
         if (!overlay) {
             overlay = document.createElement('div');
@@ -544,13 +764,12 @@ function showConfirm(title, message) {
             document.body.appendChild(overlay);
         }
 
-        document.getElementById('confirmTitle').textContent   = title;
-        document.getElementById('confirmMessage').innerHTML   = message;
+        document.getElementById('confirmTitle').textContent = title;
+        document.getElementById('confirmMessage').innerHTML = message;
 
         const close = (result) => {
             overlay.classList.remove('open');
             document.body.style.overflow = '';
-            // Détacher les listeners pour éviter les doublons
             document.getElementById('confirmOk').replaceWith(document.getElementById('confirmOk').cloneNode(true));
             document.getElementById('confirmCancel').replaceWith(document.getElementById('confirmCancel').cloneNode(true));
             resolve(result);
@@ -562,13 +781,12 @@ function showConfirm(title, message) {
 
         overlay.classList.add('open');
         document.body.style.overflow = 'hidden';
-        // Focus sur Annuler par défaut (safer)
         setTimeout(() => document.getElementById('confirmCancel')?.focus(), 50);
     });
 }
 
 /* ══════════════════════════════════════════════════════════
-   LOGIN ADMIN
+   LOGIN
    ══════════════════════════════════════════════════════════ */
 function bindLogin() {
     const overlay  = document.getElementById('loginOverlay');
@@ -624,7 +842,6 @@ function showToast(msg, type = 'info') {
 /* ══════════════════════════════════════════════════════════
    HELPERS
    ══════════════════════════════════════════════════════════ */
-
 async function api(action, body = {}) {
     const fd = new FormData();
     fd.append('action', action);
