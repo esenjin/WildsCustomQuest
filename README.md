@@ -58,4 +58,4 @@ Voir [le wiki](https://git.crystalyx.net/Esenjin_Asakha/WildsQuetesPerso/wiki/) 
 
 ---
 
-*Outil non officiel, non affilié à CAPCOM.*
+*Outil non officiel, non affilié à CAPCOM©.*
