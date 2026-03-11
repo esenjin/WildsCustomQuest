@@ -37,7 +37,7 @@ mhwilds-qp/
     ├── index.php           # Hub communautaire + interface admin
     ├── soumettre.php       # Page de soumission
     ├── api.php             # Endpoints AJAX
-    ├── config.php          # ⚠ Credentials admin — ne pas versionner
+    ├── config.php          # Configuration principale du site
     └── base/
         ├── quest_<id>_<pseudo>.zip   # Quêtes validées
         └── attente/                  # Quêtes en attente de modération
