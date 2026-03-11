@@ -59,7 +59,7 @@ $displayName = $_SESSION['displayName'] ?? $_SESSION['login'] ?? '';
             </button>
         <?php endif; ?>
         <?php if ($isAdmin): ?>
-            <button class="main-tab" data-tab="moderators">Modérateurs</button>
+            <button class="main-tab" data-tab="moderators">Gestion des modérateurs</button>
         <?php endif; ?>
     </div>
 
@@ -352,6 +352,7 @@ $displayName = $_SESSION['displayName'] ?? $_SESSION['login'] ?? '';
             <div class="form-group">
                 <label class="form-label" for="profileNewPass">Nouveau mot de passe <span style="opacity:.6;font-weight:400">(laisser vide = inchangé)</span></label>
                 <input type="password" id="profileNewPass" class="form-input" autocomplete="new-password">
+                <div class="pass-strength" id="profilePassStrength" style="display:none"></div>
             </div>
             <div class="form-group">
                 <label class="form-label" for="profileCurrentPass">Mot de passe actuel <span style="color:var(--red);font-size:.85em">*</span></label>
@@ -397,6 +398,7 @@ $displayName = $_SESSION['displayName'] ?? $_SESSION['login'] ?? '';
                     <span id="modoPassHint" style="opacity:.6;font-weight:400"></span>
                 </label>
                 <input type="password" id="modoPass" class="form-input" autocomplete="new-password">
+                <div class="pass-strength" id="modoPassStrength" style="display:none"></div>
             </div>
             <div id="modoError" class="login-error" style="display:none"></div>
             <div style="margin-top:16px;display:flex;gap:10px">

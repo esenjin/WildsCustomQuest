@@ -591,6 +591,11 @@ function openModoModal(user) {
     document.getElementById('modoDisplayName').value = user?.displayName ?? '';
     document.getElementById('modoPass').value        = '';
 
+    // Réinitialiser l'indicateur de force
+    const strengthEl = document.getElementById('modoPassStrength');
+    if (strengthEl) strengthEl.style.display = 'none';
+    bindPasswordStrength('modoPass', 'modoPassStrength');
+
     // Indice mot de passe
     const hint = document.getElementById('modoPassHint');
     if (hint) hint.textContent = user ? '(laisser vide = inchangé)' : '';
@@ -624,6 +629,20 @@ async function saveModerator() {
 
     const displayName = document.getElementById('modoDisplayName')?.value.trim() ?? '';
     const pass        = document.getElementById('modoPass')?.value ?? '';
+
+    // Mot de passe obligatoire en création, optionnel en édition
+    if (pass !== '') {
+        const passErr = checkPasswordRules(pass);
+        if (passErr) {
+            errEl.textContent = passErr;
+            errEl.style.display = 'block';
+            return;
+        }
+    } else if (!currentModoEdit) {
+        errEl.textContent = 'Le mot de passe est requis pour créer un modérateur.';
+        errEl.style.display = 'block';
+        return;
+    }
 
     try {
         if (currentModoEdit) {
@@ -672,11 +691,67 @@ async function deleteModerator(login, rowEl) {
 }
 
 /* ══════════════════════════════════════════════════════════
+   VALIDATEUR MOT DE PASSE
+   ══════════════════════════════════════════════════════════ */
+
+const PASS_RULES = [
+    { id: 'len',     label: '12 caractères minimum',      test: p => p.length >= 12 },
+    { id: 'letter',  label: 'Au moins une lettre',         test: p => /[a-zA-Z]/.test(p) },
+    { id: 'digit',   label: 'Au moins un chiffre',         test: p => /[0-9]/.test(p) },
+    { id: 'special', label: 'Au moins un caractère spécial', test: p => /[^a-zA-Z0-9]/.test(p) },
+];
+
+/**
+ * Branche le retour visuel en direct sur un champ mot de passe.
+ * @param {string} inputId   - id du <input type="password">
+ * @param {string} strengthId - id du conteneur .pass-strength
+ */
+function bindPasswordStrength(inputId, strengthId) {
+    const input     = document.getElementById(inputId);
+    const container = document.getElementById(strengthId);
+    if (!input || !container) return;
+
+    input.addEventListener('input', () => updateStrengthUI(input.value, container));
+    // Masquer quand le champ est vide au départ
+    updateStrengthUI(input.value, container);
+}
+
+function updateStrengthUI(pass, container) {
+    if (pass === '') {
+        container.style.display = 'none';
+        return;
+    }
+    container.style.display = 'block';
+
+    const results = PASS_RULES.map(r => ({ ...r, ok: r.test(pass) }));
+    const allOk   = results.every(r => r.ok);
+
+    container.innerHTML = results.map(r => `
+        <div class="pass-rule ${r.ok ? 'pass-rule-ok' : 'pass-rule-fail'}">
+            <span class="pass-rule-icon">${r.ok ? '✓' : '✗'}</span>
+            ${r.label}
+        </div>`).join('');
+}
+
+/**
+ * Vérifie qu'un mot de passe remplit toutes les règles.
+ * Retourne un message d'erreur ou null si valide.
+ */
+function checkPasswordRules(pass) {
+    for (const r of PASS_RULES) {
+        if (!r.test(pass)) return r.label + ' requis(e).';
+    }
+    return null;
+}
+
+/* ══════════════════════════════════════════════════════════
    PROFIL
    ══════════════════════════════════════════════════════════ */
 function bindProfile() {
     const overlay = document.getElementById('profileOverlay');
     if (!overlay) return;
+
+    bindPasswordStrength('profileNewPass', 'profilePassStrength');
 
     document.getElementById('btnProfile')?.addEventListener('click', () => {
         const errEl = document.getElementById('profileError');
@@ -715,6 +790,16 @@ async function saveProfile() {
         errEl.textContent = 'Le mot de passe actuel est requis.';
         errEl.style.display = 'block';
         return;
+    }
+
+    // Validation des règles si un nouveau mot de passe est saisi
+    if (newPass !== '') {
+        const passErr = checkPasswordRules(newPass);
+        if (passErr) {
+            errEl.textContent = passErr;
+            errEl.style.display = 'block';
+            return;
+        }
     }
 
     try {

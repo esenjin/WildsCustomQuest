@@ -105,6 +105,22 @@ function requireAdmin(): void {
         fail('Réservé à l\'administrateur.', 403);
 }
 
+/**
+ * Valide la complexité d'un mot de passe.
+ * Règles : 12 caractères min, au moins 1 lettre, 1 chiffre, 1 caractère spécial.
+ * Appelle fail() si invalide.
+ */
+function validatePassword(string $pass): void {
+    if (strlen($pass) < 12)
+        fail('Mot de passe trop court (12 caractères minimum).');
+    if (!preg_match('/[a-zA-Z]/', $pass))
+        fail('Le mot de passe doit contenir au moins une lettre.');
+    if (!preg_match('/[0-9]/', $pass))
+        fail('Le mot de passe doit contenir au moins un chiffre.');
+    if (!preg_match('/[^a-zA-Z0-9]/', $pass))
+        fail('Le mot de passe doit contenir au moins un caractère spécial.');
+}
+
 /* ── Routing ─────────────────────────────────────────────── */
 $action = $_POST['action'] ?? $_GET['action'] ?? '';
 
@@ -196,8 +212,7 @@ function actionCreateModerator(): void {
 
     if (!preg_match('/^[a-zA-Z0-9_-]{2,30}$/', $login))
         fail('Identifiant invalide (2–30 caractères alphanumériques, - ou _).');
-    if (strlen($pass) < 6)
-        fail('Mot de passe trop court (6 caractères minimum).');
+    validatePassword($pass);
     if ($displayName === '') $displayName = $login;
     if (strlen($displayName) > 30)
         fail('Nom d\'affichage trop long (30 max).');
@@ -245,7 +260,7 @@ function actionUpdateModerator(): void {
                 $u['displayName'] = $displayName;
             }
             if ($newPass !== '') {
-                if (strlen($newPass) < 6) fail('Mot de passe trop court (6 caractères minimum).');
+                validatePassword($newPass);
                 $u['password'] = password_hash($newPass, PASSWORD_BCRYPT);
             }
         }
@@ -331,7 +346,7 @@ function actionUpdateProfile(): void {
                 $u['displayName'] = $newDisplay;
             }
             if ($newPass !== '') {
-                if (strlen($newPass) < 6) fail('Nouveau mot de passe trop court (6 caractères minimum).');
+                validatePassword($newPass);
                 $u['password'] = password_hash($newPass, PASSWORD_BCRYPT);
             }
         }
