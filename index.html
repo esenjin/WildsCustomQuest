@@ -132,7 +132,7 @@
 
             <div class="form-group">
                 <label for="timeLimit">Limite de temps (minutes) :</label>
-                <input type="number" id="timeLimit" min="1" max="500" value="20">
+                <input type="number" id="timeLimit" min="5" max="500" value="20">
             </div>
 
             <div class="form-group">
@@ -290,7 +290,7 @@
 
             // Clamp en temps réel pour les inputs avec min/max
             const clampedInputs = [
-                { id: 'timeLimit',   min: 1,    max: 500      },
+                { id: 'timeLimit',   min: 5,    max: 500      },
                 { id: 'rewardMoney', min: 1000, max: 10000000 },
                 { id: 'hrPoints',    min: 100,  max: 25000    },
                 { id: 'minRC',       min: 1,    max: 999      },
