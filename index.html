@@ -132,22 +132,22 @@
 
             <div class="form-group">
                 <label for="timeLimit">Limite de temps (minutes) :</label>
-                <input type="number" id="timeLimit" min="5" value="20">
+                <input type="number" id="timeLimit" min="1" max="500" value="20">
             </div>
 
             <div class="form-group">
                 <label for="rewardMoney">Récompense en zenny :</label>
-                <input type="number" id="rewardMoney" min="1000" step="1000" value="24000">
+                <input type="number" id="rewardMoney" min="1000" max="10000000" step="1000" value="24000">
             </div>
 
             <div class="form-group">
-                <label for="hrPoints">Points de RC (~2400/1 niveau):</label>
-                <input type="number" id="hrPoints" min="100" step="10" value="660">
+                <label for="hrPoints">Points de RC :</label>
+                <input type="number" id="hrPoints" min="100" max="25000" step="10" value="660">
             </div>
 
             <div class="form-group">
                 <label for="questLife">Nombre de morts autorisées :</label>
-                <input type="number" id="questLife" min="1" value="2">
+                <input type="number" id="questLife" min="1" max="99" value="2">
             </div>
 
             <div class="form-group">
@@ -287,6 +287,32 @@
         document.addEventListener('DOMContentLoaded', function () {
             loadData();
             setupEventListeners();
+
+            // Clamp en temps réel pour les inputs avec min/max
+            const clampedInputs = [
+                { id: 'timeLimit',   min: 1,    max: 500      },
+                { id: 'rewardMoney', min: 1000, max: 10000000 },
+                { id: 'hrPoints',    min: 100,  max: 25000    },
+                { id: 'minRC',       min: 1,    max: 999      },
+                { id: 'questLife',   min: 1,    max: 99       },
+            ];
+
+            clampedInputs.forEach(({ id, min, max }) => {
+                const el = document.getElementById(id);
+                if (!el) return;
+                el.addEventListener('input', () => {
+                    const val = parseInt(el.value, 10);
+                    if (!isNaN(val)) {
+                        if (val < min) el.value = min;
+                        if (val > max) el.value = max;
+                    }
+                });
+                el.addEventListener('blur', () => {
+                    const val = parseInt(el.value, 10);
+                    if (isNaN(val) || val < min) el.value = min;
+                    else if (val > max) el.value = max;
+                });
+            });
         });
     </script>
 
