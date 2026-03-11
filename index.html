@@ -65,7 +65,7 @@
 
             <div class="form-group">
                 <label for="questId">ID de la quête :</label>
-                <input type="number" id="questId" placeholder="Entrez un ID unique (ex. 10086)" value="10086">
+                <input type="number" id="questId" placeholder="Entrez un ID unique (ex. 60086)" min="50000" max="9999999" value="60086">
             </div>
 
             <div class="form-group">
@@ -290,6 +290,7 @@
 
             // Clamp en temps réel pour les inputs avec min/max
             const clampedInputs = [
+                { id: 'questId',     min: 50000, max: 9999999 },
                 { id: 'timeLimit',   min: 5,    max: 500      },
                 { id: 'rewardMoney', min: 1000, max: 10000000 },
                 { id: 'hrPoints',    min: 100,  max: 25000    },
