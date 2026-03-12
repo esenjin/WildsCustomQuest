@@ -34,8 +34,8 @@ $displayName = $_SESSION['displayName'] ?? $_SESSION['login'] ?? '';
             <div class="hub-breadcrumb">
                 <a href="../index.html">⬅ Générateur de quêtes</a> › Hub communautaire
             </div>
-            <h1 class="hub-title">Comptoir des quêtes</h1>
-            <p class="hub-subtitle">Quêtes personnalisées partagées par la communauté</p>
+            <h1 class="hub-title">MH Wilds - Comptoir des quêtes</h1>
+            <p class="hub-subtitle">Quêtes personnalisées partagées par la communauté, n'hésite pas à <a href="../" target="_blank">créer la tienne</a> puis nous <a href="soumettre.php">la proposer</a> !</p>
         </div>
         <div class="hub-header-actions">
             <?php if ($isAuth): ?>

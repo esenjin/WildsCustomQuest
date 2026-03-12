@@ -27,7 +27,7 @@ session_start();
                 Soumettre
             </div>
             <h1 class="hub-title">Soumettre une quête</h1>
-            <p class="hub-subtitle">Partagez vos créations avec la communauté</p>
+            <p class="hub-subtitle">Partagez vos créations avec la communauté.</p>
         </div>
     </header>
 
