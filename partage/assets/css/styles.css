@@ -105,6 +105,39 @@ body {
     border-radius: 20px;
 }
 
+/* Indicateur de force de mot de passe */
+
+.pass-strength {
+    margin-top: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.pass-rule {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: .82em;
+    padding: 3px 0;
+    transition: color .2s;
+}
+
+.pass-rule-icon {
+    font-size: .9em;
+    width: 14px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.pass-rule-ok {
+    color: #5fbe85;
+}
+
+.pass-rule-fail {
+    color: var(--text-muted, rgba(232, 224, 213, .45));
+}
+
 /* ── Pied de page ─────────────────────────────────────────── */
 .hub-footer {
     position: fixed;
