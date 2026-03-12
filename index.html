@@ -311,13 +311,6 @@
             clampedInputs.forEach(({ id, min, max }) => {
                 const el = document.getElementById(id);
                 if (!el) return;
-                el.addEventListener('input', () => {
-                    const val = parseInt(el.value, 10);
-                    if (!isNaN(val)) {
-                        if (val < min) el.value = min;
-                        if (val > max) el.value = max;
-                    }
-                });
                 el.addEventListener('blur', () => {
                     const val = parseInt(el.value, 10);
                     if (isNaN(val) || val < min) el.value = min;
