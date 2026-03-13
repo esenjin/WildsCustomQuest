@@ -427,3 +427,24 @@ function sanitizeIntInput(input, min, max) {
     if (parsed > max) input.value = max;
     else if (parsed < min) input.value = min;
 }
+
+
+/* ── Récupération de la version ───────────────────────────── */
+
+/**
+ * Récupère la version de l'outil depuis api.php et l'affiche
+ * dans l'élément #footer-version.
+ */
+async function fetchVersion() {
+    const el = document.getElementById('footer-version');
+    if (!el) return;
+    try {
+        const res  = await fetch('partage/api.php?action=version');
+        const data = await res.json();
+        if (data.version) {
+            el.innerHTML = `<a href="https://git.crystalyx.net/Esenjin_Asakha/WildsQuetesPerso/releases" target="_blank" rel="noopener">v${data.version} — ${data.name}</a>`;
+        }
+    } catch {
+        // Silencieux : le footer reste vide si l'API est inaccessible
+    }
+}

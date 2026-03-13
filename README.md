@@ -49,9 +49,9 @@ mhwilds-qp/
 
 ---
 
-## Des questions ?
+## Installation rapide
 
-Merci de [consulter les wiki](https://git.crystalyx.net/Esenjin_Asakha/WildsQuetesPerso/wiki) qui contiennent une grande quantité d'information.
+Voir [le wiki](https://git.crystalyx.net/Esenjin_Asakha/WildsQuetesPerso/wiki/) pour le guide complet, ainsi que la FAQ.
 
 ---
 

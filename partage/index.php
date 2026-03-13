@@ -243,6 +243,16 @@ $displayName = $_SESSION['displayName'] ?? $_SESSION['login'] ?? '';
            target="_blank" rel="noopener" class="hub-footer-link">
             ❓ FAQ
         </a>
+        <span class="hub-footer-sep">·</span>
+        <a href="https://git.crystalyx.net/Esenjin_Asakha/WildsQuetesPerso/wiki" 
+            target="_blank" rel="noopener" class="hub-footer-link">
+            📖 Tous les wiki
+        </a>
+        <span class="hub-footer-sep">—</span>
+        <a href="https://git.crystalyx.net/Esenjin_Asakha/WildsQuetesPerso/releases" 
+            target="_blank" rel="noopener" class="hub-footer-link">
+            v<?= APP_VERSION ?> · <?= htmlspecialchars(APP_VERSION_NAME) ?>
+        </a>
     </nav>
 </footer>
 

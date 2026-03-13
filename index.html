@@ -279,6 +279,20 @@
 
     </div><!-- /.container -->
 
+
+    <!-- ── Pied de page ──────────────────────────────────────── -->
+    <footer class="site-footer">
+        <div class="footer-version" id="footer-version">
+            <!-- Rempli dynamiquement par fetchVersion() -->
+        </div>
+        <nav class="footer-links">
+            <a href="https://git.crystalyx.net/Esenjin_Asakha/WildsQuetesPerso/wiki/2.-G%C3%A9n%C3%A9rateur-de-qu%C3%AAtes" target="_blank" rel="noopener">📋 Infos &amp; guides</a>
+            <a href="https://git.crystalyx.net/Esenjin_Asakha/WildsQuetesPerso/wiki/4.-FAQ" target="_blank" rel="noopener">❓ FAQ</a>
+            <a href="https://git.crystalyx.net/Esenjin_Asakha/WildsQuetesPerso/wiki/5.-Structure-des-fichiers-de-qu%C3%AAte-JSON" target="_blank" rel="noopener">🗂 Structure des JSON</a>
+            <a href="https://git.crystalyx.net/Esenjin_Asakha/WildsQuetesPerso/wiki" target="_blank" rel="noopener">📖 Tous les wiki</a>
+        </nav>
+    </footer>
+
     <!-- ── Scripts JavaScript ────────────────────────────────
          Ordre de chargement important :
          1. app.js     – état global et utilitaires
@@ -303,6 +317,7 @@
         document.addEventListener('DOMContentLoaded', function () {
             loadData();
             setupEventListeners();
+            fetchVersion();
 
             // Initialiser le panneau de restrictions avec les valeurs par défaut (★8, grade 3)
             const initLevel = parseInt(document.getElementById('questLevel')?.value ?? '8');

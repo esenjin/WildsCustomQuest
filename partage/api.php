@@ -143,6 +143,7 @@ match ($action) {
     'clear_logs'        => actionClearLogs(),
     'check_duplicate'   => actionCheckDuplicate(),
     'check_monsters'    => actionCheckMonsters(),
+    'version'            => actionVersion(),
     default             => fail('Action inconnue.', 400),
 };
 
@@ -950,4 +951,18 @@ function uploadErrMsg(int $code): string {
         UPLOAD_ERR_CANT_WRITE => 'Impossible d\'écrire le fichier temporaire.',
         default               => 'Erreur d\'upload inconnue.',
     };
+}
+/* ══════════════════════════════════════════════════════════
+   VERSION
+   ══════════════════════════════════════════════════════════ */
+
+/**
+ * Retourne la version et le nom de version de l'outil.
+ * Accessible sans authentification.
+ */
+function actionVersion(): void {
+    echo json_encode([
+        'version' => APP_VERSION,
+        'name'    => APP_VERSION_NAME,
+    ]);
 }
