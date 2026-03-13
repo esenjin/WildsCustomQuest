@@ -521,12 +521,12 @@ body {
 .log-refuse {
     background: rgba(180, 50, 50, .15);
     border: 1px solid rgba(180, 50, 50, .35);
-    color: #e07070;
+    color: #e0a060;
 }
 .log-delete {
     background: rgba(200, 100, 30, .15);
     border: 1px solid rgba(200, 100, 30, .35);
-    color: #e0a060;
+    color: #e07070;
 }
 
 .log-info {
