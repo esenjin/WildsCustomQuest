@@ -296,7 +296,7 @@ function openModal(quest, isPending = false) {
     const gradeLabels = { 1: 'Faible', 2: 'Modéré', 3: 'Standard', 4: 'Puissant', 5: 'Extrême' };
     const g = quest.monsterGrade ?? quest.monsterStars; // compat. anciennes quêtes
     const gradeStars = g ? '✦'.repeat(g) : '';
-    setEl('modalMonsterStars', g ? `${gradeStars} Grade ${g} — ${gradeLabels[g] ?? g}` : '—');
+    setEl('modalMonsterStars', g ? `${gradeStars} ${gradeLabels[g] ?? g}` : '—');
     setEl('modalRC',      `RC ${quest.minRC ?? 1} ou plus`);
     setEl('modalPlayers', `Jusqu'à ${quest.maxPlayers ?? 4} joueur(s)`);
     setEl('modalDeaths',  `S'évanouir ${quest.questLife ?? 3} fois`);

@@ -130,11 +130,11 @@ $displayName = $_SESSION['displayName'] ?? $_SESSION['login'] ?? '';
                     <label class="filter-label" for="filterGrade">Grade des monstres</label>
                     <select id="filterGrade" class="filter-select">
                         <option value="">Tous</option>
-                        <option value="1">✦ Grade 1 — Faible</option>
-                        <option value="2">✦✦ Grade 2 — Modéré</option>
-                        <option value="3">✦✦✦ Grade 3 — Standard</option>
-                        <option value="4">✦✦✦✦ Grade 4 — Puissant</option>
-                        <option value="5">✦✦✦✦✦ Grade 5 — Extrême</option>
+                        <option value="1">✦ (1) — Faible</option>
+                        <option value="2">✦✦ (2) — Modéré</option>
+                        <option value="3">✦✦✦ (3) — Standard</option>
+                        <option value="4">✦✦✦✦ (4) — Puissant</option>
+                        <option value="5">✦✦✦✦✦ (5) — Extrême</option>
                     </select>
                 </div>
                 <div class="filter-group">
