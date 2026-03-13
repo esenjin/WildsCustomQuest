@@ -9,13 +9,36 @@
 const ARCH_TEMPERED_IDS = new Set([-1547364608, 1467998976, 1657778432, 746996864, 1553456768]);
 
 /**
- * IDs des monstres exclusifs aux Cimes gelées (st402).
- * Jin Dahaad et Oméga Planetikos ne fonctionnent que dans cette zone.
+ * Vérifie si un monstre est autorisé dans la zone (location) courante.
+ * La liste des zones autorisées est portée par le champ `monster.zones` (tableau d'IDs en string).
+ * Si le monstre n'a pas de champ `zones`, il est considéré comme autorisé partout (rétro-compatibilité).
+ * @param {Object} monster     - L'objet monstre (depuis enemiesData).
+ * @param {string} locationId  - L'ID numérique de la région courante (string).
+ * @returns {boolean} true si le monstre peut apparaître dans cette zone.
  */
-const FROZEN_PEAKS_ONLY_IDS = new Set([1553456768, 21849]);
+function isMonsterAllowedInZone(monster, locationId) {
+    if (!monster.zones || monster.zones.length === 0) return true;
+    return monster.zones.includes(locationId);
+}
 
-/** Valeur de l'ID de zone pour les Cimes gelées. */
-const FROZEN_PEAKS_LOCATION = '544388992';
+/**
+ * Retourne un libellé court lisible pour un ID de zone.
+ * Utilisé dans les messages d'erreur affichés sur les cartes monstres.
+ * @param {string} locationId
+ * @returns {string}
+ */
+function getZoneLabel(locationId) {
+    const labels = {
+        "-1226157568": "Plaines venteuses",
+        "-859829056":  "Forêt écarlate",
+        "-1251081216": "Bassin pétrolier",
+        "1182228864":  "Falaises de glace",
+        "327401792":   "Ruines de Wyveria",
+        "1181994624":  "Vallon meurtri",
+        "544388992":   "Cimes gelées"
+    };
+    return labels[locationId] ?? locationId;
+}
 
 /** Nombre maximum d'exemplaires d'un même monstre autorisé par quête. */
 const MAX_MONSTER_COUNT = 5;
@@ -38,9 +61,8 @@ function populateMonsterList() {
         // Ignorer les monstres sans nom dans la langue courante
         if (!monster.name || !monster.name[currentLanguage]) return;
 
-        // Vérifier si ce monstre est réservé aux Cimes gelées
-        const isFrozenOnly  = FROZEN_PEAKS_ONLY_IDS.has(monster.fixedId);
-        const isZoneInvalid = isFrozenOnly && currentLocation !== FROZEN_PEAKS_LOCATION;
+        // Vérifier si ce monstre est autorisé dans la zone courante
+        const isZoneInvalid = currentLocation !== '' && !isMonsterAllowedInZone(monster, currentLocation);
 
         const card = document.createElement('div');
         card.className = 'monster-card';
@@ -117,7 +139,7 @@ function populateMonsterList() {
                 <div class="monster-card-body">
                     <h3>${monster.name[currentLanguage]}</h3>
                     ${isZoneInvalid ? `
-                    <p class="zone-locked-msg">⛔ Uniquement disponible en zone <strong>Cimes gelées</strong></p>
+                    <p class="zone-locked-msg">⛔ Disponible uniquement en : <strong>${(monster.zones || []).map(getZoneLabel).join(', ')}</strong></p>
                     ` : `
                     <div class="monster-controls">
                         <label
