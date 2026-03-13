@@ -303,16 +303,18 @@ body {
 }
 @keyframes cardIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
 
-.quest-card-banner { height: 4px; }
+.quest-card-banner { height: 5px; }
 .quest-card-body { padding: 14px 16px 10px; flex: 1; display: flex; flex-direction: column; gap: 10px; }
 .quest-card-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
 .quest-card-title { font-family: var(--font-title); font-size: 0.93em; font-weight: 600; color: var(--text); line-height: 1.25; flex: 1; }
 
-/* Étoiles */
+/* Étoiles – couleur pilotée par JS via CSS vars */
 .quest-stars, .modal-stars { display: flex; gap: 2px; flex-shrink: 0; margin-top: 7px; }
 .star {
     width: 9px; height: 9px; border-radius: 50%;
-    background: var(--accent); box-shadow: 0 0 3px var(--accent);
+    background: var(--star-color, var(--accent));
+    box-shadow: 0 0 3px var(--star-glow, rgba(200,135,42,0.55));
+    transition: background 0.2s, box-shadow 0.2s;
 }
 .star.dim { background: var(--surface3); box-shadow: none; }
 

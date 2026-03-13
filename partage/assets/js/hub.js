@@ -209,19 +209,21 @@ function buildCard(quest) {
     card.className = 'quest-card';
     card.addEventListener('click', () => openModal(quest, false));
 
+    const zc = zoneGradient(quest.stageName);
     const banner = document.createElement('div');
     banner.className = 'quest-card-banner';
-    banner.style.background = levelGradient(quest.level);
+    banner.style.background = zc.bg;
     card.appendChild(banner);
 
     const body = document.createElement('div');
     body.className = 'quest-card-body';
 
+    const sc = levelStarColor(quest.level);
     const header = document.createElement('div');
     header.className = 'quest-card-header';
     header.innerHTML = `
         <div class="quest-card-title">${esc(quest.title || 'Sans titre')}</div>
-        <div class="quest-stars">${buildStars(quest.level)}</div>`;
+        <div class="quest-stars" style="--star-color:${sc.active};--star-glow:${sc.glow}">${buildStars(quest.level)}</div>`;
     body.appendChild(header);
 
     if (quest.monsters?.length) {
@@ -304,7 +306,14 @@ function openModal(quest, isPending = false) {
     setEl('modalAuthor',  esc(quest.pseudo || 'Anonyme'));
 
     const banner = document.getElementById('modalBanner');
-    if (banner) banner.style.background = levelGradient(quest.level);
+    if (banner) banner.style.background = zoneGradient(quest.stageName).bg;
+
+    const modalStarsEl = document.getElementById('modalStars');
+    if (modalStarsEl) {
+        const sc = levelStarColor(quest.level);
+        modalStarsEl.style.setProperty('--star-color', sc.active);
+        modalStarsEl.style.setProperty('--star-glow',  sc.glow);
+    }
 
     const monstersEl = document.getElementById('modalMonsters');
     if (monstersEl) {
@@ -1078,6 +1087,31 @@ function levelGradient(l) {
     if (l >= 8)  return 'linear-gradient(90deg,#c8872a,#e09a38)';
     if (l >= 6)  return 'linear-gradient(90deg,#2d6fb5,#3a82cc)';
     return 'linear-gradient(90deg,#2a8a4a,#34a85a)';
+}
+
+/* Couleur de bannière selon la zone */
+const ZONE_COLORS = {
+    'st101_砂':         { from: '#8a7020', to: '#b89830', dim: 'rgba(138,112,32,0.12)' },  // Plaines venteuses – ocre doré
+    'st102_森':         { from: '#2a6b3a', to: '#3a9450', dim: 'rgba(42,107,58,0.12)'  },  // Forêt écarlate – vert forêt
+    'st103_油田':       { from: '#8a2020', to: '#b83232', dim: 'rgba(138,32,32,0.12)'  },  // Bassin pétrolier – rouge brûlé
+    'st104_壁':         { from: '#2060a0', to: '#3a82cc', dim: 'rgba(32,96,160,0.12)'  },  // Falaises de glace – bleu glacé
+    'st105_炉心':       { from: '#4a4f62', to: '#6b7290', dim: 'rgba(74,79,98,0.12)'   },  // Ruines de Wyveria – gris pierre
+    'st401_闘技場':     { from: '#5c2880', to: '#8040b8', dim: 'rgba(92,40,128,0.12)'  },  // Vallon meurtri – violet arène
+    'st402_壁ヌシ戦闘': { from: '#6a7890', to: '#98aabf', dim: 'rgba(106,120,144,0.12)'},  // Cimes gelées – blanc glaciaire
+};
+
+function zoneGradient(stageName) {
+    const c = ZONE_COLORS[stageName];
+    if (!c) return { bg: 'linear-gradient(90deg,#2e3450,#3d4a6e)', dim: 'rgba(46,52,80,0.12)' };
+    return { bg: `linear-gradient(90deg,${c.from},${c.to})`, dim: c.dim };
+}
+
+/* Couleur solide des étoiles actives selon le niveau */
+function levelStarColor(l) {
+    if (l >= 10) return { active: '#d4256e', glow: 'rgba(212,37,110,0.55)' };
+    if (l >= 8)  return { active: '#e09a38', glow: 'rgba(224,154,56,0.55)'  };
+    if (l >= 6)  return { active: '#3a82cc', glow: 'rgba(58,130,204,0.55)'  };
+    return { active: '#34a85a', glow: 'rgba(52,168,90,0.55)' };
 }
 
 function esc(s) {
