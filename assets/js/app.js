@@ -396,3 +396,34 @@ function showAlert(message, type = 'error') {
         console.log(message);
     }
 }
+
+/* ── Utilitaire de saisie numérique entière ───────────────── */
+
+/**
+ * Assainit en temps réel un champ <input type="number"> pour n'accepter
+ * que des entiers compris entre min et max inclus.
+ * Appelé via l'événement oninput.
+ * @param {HTMLInputElement} input - Le champ concerné.
+ * @param {number} min             - Valeur minimale autorisée.
+ * @param {number} max             - Valeur maximale autorisée.
+ */
+function sanitizeIntInput(input, min, max) {
+    const raw = input.value;
+
+    // Champ vide ou saisie en cours -> laisser l'utilisateur taper
+    if (raw === '' || raw === '-') return;
+
+    // Décimale détectée : tronquer immédiatement
+    if (raw.includes('.') || raw.includes(',')) {
+        const trunc = Math.trunc(parseFloat(raw.replace(',', '.')));
+        input.value = isNaN(trunc) ? min : Math.min(max, Math.max(min, trunc));
+        return;
+    }
+
+    const parsed = parseInt(raw, 10);
+    if (isNaN(parsed)) return;
+
+    // Clamp uniquement si la valeur dépasse les bornes
+    if (parsed > max) input.value = max;
+    else if (parsed < min) input.value = min;
+}

@@ -52,7 +52,10 @@ function updateRewardItem(index, property, value) {
                 : 'Objet inconnu';
         }
     } else if (property === 'minCount' || property === 'maxCount') {
-        rewardItems[index][property] = parseInt(value);
+        let parsed = Math.trunc(parseFloat(value));
+        if (isNaN(parsed) || parsed < 1)   parsed = 1;
+        if (parsed > 999)                   parsed = 999;
+        rewardItems[index][property] = parsed;
 
         // S'assurer que minCount ≤ maxCount
         if (rewardItems[index].minCount > rewardItems[index].maxCount) {
@@ -64,11 +67,10 @@ function updateRewardItem(index, property, value) {
             }
         }
     } else if (property === 'probability') {
-        rewardItems[index][property] = parseInt(value);
-
-        // Clamp entre 1 et 100
-        if (rewardItems[index].probability < 1)   rewardItems[index].probability = 1;
-        if (rewardItems[index].probability > 100) rewardItems[index].probability = 100;
+        let parsed = Math.trunc(parseFloat(value));
+        if (isNaN(parsed) || parsed < 1)   parsed = 1;
+        if (parsed > 100)                   parsed = 100;
+        rewardItems[index][property] = parsed;
     }
 }
 
@@ -180,12 +182,12 @@ function _createRewardElement(idx, item) {
             <select class="item-select" title="Nom de l'objet" onchange="updateRewardItem(${idx}, 'itemId', this.value)">
                 ${_buildItemOptions(item.itemId)}
             </select>
-            <input type="number" title="Quantité minimum" placeholder="Min" min="1" value="${item.minCount}"
-                onchange="updateRewardItem(${idx}, 'minCount', this.value)">
-            <input type="number" title="Quantité maximum" placeholder="Max" min="1" value="${item.maxCount}"
-                onchange="updateRewardItem(${idx}, 'maxCount', this.value)">
-            <input type="number" title="Chance de drop (%)" placeholder="Chance %" min="1" max="100" value="${item.probability}"
-                onchange="updateRewardItem(${idx}, 'probability', this.value)">
+            <input type="number" title="Quantité minimum" placeholder="Min" min="1" max="999" step="1" value="${item.minCount}"
+                oninput="sanitizeIntInput(this, 1, 999)" onchange="updateRewardItem(${idx}, 'minCount', this.value)">
+            <input type="number" title="Quantité maximum" placeholder="Max" min="1" max="999" step="1" value="${item.maxCount}"
+                oninput="sanitizeIntInput(this, 1, 999)" onchange="updateRewardItem(${idx}, 'maxCount', this.value)">
+            <input type="number" title="Chance de drop (%)" placeholder="Chance %" min="1" max="100" step="1" value="${item.probability}"
+                oninput="sanitizeIntInput(this, 1, 100)" onchange="updateRewardItem(${idx}, 'probability', this.value)">
         </div>
         <button onclick="removeRewardItem(${idx})">×</button>
     `;
