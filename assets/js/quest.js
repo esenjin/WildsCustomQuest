@@ -440,7 +440,13 @@ function updateQuestSummary() {
                 : target._LegendaryID === 'NORMAL'
                     ? '<span class="badge-alpha">Alpha</span>'
                     : '<span style="display:inline-block;font-size:0.7em;background:#2a2e3e;color:#888;border-radius:3px;padding:1px 5px;margin-left:5px;vertical-align:middle;font-weight:bold;">Standard</span>';
-            monstersList += `<li>${monsterName}${badge} <span style="color:#888;font-size:0.85em">(${monster ? monster.label : 'Inconnu'})</span></li>`;
+            const diffRankId = target._DifficultyRankId;
+            const gradeMatch = diffRankId?.Name?.match(/★\d+-(\d+)/);
+            const gradeNum   = gradeMatch ? parseInt(gradeMatch[1]) : null;
+            const gradeTag   = gradeNum
+                ? ` <span style="display:inline-block;font-size:0.7em;background:#1a1208;color:#c8902a;border:1px solid #6b4c10;border-radius:3px;padding:1px 5px;margin-left:4px;vertical-align:middle;">${'✦'.repeat(gradeNum)} G${gradeNum}</span>`
+                : '';
+            monstersList += `<li>${monsterName}${badge}${gradeTag} <span style="color:#888;font-size:0.85em">(${monster ? monster.label : 'Inconnu'})</span></li>`;
         });
 
         // ── Liste des récompenses ───────────────────────────
@@ -459,12 +465,13 @@ function updateQuestSummary() {
                 <div><strong>Client :</strong> ${msgEntry.MessageData[3].Text}</div>
                 <div><strong>ID :</strong> ${quest._DataList._MissionId._Value}</div>
                 <div><strong>Niveau :</strong> ★${quest._DataList._QuestLv}</div>
-                <div><strong>Puissance des monstres :</strong> ${(() => {
+                <div><strong>Grade des monstres :</strong> ${(() => {
                     const rankId = quest._BossZakoDataList._MainTargetDataList?.[0]?._DifficultyRankId;
                     const nameMatch = rankId?.Name?.match(/★\d+-(\d+)/);
-                    const stars = nameMatch ? parseInt(nameMatch[1]) : 3;
-                    const labels = { 3: '⚔️ Normal (3 étoiles)', 5: '☠️ Extrême (5 étoiles)' };
-                    return labels[stars] ?? `${stars} étoile(s)`;
+                    const grade = nameMatch ? parseInt(nameMatch[1]) : 3;
+                    const gradeStars = '✦'.repeat(grade);
+                    const gradeLabels = { 1: 'Faible', 2: 'Modéré', 3: 'Standard', 4: 'Puissant', 5: 'Extrême' };
+                    return `${gradeStars} Grade ${grade} — ${gradeLabels[grade] ?? grade}`;
                 })()}</div>
                 <div><strong>Lieu :</strong> ${quest._DataList._Stage._Name}</div>
                 ${(quest._DataList._BossRushParams ?? []).some(p => p._PopType === 2)
@@ -593,25 +600,34 @@ async function importQuest(input) {
         document.getElementById('questLevel').value       = data._QuestLv ?? 8;
 
         // ── Difficulté des monstres ─────────────────────────
-        // Lire le DifficultyRankId du premier monstre principal pour déduire les étoiles
+        // Lire le DifficultyRankId du premier monstre principal pour déduire le grade
         const firstTarget = raw._BossZakoDataList?._MainTargetDataList?.[0];
         if (firstTarget?._DifficultyRankId?.Value) {
             const uuid = firstTarget._DifficultyRankId.Value;
-            // Chercher dans notre table de correspondance
-            let detectedStars = 3; // défaut : normal
-            for (const [stars, entry] of Object.entries(DIFFICULTY_RANK_IDS)) {
-                if (entry.normal === uuid || entry.tempered === uuid) {
-                    detectedStars = parseInt(stars);
-                    break;
+            // Chercher dans la DIFFICULTY_TABLE complète (10 rangs × 5 grades × 3 variants)
+            let detectedGrade = 3; // défaut raisonnable
+            outer:
+            for (const [rankKey, rankEntry] of Object.entries(DIFFICULTY_TABLE)) {
+                for (const [gradeKey, gradeEntry] of Object.entries(rankEntry)) {
+                    if (gradeEntry.normal === uuid || gradeEntry.alpha === uuid || gradeEntry.supreme === uuid) {
+                        detectedGrade = parseInt(gradeKey);
+                        break outer;
+                    }
                 }
             }
-            // Fallback : lire le nom (format ★N-X)
-            if (detectedStars === 3) {
+            // Fallback : lire le grade depuis le nom (format ★N-G)
+            if (detectedGrade === 3) {
                 const nameMatch = firstTarget._DifficultyRankId.Name?.match(/★\d+-(\d+)/);
-                if (nameMatch) detectedStars = parseInt(nameMatch[1]);
+                if (nameMatch) detectedGrade = parseInt(nameMatch[1]);
             }
             const diffEl = document.getElementById('monsterDifficulty');
-            if (diffEl) diffEl.value = String(detectedStars);
+            if (diffEl) {
+                diffEl.value = String(detectedGrade);
+                // Appliquer les restrictions et rafraîchir le panneau
+                const questLevel = parseInt(document.getElementById('questLevel')?.value ?? '8');
+                _applyGradeRestrictions(questLevel);
+                _refreshRestrictionsPanel();
+            }
         }
 
 

@@ -121,6 +121,8 @@ function bindFilters() {
     document.getElementById('filterZone')?.addEventListener('change', applyFilters);
     document.getElementById('filterMonster')?.addEventListener('change', applyFilters);
     document.getElementById('filterPlayers')?.addEventListener('change', applyFilters);
+    document.getElementById('filterGrade')?.addEventListener('change', applyFilters);
+    document.getElementById('filterVariant')?.addEventListener('change', applyFilters);
     document.getElementById('filterAuthor')?.addEventListener('input', debounce(applyFilters, 280));
     document.getElementById('filterMaxDeaths')?.addEventListener('input', debounce(applyFilters, 280));
     document.getElementById('filterMaxTime')?.addEventListener('input', debounce(applyFilters, 280));
@@ -134,6 +136,8 @@ function applyFilters() {
     const zone    = document.getElementById('filterZone')?.value ?? '';
     const mId     = parseInt(document.getElementById('filterMonster')?.value ?? '0');
     const players = document.getElementById('filterPlayers')?.value ?? '';
+    const grade   = parseInt(document.getElementById('filterGrade')?.value)   || null;
+    const variant = document.getElementById('filterVariant')?.value ?? '';
     const author  = (document.getElementById('filterAuthor')?.value ?? '').toLowerCase().trim();
     const maxD    = parseInt(document.getElementById('filterMaxDeaths')?.value) || null;
     const maxT    = parseInt(document.getElementById('filterMaxTime')?.value)   || null;
@@ -149,6 +153,8 @@ function applyFilters() {
         if (zone    && quest.stageName          !== zone)    return false;
         if (mId     && !(quest.monsters ?? []).some(m => m.fixedId === mId)) return false;
         if (players && String(quest.maxPlayers) !== players) return false;
+        if (grade   && quest.monsterGrade !== grade)         return false;
+        if (variant && !(quest.monsters ?? []).some(m => m.variant === variant)) return false;
         if (author  && !(quest.pseudo ?? '').toLowerCase().includes(author)) return false;
         if (maxD !== null && quest.questLife > maxD) return false;
         if (maxT !== null && quest.timeLimit > maxT) return false;
@@ -171,7 +177,7 @@ function resetFilters() {
     ['searchInput','filterAuthor','filterMaxDeaths','filterMaxTime'].forEach(id => {
         const el = document.getElementById(id); if (el) el.value = '';
     });
-    ['filterLevel','filterZone','filterMonster','filterPlayers','sortSelect'].forEach(id => {
+    ['filterLevel','filterZone','filterMonster','filterPlayers','filterGrade','filterVariant','sortSelect'].forEach(id => {
         const el = document.getElementById(id); if (el) el.selectedIndex = 0;
     });
     applyFilters();
@@ -249,6 +255,7 @@ function buildCard(quest) {
         <div class="quest-meta-chips">
             <span class="meta-chip" title="Temps limite">⏱ ${quest.timeLimit} min</span>
             <span class="meta-chip" title="Fautes tolérées">💀 ${quest.questLife}</span>
+            ${quest.monsterGrade ? `<span class="meta-chip meta-chip-grade" title="Grade des monstres">${'✦'.repeat(quest.monsterGrade)} G${quest.monsterGrade}</span>` : ''}
         </div>`;
     card.appendChild(footer);
 
@@ -286,8 +293,10 @@ function openModal(quest, isPending = false) {
     if (seqEl) seqEl.style.display = quest.sequential ? 'inline-flex' : 'none';
     setEl('modalMoney', (quest.money ?? 0).toLocaleString('fr-FR') + ' z');
 
-    const starsLabels = { 3: '⚔️ Normal (3✦)', 5: '☠️ Extrême (5✦)' };
-    setEl('modalMonsterStars', starsLabels[quest.monsterStars] ?? `${quest.monsterStars ?? '?'} étoile(s)`);
+    const gradeLabels = { 1: 'Faible', 2: 'Modéré', 3: 'Standard', 4: 'Puissant', 5: 'Extrême' };
+    const g = quest.monsterGrade ?? quest.monsterStars; // compat. anciennes quêtes
+    const gradeStars = g ? '✦'.repeat(g) : '';
+    setEl('modalMonsterStars', g ? `${gradeStars} Grade ${g} — ${gradeLabels[g] ?? g}` : '—');
     setEl('modalRC',      `RC ${quest.minRC ?? 1} ou plus`);
     setEl('modalPlayers', `Jusqu'à ${quest.maxPlayers ?? 4} joueur(s)`);
     setEl('modalDeaths',  `S'évanouir ${quest.questLife ?? 3} fois`);

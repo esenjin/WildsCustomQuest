@@ -115,70 +115,246 @@ function getQuestLevelConfig(level) {
     // Mapping rewardId par niveau :
     // 1–3 → 201, 4–6 → 301, 7 → 450, 8 → 520, 9 → 620, 10 → 630
     const configs = {
-        1:  { money: 2400,  hrPoints: 100,  rewardId: 201, orderHR: 1   },
-        2:  { money: 4800,  hrPoints: 180,  rewardId: 201, orderHR: 1   },
-        3:  { money: 7200,  hrPoints: 270,  rewardId: 201, orderHR: 10  },
-        4:  { money: 9600,  hrPoints: 360,  rewardId: 301, orderHR: 20  },
-        5:  { money: 12000, hrPoints: 450,  rewardId: 301, orderHR: 25  },
-        6:  { money: 16800, hrPoints: 540,  rewardId: 301, orderHR: 30  },
-        7:  { money: 20400, hrPoints: 600,  rewardId: 450, orderHR: 40  },
-        8:  { money: 24000, hrPoints: 660,  rewardId: 520, orderHR: 60  },
-        9:  { money: 36000, hrPoints: 900,  rewardId: 620, orderHR: 100 },
-        10: { money: 48000, hrPoints: 1200, rewardId: 630, orderHR: 100 }
+        1:  { money: 2000,  hrPoints: 200,  rewardId: 201, orderHR: 1   },
+        2:  { money: 5000,  hrPoints: 400,  rewardId: 201, orderHR: 1   },
+        3:  { money: 8000,  hrPoints: 600,  rewardId: 201, orderHR: 10  },
+        4:  { money: 10000, hrPoints: 800,  rewardId: 301, orderHR: 21  },
+        5:  { money: 15000, hrPoints: 1000, rewardId: 301, orderHR: 21  },
+        6:  { money: 20000, hrPoints: 1500, rewardId: 301, orderHR: 41  },
+        7:  { money: 23000, hrPoints: 2000, rewardId: 450, orderHR: 41  },
+        8:  { money: 25000, hrPoints: 2500, rewardId: 520, orderHR: 61  },
+        9:  { money: 30000, hrPoints: 2800, rewardId: 620, orderHR: 100 },
+        10: { money: 50000, hrPoints: 3400, rewardId: 630, orderHR: 100 }
     };
     return configs[level] || configs[8];
 }
 
-/* ── Difficulté des monstres ──────────────────────────────── */
+/* ══════════════════════════════════════════════════════════
+   SYSTÈME DE RESTRICTIONS DE DIFFICULTÉ
+   ══════════════════════════════════════════════════════════ */
 
 /**
- * Table des UUIDs de DifficultyRankId extraits des quêtes officielles.
- * Format : { `${questLv}-${stars}`: { normal: uuid, tempered: uuid } }
+ * Retourne les règles de restriction actives pour un niveau de quête donné.
+ * Ces règles reflètent fidèlement la structure des quêtes officielles MH Wilds.
  *
- * Sources confirmées par analyse de quêtes officielles :
- *   ★8-3  → 14627cdc-9c1a-43e6-ab18-d01c45120a4b  (Gogmazios, LegendaryID: NONE)
- *   ★10-5 → 64938e94-d384-4567-8ed5-af922379600d  (Jin Dahaad, LegendaryID: KING)
+ * Restrictions de grade (global) :
+ *   ★1–8  → grades 1 à 5 tous disponibles
+ *   ★9    → grade minimum 3 (grades 1–2 absents des données officielles)
+ *   ★10   → grade 5 uniquement (seul grade présent dans les données officielles)
  *
- * Les autres entrées utilisent les valeurs génériques connues du générateur
- * (aa92e87f = standard 5★, 6d893ac4 = Alpha trempé).
+ * Restrictions de variant (par monstre) :
+ *   Alpha         → requiert quête ≥ 5★ ET grade ≥ 3
+ *   Alpha Suprême → requiert quête ≥ 8★ ET grade = 5
+ *
+ * @param {number} questLevel - Niveau de la quête (1–10).
+ * @returns {{ minGrade, alphaMinQuestLevel, alphaMinGrade, supremeMinQuestLevel, supremeMinGrade }}
  */
+function getQuestRestrictions(questLevel) {
+    return {
+        minGrade:             questLevel >= 10 ? 5 : questLevel >= 9 ? 3 : 1,
+        alphaMinQuestLevel:   5,
+        alphaMinGrade:        3,
+        supremeMinQuestLevel: 8,
+        supremeMinGrade:      5
+    };
+}
+
 /**
- * UUIDs de DifficultyRankId par nombre d'étoiles et type de monstre.
- *
- * Pour les monstres standard (NONE) :
- *   3★ → 14627cdc
- *   5★ → 64938e94
- *
- * Pour les monstres Alpha / Alpha Suprême (TEMPERED / ARCH_TEMPERED) :
- *   3★ → f6554537
- *   5★ → 3ba88339
+ * Indique si le variant Alpha est autorisé pour la combinaison donnée.
+ * @param {number} questLevel
+ * @param {number} grade
  */
-const DIFFICULTY_RANK_IDS = {
+function isAlphaAllowed(questLevel, grade) {
+    const r = getQuestRestrictions(questLevel);
+    return questLevel >= r.alphaMinQuestLevel && grade >= r.alphaMinGrade;
+}
+
+/**
+ * Indique si le variant Alpha Suprême est autorisé pour la combinaison donnée.
+ * @param {number} questLevel
+ * @param {number} grade
+ */
+function isSupremeAllowed(questLevel, grade) {
+    const r = getQuestRestrictions(questLevel);
+    return questLevel >= r.supremeMinQuestLevel && grade >= r.supremeMinGrade;
+}
+
+/**
+ * Construit le message HTML du panneau de restrictions pour l'affichage dans l'UI.
+ * @param {number} questLevel
+ * @param {number} grade
+ * @returns {string} HTML du panneau, ou chaîne vide si aucune restriction active.
+ */
+function buildRestrictionsHTML(questLevel, grade) {
+    const items = [];
+    const r = getQuestRestrictions(questLevel);
+
+    // Restrictions de grade
+    if (questLevel >= 10) {
+        items.push({ type: 'block', text: 'Grade 5 obligatoire en quête ★10' });
+    } else if (questLevel >= 9) {
+        items.push({ type: 'block', text: 'Grades 1 et 2 indisponibles en quête ★9' });
+    }
+
+    // Restrictions Alpha
+    if (questLevel < r.alphaMinQuestLevel) {
+        items.push({ type: 'block', text: 'Alpha indisponible — requiert une quête ★5 minimum' });
+    } else if (grade < r.alphaMinGrade) {
+        items.push({ type: 'block', text: 'Alpha indisponible — requiert le grade 3 minimum' });
+    } else {
+        items.push({ type: 'ok', text: 'Alpha disponible ✓' });
+    }
+
+    // Restrictions Alpha Suprême
+    if (questLevel < r.supremeMinQuestLevel) {
+        items.push({ type: 'block', text: 'Alpha Suprême indisponible — requiert une quête ★8 minimum' });
+    } else if (grade < r.supremeMinGrade) {
+        items.push({ type: 'block', text: 'Alpha Suprême indisponible — requiert le grade 5' });
+    } else {
+        items.push({ type: 'ok', text: 'Alpha Suprême disponible ✓' });
+    }
+
+    const hasBlocks = items.some(i => i.type === 'block');
+    if (!hasBlocks && items.every(i => i.type === 'ok')) return '';
+
+    const html = items.map(i => {
+        if (i.type === 'block') return `<li class="restr-block">⛔ ${i.text}</li>`;
+        return `<li class="restr-ok">✅ ${i.text}</li>`;
+    }).join('');
+
+    return `<ul class="restr-list">${html}</ul>`;
+}
+
+
+/* ── Table complète des GUIDs de difficulté ───────────────── */
+
+/**
+ * Table exhaustive des instanceGuid extraits des fichiers officiels du jeu.
+ * 182 entrées couvrant les 10 rangs de récompense × 5 grades × 3 variants.
+ *
+ * Logique de sélection des GUIDs :
+ *   - Normal    → dying=28 (rangs 1–3) ou dying=23 (rangs 4–8) ou dying=15 (rang 9) ou dying=12 (rang 10)
+ *   - Alpha     → dying=17 (rangs 6–7) ou dying=18 (rang 8) ou atk renforcée (rang 9) — fallback=normal si absent
+ *   - Suprême   → dying=13 (rangs 8–9) ou dying=12 hp+ (rang 10)   — fallback=alpha si absent
+ *
+ * Grades manquants dans les données officielles :
+ *   - Rang 9 grades 1–2 → fallback grade 3 (logique, bloqué par getQuestRestrictions)
+ *   - Rang 10 grades 1–4 → fallback grade 5 (idem, bloqué par restriction)
+ *
+ * @type {Object.<string, Object.<number, {normal:string, alpha:string, supreme:string}>>}
+ */
+const DIFFICULTY_TABLE = {
+    "1": {
+        1: { normal: "8749a106-3696-4bba-a267-ec0814c4ee46", alpha: "8749a106-3696-4bba-a267-ec0814c4ee46", supreme: "8749a106-3696-4bba-a267-ec0814c4ee46" },
+        2: { normal: "4287dc88-acce-49d0-8e00-12cfadee4cca", alpha: "4287dc88-acce-49d0-8e00-12cfadee4cca", supreme: "4287dc88-acce-49d0-8e00-12cfadee4cca" },
+        3: { normal: "e2dc622b-6851-4051-9a29-ea6c0af64afa", alpha: "e2dc622b-6851-4051-9a29-ea6c0af64afa", supreme: "e2dc622b-6851-4051-9a29-ea6c0af64afa" },
+        4: { normal: "1384437b-9627-4234-9072-a9f2396386cb", alpha: "1384437b-9627-4234-9072-a9f2396386cb", supreme: "1384437b-9627-4234-9072-a9f2396386cb" },
+        5: { normal: "560f97b6-a408-4c42-ad70-f410a0b7f83c", alpha: "560f97b6-a408-4c42-ad70-f410a0b7f83c", supreme: "560f97b6-a408-4c42-ad70-f410a0b7f83c" }
+    },
+    "2": {
+        1: { normal: "512cefb4-eba1-4e21-a0d5-5486b924fcf7", alpha: "512cefb4-eba1-4e21-a0d5-5486b924fcf7", supreme: "512cefb4-eba1-4e21-a0d5-5486b924fcf7" },
+        2: { normal: "6ab722c0-eadf-4380-a0d6-e040082910de", alpha: "6ab722c0-eadf-4380-a0d6-e040082910de", supreme: "6ab722c0-eadf-4380-a0d6-e040082910de" },
+        3: { normal: "e7504b4e-9b0d-4cc7-918e-c66abf352fcb", alpha: "e7504b4e-9b0d-4cc7-918e-c66abf352fcb", supreme: "e7504b4e-9b0d-4cc7-918e-c66abf352fcb" },
+        4: { normal: "43b56a3d-2dec-464b-8dff-63d973dbcecc", alpha: "43b56a3d-2dec-464b-8dff-63d973dbcecc", supreme: "43b56a3d-2dec-464b-8dff-63d973dbcecc" },
+        5: { normal: "ab8dceaf-a84c-48d3-a68a-9301b6b9b12b", alpha: "ab8dceaf-a84c-48d3-a68a-9301b6b9b12b", supreme: "ab8dceaf-a84c-48d3-a68a-9301b6b9b12b" }
+    },
     "3": {
-        normal:   "14627cdc-9c1a-43e6-ab18-d01c45120a4b",
-        tempered: "f6554537-09bf-4911-8139-ce95843973fc"
+        1: { normal: "844bfce6-3663-4c5c-9460-6b4c4c4c7a1a", alpha: "844bfce6-3663-4c5c-9460-6b4c4c4c7a1a", supreme: "844bfce6-3663-4c5c-9460-6b4c4c4c7a1a" },
+        2: { normal: "eab95bfa-10a1-4912-8e3e-1ac85c15d870", alpha: "eab95bfa-10a1-4912-8e3e-1ac85c15d870", supreme: "eab95bfa-10a1-4912-8e3e-1ac85c15d870" },
+        3: { normal: "987044cd-0624-4665-a490-b6bb969ec89a", alpha: "987044cd-0624-4665-a490-b6bb969ec89a", supreme: "987044cd-0624-4665-a490-b6bb969ec89a" },
+        4: { normal: "b5da9c7e-36e0-4487-8b77-e66bf72609b9", alpha: "b5da9c7e-36e0-4487-8b77-e66bf72609b9", supreme: "b5da9c7e-36e0-4487-8b77-e66bf72609b9" },
+        5: { normal: "dfe07421-aa0d-4cc6-8358-9f59674d414d", alpha: "dfe07421-aa0d-4cc6-8358-9f59674d414d", supreme: "dfe07421-aa0d-4cc6-8358-9f59674d414d" }
+    },
+    "4": {
+        1: { normal: "e4cb18b4-dedd-4b8b-9737-be9d882d31d6", alpha: "e4cb18b4-dedd-4b8b-9737-be9d882d31d6", supreme: "e4cb18b4-dedd-4b8b-9737-be9d882d31d6" },
+        2: { normal: "b13f1838-fade-498c-ae0c-005acf618a73", alpha: "b13f1838-fade-498c-ae0c-005acf618a73", supreme: "b13f1838-fade-498c-ae0c-005acf618a73" },
+        3: { normal: "8ac996e9-cd2a-4c72-8bbc-e42cfa8df67b", alpha: "8ac996e9-cd2a-4c72-8bbc-e42cfa8df67b", supreme: "8ac996e9-cd2a-4c72-8bbc-e42cfa8df67b" },
+        4: { normal: "72dc9845-7063-4066-af98-7d80ff46ceb6", alpha: "72dc9845-7063-4066-af98-7d80ff46ceb6", supreme: "72dc9845-7063-4066-af98-7d80ff46ceb6" },
+        5: { normal: "2fbc2268-808d-466e-9ccd-40d796a62635", alpha: "2fbc2268-808d-466e-9ccd-40d796a62635", supreme: "2fbc2268-808d-466e-9ccd-40d796a62635" }
     },
     "5": {
-        normal:   "64938e94-d384-4567-8ed5-af922379600d",
-        tempered: "3ba88339-3d81-4ae6-85e0-dafa2af189f8"
+        // Rang 5 : pas de GUID alpha dédié (dying=17 absent) → alpha = même GUID que normal
+        // L'aura alpha est portée uniquement par le flag variant TEMPERED
+        1: { normal: "6f969570-6e32-4caa-9ae0-b3fa7c131975", alpha: "6f969570-6e32-4caa-9ae0-b3fa7c131975", supreme: "6f969570-6e32-4caa-9ae0-b3fa7c131975" },
+        2: { normal: "d9e307a4-8be2-428b-9533-533e43737134", alpha: "d9e307a4-8be2-428b-9533-533e43737134", supreme: "d9e307a4-8be2-428b-9533-533e43737134" },
+        3: { normal: "d320da89-0663-4541-bbb5-8542f4d307f6", alpha: "d320da89-0663-4541-bbb5-8542f4d307f6", supreme: "d320da89-0663-4541-bbb5-8542f4d307f6" },
+        4: { normal: "6178728a-23ed-4456-97d2-9e5d173dd1f7", alpha: "6178728a-23ed-4456-97d2-9e5d173dd1f7", supreme: "6178728a-23ed-4456-97d2-9e5d173dd1f7" },
+        5: { normal: "f5332191-0ae8-4a76-9f31-e61b5048e22d", alpha: "f5332191-0ae8-4a76-9f31-e61b5048e22d", supreme: "f5332191-0ae8-4a76-9f31-e61b5048e22d" }
+    },
+    "6": {
+        // dying=23 → normal | dying=17 → alpha | pas de suprême (restriction ★8)
+        // Grades 1–2 : pas d'entrée dying=17 → alpha = normal
+        1: { normal: "be8cbfe8-acd9-487c-91f1-353ea3928ef2", alpha: "be8cbfe8-acd9-487c-91f1-353ea3928ef2", supreme: "be8cbfe8-acd9-487c-91f1-353ea3928ef2" },
+        2: { normal: "3809f0fa-a5b1-4a0d-8db7-aa4381c4ff2d", alpha: "3809f0fa-a5b1-4a0d-8db7-aa4381c4ff2d", supreme: "3809f0fa-a5b1-4a0d-8db7-aa4381c4ff2d" },
+        3: { normal: "0e9c0fff-7aa6-4087-925c-501a900f602b", alpha: "38308372-4fc3-49d4-929a-676f7fe2565f", supreme: "38308372-4fc3-49d4-929a-676f7fe2565f" },
+        4: { normal: "5998e97c-7f3a-41fa-8122-650e9351c250", alpha: "70397745-7632-471b-8f0e-41c271d5ef47", supreme: "70397745-7632-471b-8f0e-41c271d5ef47" },
+        5: { normal: "776ba34f-17a9-4d4c-9794-a11918d0dc00", alpha: "a325aaaf-a1aa-4911-88a9-4285a73ed0db", supreme: "a325aaaf-a1aa-4911-88a9-4285a73ed0db" }
+    },
+    "7": {
+        // dying=23 → normal | dying=17 → alpha | pas de suprême (restriction ★8)
+        // Grades 1–2 : pas d'entrée dying=17 → alpha = normal
+        1: { normal: "49f8e6c1-e77f-4ec3-ae2f-e0253a244bd3", alpha: "49f8e6c1-e77f-4ec3-ae2f-e0253a244bd3", supreme: "49f8e6c1-e77f-4ec3-ae2f-e0253a244bd3" },
+        2: { normal: "7f8246d1-88b0-41d8-b993-92cdd0371712", alpha: "7f8246d1-88b0-41d8-b993-92cdd0371712", supreme: "7f8246d1-88b0-41d8-b993-92cdd0371712" },
+        3: { normal: "80e64c45-1926-4659-a954-9654a488f2f0", alpha: "681788c2-129c-4305-b054-360c74033bf5", supreme: "681788c2-129c-4305-b054-360c74033bf5" },
+        4: { normal: "d98b7732-2063-4582-b884-bb2287600dfd", alpha: "672504b4-7a87-45c3-b199-90d3eb37d393", supreme: "672504b4-7a87-45c3-b199-90d3eb37d393" },
+        5: { normal: "f3e5ded8-fe74-4334-b582-9142e511c180", alpha: "d6c1670c-ecbb-4c5d-95e7-33c2c320800b", supreme: "d6c1670c-ecbb-4c5d-95e7-33c2c320800b" }
+    },
+    "8": {
+        // dying=23 → normal | dying=18 → alpha | dying=13 → suprême
+        // Grades 1–2 : pas de dying=18/13 → alpha = supreme = normal
+        1: { normal: "b592f809-84f1-44a9-a788-3302fdf24b9e", alpha: "b592f809-84f1-44a9-a788-3302fdf24b9e", supreme: "b592f809-84f1-44a9-a788-3302fdf24b9e" },
+        2: { normal: "703e1672-832a-4ef8-871d-e139d9f63734", alpha: "703e1672-832a-4ef8-871d-e139d9f63734", supreme: "703e1672-832a-4ef8-871d-e139d9f63734" },
+        3: { normal: "ccaf8a5e-5842-4316-b328-5ad826629f42", alpha: "f6554537-09bf-4911-8139-ce95843973fc", supreme: "a7238a40-6595-4b05-8f5a-3f0114e1c0f7" },
+        4: { normal: "e40ac53b-c101-4c04-8981-bbceb6d806ff", alpha: "0ea0c910-1d08-44b2-970a-13c4d997e378", supreme: "2d410590-46af-48dc-b99b-8c0edaeed0d8" },
+        5: { normal: "e889e55e-cea7-4764-ae73-408ba124212c", alpha: "3ba88339-3d81-4ae6-85e0-dafa2af189f8", supreme: "f25965da-30b5-42de-993b-d4d140986726" }
+    },
+    "9": {
+        // Grades 1–2 absents des données → fallback grade 3 (bloqués par restriction)
+        // dying=15 → normal/alpha différenciés par attack | dying=13 → suprême (grade 3 et 5)
+        1: { normal: "d6e4e648-df88-4bd1-874f-d1997cf96b22", alpha: "323f25ba-425d-430a-8734-2de5e98f2d43", supreme: "b3a5ca9d-ba99-4771-9974-a7471f706d6b" },
+        2: { normal: "d6e4e648-df88-4bd1-874f-d1997cf96b22", alpha: "323f25ba-425d-430a-8734-2de5e98f2d43", supreme: "b3a5ca9d-ba99-4771-9974-a7471f706d6b" },
+        3: { normal: "d6e4e648-df88-4bd1-874f-d1997cf96b22", alpha: "323f25ba-425d-430a-8734-2de5e98f2d43", supreme: "b3a5ca9d-ba99-4771-9974-a7471f706d6b" },
+        4: { normal: "ac25e176-a1e8-4872-b34f-2e2b7a230f5c", alpha: "591e8610-e43f-4078-9608-6c5ff6540003", supreme: "591e8610-e43f-4078-9608-6c5ff6540003" },
+        5: { normal: "aa92e87f-9a58-4a8f-8613-c00ddb9e763a", alpha: "f909927b-cb28-4874-b03c-4a72ff88399b", supreme: "f909927b-cb28-4874-b03c-4a72ff88399b" }
+    },
+    "10": {
+        // Grade 5 uniquement dans les données → grades 1–4 fallback sur grade 5 (bloqués par restriction)
+        // dying=12 — différencié par HP : 7.30 (normal) | 10.90 (alpha) | 12.15 (suprême)
+        1: { normal: "5ffe9dda-6926-4fd8-a3de-e9eafcf0fa50", alpha: "d5826b15-4244-4e85-bbd9-d2f44b8a4f7a", supreme: "92666b5d-ef17-4e5c-90d5-a07e97ee57ac" },
+        2: { normal: "5ffe9dda-6926-4fd8-a3de-e9eafcf0fa50", alpha: "d5826b15-4244-4e85-bbd9-d2f44b8a4f7a", supreme: "92666b5d-ef17-4e5c-90d5-a07e97ee57ac" },
+        3: { normal: "5ffe9dda-6926-4fd8-a3de-e9eafcf0fa50", alpha: "d5826b15-4244-4e85-bbd9-d2f44b8a4f7a", supreme: "92666b5d-ef17-4e5c-90d5-a07e97ee57ac" },
+        4: { normal: "5ffe9dda-6926-4fd8-a3de-e9eafcf0fa50", alpha: "d5826b15-4244-4e85-bbd9-d2f44b8a4f7a", supreme: "92666b5d-ef17-4e5c-90d5-a07e97ee57ac" },
+        5: { normal: "5ffe9dda-6926-4fd8-a3de-e9eafcf0fa50", alpha: "d5826b15-4244-4e85-bbd9-d2f44b8a4f7a", supreme: "92666b5d-ef17-4e5c-90d5-a07e97ee57ac" }
     }
 };
 
 /**
  * Retourne le _DifficultyRankId complet pour un monstre donné.
- * @param {number} questLevel      - Niveau de la quête (1–10).
- * @param {number} stars           - Nombre d'étoiles (3 ou 5), lu depuis le sélecteur global.
- * @param {string} variant         - Variante du monstre : 'NONE', 'TEMPERED', 'ARCH_TEMPERED'.
+ * Utilise la table DIFFICULTY_TABLE avec fallbacks sécurisés.
+ *
+ * @param {number} questLevel - Niveau de la quête (1–10).
+ * @param {number} grade      - Grade du monstre (1–5), lu depuis le sélecteur global.
+ * @param {string} variant    - Variante : 'NONE', 'TEMPERED' (Alpha), 'ARCH_TEMPERED' (Suprême).
  * @returns {{ Name: string, Value: string }}
  */
-function getDifficultyRankId(questLevel, stars, variant) {
-    const isTempered = variant === 'TEMPERED' || variant === 'ARCH_TEMPERED';
-    const key   = String(stars);
-    const entry = DIFFICULTY_RANK_IDS[key] || DIFFICULTY_RANK_IDS["3"];
-    const uuid  = isTempered ? entry.tempered : entry.normal;
+function getDifficultyRankId(questLevel, grade, variant) {
+    const rankKey  = String(Math.min(10, Math.max(1, questLevel)));
+    const gradeKey = Math.min(5, Math.max(1, grade));
 
-    const starLabel = stars === 0 ? `★${questLevel}-0` : `★${questLevel}-${stars}`;
-    return { "Name": starLabel, "Value": uuid };
+    const rankEntry  = DIFFICULTY_TABLE[rankKey] ?? DIFFICULTY_TABLE["8"];
+    const gradeEntry = rankEntry[gradeKey] ?? rankEntry[3] ?? Object.values(rankEntry)[0];
+
+    let variantKey;
+    if (variant === 'ARCH_TEMPERED') {
+        variantKey = isSupremeAllowed(questLevel, grade) ? 'supreme' : 'normal';
+    } else if (variant === 'TEMPERED') {
+        variantKey = isAlphaAllowed(questLevel, grade) ? 'alpha' : 'normal';
+    } else {
+        variantKey = 'normal';
+    }
+
+    const uuid = gradeEntry[variantKey] ?? gradeEntry.normal;
+    return { "Name": `★${questLevel}-${grade}`, "Value": uuid };
 }
 
 

@@ -77,6 +77,24 @@ function populateMonsterList() {
         const isAlpha        = variant === 'TEMPERED';
         const isArchTempered = variant === 'ARCH_TEMPERED';
 
+        // ── Restrictions de variant ──────────────────────────
+        const _questLevel   = parseInt(document.getElementById('questLevel')?.value ?? '8');
+        const _grade        = parseInt(document.getElementById('monsterDifficulty')?.value ?? '3');
+        const _alphaAllowed = isAlphaAllowed(_questLevel, _grade);
+        const _atAllowed    = isSupremeAllowed(_questLevel, _grade);
+
+        // Raisons de blocage (pour les tooltips)
+        const _alphaTitle = !_alphaAllowed
+            ? (_questLevel < 5
+                ? 'Alpha indisponible — requiert une quête ★5 minimum'
+                : 'Alpha indisponible — requiert le grade 3 minimum')
+            : '';
+        const _atTitle = !_atAllowed
+            ? (_questLevel < 8
+                ? 'Alpha Suprême indisponible — requiert une quête ★8 minimum'
+                : 'Alpha Suprême indisponible — requiert le grade 5')
+            : '';
+
         // ── Zone de spawn ──────────────────────────────────
         // Déterminer les zones disponibles pour la région courante
         const spawnZones      = LOCATION_SPAWN_ZONES[currentLocation] ?? null;
@@ -84,7 +102,7 @@ function populateMonsterList() {
         // Zone déjà stockée sur ce monstre, ou zone par défaut de la région
         const currentSpawnZone = existingSelection?.spawnZone ?? getDefaultSpawnZone(currentLocation);
 
-        // Récupérer les étoiles stockées sur ce monstre (défaut : 5 pour les variants)
+        // Récupérer la variante existante pour ce monstre (NONE / TEMPERED / ARCH_TEMPERED)
         card.innerHTML = `
             <div class="monster-card-inner">
                 <div class="monster-card-img-wrap">
@@ -102,14 +120,36 @@ function populateMonsterList() {
                     <p class="zone-locked-msg">⛔ Uniquement disponible en zone <strong>Cimes gelées</strong></p>
                     ` : `
                     <div class="monster-controls">
-                        <label for="${cbAlphaId}" style="color:var(--alpha-h);">
-                            <input type="checkbox" id="${cbAlphaId}" class="cb-alpha" ${isAlpha || isArchTempered ? 'checked' : ''}>
+                        <label
+                            for="${cbAlphaId}"
+                            style="color:var(--alpha-h); ${!_alphaAllowed ? 'opacity:0.4;cursor:not-allowed;' : ''}"
+                            title="${_alphaTitle}"
+                        >
+                            <input
+                                type="checkbox"
+                                id="${cbAlphaId}"
+                                class="cb-alpha"
+                                ${isAlpha || isArchTempered ? 'checked' : ''}
+                                ${!_alphaAllowed ? 'disabled' : ''}
+                            >
                             Alpha
+
                         </label>
                         ${canBeAT
-                            ? `<label for="${cbATId}" style="color:var(--at-h);">
-                                   <input type="checkbox" id="${cbATId}" class="cb-at" ${isArchTempered ? 'checked' : ''} ${isAlpha || isArchTempered ? '' : 'disabled'}>
-                                   Alpha Suprême
+                            ? `<label
+                                    for="${cbATId}"
+                                    style="color:var(--at-h); ${!_atAllowed ? 'opacity:0.4;cursor:not-allowed;' : ''}"
+                                    title="${_atTitle}"
+                                >
+                                    <input
+                                        type="checkbox"
+                                        id="${cbATId}"
+                                        class="cb-at"
+                                        ${isArchTempered ? 'checked' : ''}
+                                        ${(!isAlpha && !isArchTempered) || !_atAllowed ? 'disabled' : ''}
+                                    >
+                                    Alpha Suprême
+
                                </label>`
                             : ''
                         }
@@ -194,7 +234,8 @@ function populateMonsterList() {
                     // Décocher alpha désactive aussi AT
                     if (cbAT) { cbAT.checked = false; cbAT.disabled = true; }
                 } else {
-                    if (cbAT) cbAT.disabled = false;
+                    // N'activer AT que si la restriction suprême le permet
+                    if (cbAT) cbAT.disabled = !_atAllowed;
                 }
                 const newVariant = _getVariantFromCheckboxes(card);
                 const sel = selectedMonsters.find(m => m.fixedId === monster.fixedId);

@@ -101,12 +101,18 @@
             </div>
 
             <div class="form-group">
-                <label for="monsterDifficulty">Puissance des monstres :</label>
-                <select id="monsterDifficulty">
-                    <option value="3" selected>⚔️ Normal (3 étoiles roses)</option>
-                    <option value="5">☠️ Extrême (5 étoiles roses)</option>
+                <label for="monsterDifficulty">Grade des monstres :</label>
+                <select id="monsterDifficulty" onchange="onMonsterGradeChange(this.value)">
+                    <option value="1">✦ Grade 1 — Faible</option>
+                    <option value="2">✦✦ Grade 2 — Modéré</option>
+                    <option value="3" selected>✦✦✦ Grade 3 — Standard</option>
+                    <option value="4">✦✦✦✦ Grade 4 — Puissant</option>
+                    <option value="5">✦✦✦✦✦ Grade 5 — Extrême</option>
                 </select>
-                <p class="hint">Détermine la force intrinsèque des monstres, indépendamment du niveau de la quête. S'applique à tous les monstres présents.</p>
+                <p class="hint">Détermine la force intrinsèque des monstres (PV, attaque, résistance). S'applique à tous les monstres de la quête.</p>
+
+                <!-- Panneau de restrictions actives — mis à jour par onQuestLevelChange / onMonsterGradeChange -->
+                <div id="difficulty-restrictions" class="difficulty-restrictions" style="display:none;"></div>
             </div>
 
             <div class="form-group">
@@ -297,6 +303,11 @@
         document.addEventListener('DOMContentLoaded', function () {
             loadData();
             setupEventListeners();
+
+            // Initialiser le panneau de restrictions avec les valeurs par défaut (★8, grade 3)
+            const initLevel = parseInt(document.getElementById('questLevel')?.value ?? '8');
+            _applyGradeRestrictions(initLevel);
+            _refreshRestrictionsPanel();
 
             // Clamp en temps réel pour les inputs avec min/max
             const clampedInputs = [

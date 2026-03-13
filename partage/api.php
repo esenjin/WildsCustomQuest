@@ -628,7 +628,7 @@ function readQuestDir(string $dir, bool $skipSubdirs = false): array {
 
         $diffUuid     = $targets[0]['_DifficultyRankId']['Value'] ?? '';
         $diffName     = $targets[0]['_DifficultyRankId']['Name']  ?? '';
-        $monsterStars = resolveDifficultyStars($diffUuid, $diffName);
+        $monsterGrade = resolveDifficultyGrade($diffUuid, $diffName);
 
         $bossRushParams = $data['_BossRushParams'] ?? [];
         $isSequential   = is_array($bossRushParams) && array_reduce(
@@ -653,7 +653,7 @@ function readQuestDir(string $dir, bool $skipSubdirs = false): array {
             'stageVal'     => (int)($data['_Stage']['_Value']                 ?? 0),
             'stageName'    => $data['_Stage']['_Name'] ?? '',
             'sequential'   => $isSequential,
-            'monsterStars' => $monsterStars,
+            'monsterGrade' => $monsterGrade,
             'monsters'     => $monsters,
             'rewards'      => $ext['rewardItems'] ?? [],
             'addedAt'      => filemtime($path),
@@ -738,15 +738,202 @@ function findQuestTexts(array $raw): array {
     return [$title, $client, $desc];
 }
 
-function resolveDifficultyStars(string $uuid, string $name): int {
-    $knownUuids = [
-        '14627cdc-9c1a-43e6-ab18-d01c45120a4b' => 3,
-        '6d893ac4-5f81-4850-b1ac-a2c23845cb15' => 3,
+/**
+ * Résout le grade du monstre (1–5) depuis l'UUID du DifficultyRankId.
+ * Utilise la table exhaustive des 150 GUIDs extraits des fichiers officiels.
+ * Fallback : lecture du grade dans le champ Name (format ★N-G), puis 3 par défaut.
+ */
+function resolveDifficultyGrade(string $uuid, string $name): int {
+    // Table complète : uuid → grade (1–5)
+    // Source : difficulty_ranks.json — 10 rangs × 5 grades × 3 variants
+    static $table = [
+        // ── Rang 1 ────────────────────────────────────────
+        '8749a106-3696-4bba-a267-ec0814c4ee46' => 1,
+        '234eef53-5b31-480e-b58e-ea4fe810607f' => 1,
+        '4287dc88-acce-49d0-8e00-12cfadee4cca' => 2,
+        'cfab05d7-9cba-4ed3-928e-144ea473f4a4' => 2,
+        '2154b240-edd3-4d61-822a-3a208cdf2a9b' => 2,
+        'e2dc622b-6851-4051-9a29-ea6c0af64afa' => 3,
+        '834f1ed4-aa1f-4a1d-bd63-a83022c0c0fc' => 3,
+        '6d29e5c2-e156-4d7e-b854-f5294de10333' => 3,
+        'f62f51a9-a197-4d18-accd-6061ac2455e3' => 3,
+        '1384437b-9627-4234-9072-a9f2396386cb' => 4,
+        'bba03c33-d068-4e64-9027-1f243a47b70e' => 4,
+        '560f97b6-a408-4c42-ad70-f410a0b7f83c' => 5,
+        'ed13546e-d888-4ae4-8632-abff8d87986c' => 5,
+        // ── Rang 2 ────────────────────────────────────────
+        'ad6289b9-d70c-45a7-b770-f920ac0ee030' => 1,
+        '512cefb4-eba1-4e21-a0d5-5486b924fcf7' => 1,
+        '6ab722c0-eadf-4380-a0d6-e040082910de' => 2,
+        'cc84212a-06ae-40d4-81ad-8d7cd986755e' => 2,
+        'a045b4f4-593b-473c-9e14-f9338ab9829f' => 2,
+        'e7504b4e-9b0d-4cc7-918e-c66abf352fcb' => 3,
+        '8dbc3694-5ffd-4249-a64f-2de3dc504a75' => 3,
+        '0b16a0bc-9ee6-4607-820d-7c699242afe7' => 3,
+        '43b56a3d-2dec-464b-8dff-63d973dbcecc' => 4,
+        'f5708b8b-3ced-4435-9750-deb05521786b' => 4,
+        'ab8dceaf-a84c-48d3-a68a-9301b6b9b12b' => 5,
+        '7b62fab8-0bc4-44f7-afe0-651d8c6b21a5' => 5,
+        // ── Rang 3 ────────────────────────────────────────
+        '844bfce6-3663-4c5c-9460-6b4c4c4c7a1a' => 1,
+        'b067fbe7-5db5-4141-b2ed-44c3a7e74d61' => 1,
+        'eab95bfa-10a1-4912-8e3e-1ac85c15d870' => 2,
+        '31fb735f-6da0-4e3c-94d9-91151299ecea' => 2,
+        '987044cd-0624-4665-a490-b6bb969ec89a' => 3,
+        'f406c835-d746-49eb-b48c-272d87fcc46e' => 3,
+        'ea8488e2-d9c9-426e-b83a-dd8b055dc88d' => 3,
+        '430a24a5-17a3-4f8f-bb9e-fb4d17d258dd' => 3,
+        '2da0620c-1ced-476f-b0e8-a0c24282940b' => 3,
+        'f6bcdb59-5752-4ab0-944a-1c3f0a40016e' => 3,
+        'b5da9c7e-36e0-4487-8b77-e66bf72609b9' => 4,
+        '6e6ac10f-19f3-4d3f-ab81-427da22b28e3' => 4,
+        '57c1f12c-d2ec-4b45-99ff-96386a91d2bb' => 5,
+        'dfe07421-aa0d-4cc6-8358-9f59674d414d' => 5,
+        'eca23c6b-4085-47d0-983d-059d6bd5d429' => 5,
+        'f866c9ea-a8dc-4c1f-81a7-e37529f50f07' => 5,
+        'a604364c-19cf-4665-84f4-825c85bac933' => 5,
+        'e91b79be-c76d-4b33-aaee-64690596aa9a' => 5,
+        '49c4781f-8d3b-4313-9212-4a55d8cfe6d5' => 5,
+        // ── Rang 4 ────────────────────────────────────────
+        'e4cb18b4-dedd-4b8b-9737-be9d882d31d6' => 1,
+        'b13f1838-fade-498c-ae0c-005acf618a73' => 2,
+        'd4f88490-4d9c-419a-8d1f-6c349328f22a' => 2,
+        '8ac996e9-cd2a-4c72-8bbc-e42cfa8df67b' => 3,
+        '67aaca56-f701-4ab4-b3c9-6960d35a0abb' => 3,
+        '2018d3e6-c9b9-48a3-99fc-04bbd2e66415' => 3,
+        '5193b371-7706-45ef-ba10-f3d9a5b0e05a' => 3,
+        '97cfaf51-672c-48e0-b084-01de375da61f' => 3,
+        'f57a60f7-deb7-4d83-8670-da1e08fef64f' => 3,
+        '4a49f322-5ac2-4392-a560-fb7600b5a60e' => 3,
+        '1411b42a-1c9c-4b21-87bf-d36df49a4bea' => 3,
+        'df5a97f5-3646-43c3-a52b-b8cb33f3b9bb' => 3,
+        'e510020a-4cca-4a3c-a9ce-758d7292c106' => 3,
+        '7d03cb0b-5af6-42e5-9601-3ce065f1b770' => 3,
+        '72dc9845-7063-4066-af98-7d80ff46ceb6' => 4,
+        '2fbc2268-808d-466e-9ccd-40d796a62635' => 5,
+        // ── Rang 5 ────────────────────────────────────────
+        '6f969570-6e32-4caa-9ae0-b3fa7c131975' => 1,
+        'd9e307a4-8be2-428b-9533-533e43737134' => 2,
+        '8e8ae1ad-b02a-4ed7-a450-55c18d8e3dca' => 2,
+        'd320da89-0663-4541-bbb5-8542f4d307f6' => 3,
+        'b8b3e09e-af27-4bf6-8f29-8e843badfc41' => 3,
+        '07966662-8258-4999-9eea-a6813b036da3' => 3,
+        '2e71988c-b27f-4fa7-87eb-46e517b64114' => 3,
+        'fc76cc29-2dbb-4978-92ca-f4ddf95c664c' => 3,
+        '0c3e42b8-e13d-4502-9aba-eda79c0da015' => 3,
+        'f7f8c031-9a64-4c5d-946b-265a3846c0a5' => 3,
+        '5a921c0e-7e11-475f-968a-b311806fa5ba' => 3,
+        '568caea5-d232-47ee-a76f-4ac986ffd559' => 3,
+        '6178728a-23ed-4456-97d2-9e5d173dd1f7' => 4,
+        'f5332191-0ae8-4a76-9f31-e61b5048e22d' => 5,
+        '41dedb7f-71c9-4c2f-a8b1-87669d1917cd' => 5,
+        // ── Rang 6 ────────────────────────────────────────
+        'be8cbfe8-acd9-487c-91f1-353ea3928ef2' => 1,
+        '3809f0fa-a5b1-4a0d-8db7-aa4381c4ff2d' => 2,
+        '0e9c0fff-7aa6-4087-925c-501a900f602b' => 3,
+        '43fad461-bc90-46ec-8c0f-fac6135b05a0' => 3,
+        'c88a431f-fec6-4c62-bee3-e3a0e3756643' => 3,
+        '38308372-4fc3-49d4-929a-676f7fe2565f' => 3,
+        'aaf8c9db-dc00-4789-afde-38a8ac3459cb' => 3,
+        '45c309a3-3fdd-4020-8ee3-cfd0a8fad7e1' => 3,
+        '49b59e50-b997-4b08-8f9b-de4deed9b547' => 3,
+        '1aaf4ec0-a9fd-4bec-badd-0fce9c551872' => 3,
+        '4b99e6fc-15e5-4456-a693-7c20468f8305' => 3,
+        'd2598eb0-9657-4cd1-b6ab-eb98e79afb29' => 3,
+        '441edcab-d4ca-4bad-87db-711739478608' => 3,
+        'cf311733-5f44-4b8a-8745-b9f2e2d547ec' => 3,
+        '5998e97c-7f3a-41fa-8122-650e9351c250' => 4,
+        '70397745-7632-471b-8f0e-41c271d5ef47' => 4,
+        '3284ebab-04e6-4634-a679-044fd232dd34' => 4,
+        '87d05695-2055-4afa-9fe2-091ea3b01b68' => 4,
+        '776ba34f-17a9-4d4c-9794-a11918d0dc00' => 5,
+        'a325aaaf-a1aa-4911-88a9-4285a73ed0db' => 5,
+        'a11a4438-113a-4e6a-9188-00eaf31d04fc' => 5,
+        'da836490-ea31-485a-a818-f6158f415998' => 5,
+        // ── Rang 7 ────────────────────────────────────────
+        '49f8e6c1-e77f-4ec3-ae2f-e0253a244bd3' => 1,
+        '7f8246d1-88b0-41d8-b993-92cdd0371712' => 2,
+        '80e64c45-1926-4659-a954-9654a488f2f0' => 3,
+        '1f6269d4-dd88-4896-817d-9b609cbfe07a' => 3,
+        '681788c2-129c-4305-b054-360c74033bf5' => 3,
+        '289d3a56-3a8e-4577-bf89-873d1371b1b7' => 3,
+        'b921e903-5aad-4b7c-add7-152a5b2e9d89' => 3,
+        'a7dcfe8f-f189-4b7e-a153-672e3e85a96f' => 3,
+        'f22e18ad-f768-4542-9611-3e6ce62a23c1' => 3,
+        'dbefbbb3-47e0-4c01-ba82-0d561c98627e' => 3,
+        '5277e262-576b-49a6-9bb7-efa5b89b1b85' => 3,
+        'd98b7732-2063-4582-b884-bb2287600dfd' => 4,
+        '672504b4-7a87-45c3-b199-90d3eb37d393' => 4,
+        '556aa48c-2f42-47ae-a6e0-c54f65e90238' => 4,
+        'f3e5ded8-fe74-4334-b582-9142e511c180' => 5,
+        'd6c1670c-ecbb-4c5d-95e7-33c2c320800b' => 5,
+        '84b51374-10ad-48e8-807d-475e9bd67db9' => 5,
+        // ── Rang 8 ────────────────────────────────────────
+        'b592f809-84f1-44a9-a788-3302fdf24b9e' => 1,
+        '703e1672-832a-4ef8-871d-e139d9f63734' => 2,
+        'ccaf8a5e-5842-4316-b328-5ad826629f42' => 3,
+        '1eae46c2-ed4c-4cf7-9aa0-6ef0ac6658be' => 3,
+        'f6554537-09bf-4911-8139-ce95843973fc' => 3,
+        'a67d83c2-6e30-4838-baae-dcda67126a93' => 3,
+        '9a1a5674-0a89-4676-b11d-f76e8146d986' => 3,
+        'e1c701fe-12bf-4573-996a-57fbb266db60' => 3,
+        'ee149e96-6f09-4f62-acc1-853dc53ad111' => 3,
+        'ab44f2b9-244d-4957-ba67-e6735ed0b659' => 3,
+        'a7238a40-6595-4b05-8f5a-3f0114e1c0f7' => 3,
+        '325d8834-e5ee-4941-af5f-5dfec7cb5541' => 3,
+        'd957ed05-c6ef-4460-8a0e-43c582cc3b10' => 3,
+        'e40ac53b-c101-4c04-8981-bbceb6d806ff' => 4,
+        '0ea0c910-1d08-44b2-970a-13c4d997e378' => 4,
+        '78f9d8ae-1d3c-434e-af71-420f3e4e0d87' => 4,
+        'cff3634d-be02-460b-98bd-ec7c42ad5164' => 4,
+        'adac4b25-09d6-48e2-a0fd-e4ae5eacfd0e' => 4,
+        '29757ab4-7b71-404a-bf7d-f84668c3d740' => 4,
+        '750aa216-8969-49a1-b7f5-622f002eb47f' => 4,
+        '2d410590-46af-48dc-b99b-8c0edaeed0d8' => 4,
+        'a9626738-9d79-4eff-8ff2-2e335c51b02f' => 5,
+        'e889e55e-cea7-4764-ae73-408ba124212c' => 5,
+        '3ba88339-3d81-4ae6-85e0-dafa2af189f8' => 5,
+        'ee295820-f83c-41db-a795-12d5ede464f3' => 5,
+        '3b1cf740-c6c8-4849-b700-a0a1b9021c41' => 5,
+        '97758969-7ec7-44ca-8731-5ba26d78d89f' => 5,
+        'ae76a4eb-c2b4-4c06-a226-054096c75058' => 5,
+        '25d0989d-4bbd-4985-9257-126a985bd0f9' => 5,
+        'f25965da-30b5-42de-993b-d4d140986726' => 5,
+        // ── Rang 9 ────────────────────────────────────────
+        'f7ab0b2b-1720-4018-9bef-e46ceba77ad6' => 3,
+        'e8777717-8146-41e4-a93e-870423042ac4' => 3,
+        '7f1a7cb9-8154-4cd9-b64e-136a545b21e9' => 3,
+        'd6e4e648-df88-4bd1-874f-d1997cf96b22' => 3,
+        '323f25ba-425d-430a-8734-2de5e98f2d43' => 3,
+        'b3a5ca9d-ba99-4771-9974-a7471f706d6b' => 3,
+        '60296cc8-7c2b-4e7e-9609-d9f4305da417' => 3,
+        'ac25e176-a1e8-4872-b34f-2e2b7a230f5c' => 4,
+        '591e8610-e43f-4078-9608-6c5ff6540003' => 4,
+        'de815e08-dd85-4621-8ed7-02ce8a80be4c' => 4,
+        'b3f28ec1-6bb5-473e-b018-93ac9a67ac8d' => 4,
+        'dc8806e3-6e7e-420b-8e03-3eb798989add' => 4,
+        '06f3aa74-1810-4dd6-b881-9805cbd29248' => 4,
+        'f326f227-c0ff-47bb-92e7-aa187d61ad3c' => 5,
+        '1de1fb98-de58-474d-91cb-b3071a61262a' => 5,
+        'aa92e87f-9a58-4a8f-8613-c00ddb9e763a' => 5,
+        'f909927b-cb28-4874-b03c-4a72ff88399b' => 5,
+        // ── Rang 10 ───────────────────────────────────────
         '64938e94-d384-4567-8ed5-af922379600d' => 5,
+        '5ffe9dda-6926-4fd8-a3de-e9eafcf0fa50' => 5,
+        '0d2f0e0c-cb6b-42b5-b1d8-5f51e5a97767' => 5,
+        '38c2520b-53ab-4c1b-8d7c-335ca8a75bd6' => 5,
+        'd5826b15-4244-4e85-bbd9-d2f44b8a4f7a' => 5,
+        '92666b5d-ef17-4e5c-90d5-a07e97ee57ac' => 5,
+        '6d893ac4-5f81-4850-b1ac-a2c23845cb15' => 5,
     ];
-    if (isset($knownUuids[$uuid])) return $knownUuids[$uuid];
-    if (preg_match('/★\d+-(\d+)/', $name, $m)) return (int)$m[1];
-    return 3;
+
+    if (isset($table[$uuid])) return $table[$uuid];
+    // Fallback : lire le grade dans le Name (format ★N-G)
+    if (preg_match('/â\d+-(\d+)/', $name, $m)) {
+        $g = (int)$m[1];
+        if ($g >= 1 && $g <= 5) return $g;
+    }
+    return 3; // défaut raisonnable
 }
 
 function sanitizeFilename(string $name): string {

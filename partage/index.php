@@ -126,6 +126,26 @@ $displayName = $_SESSION['displayName'] ?? $_SESSION['login'] ?? '';
                     <label class="filter-label" for="filterMaxTime">⏱ max (minutes)</label>
                     <input type="number" id="filterMaxTime" class="filter-input" placeholder="Ex : 50" min="1">
                 </div>
+                <div class="filter-group">
+                    <label class="filter-label" for="filterGrade">Grade des monstres</label>
+                    <select id="filterGrade" class="filter-select">
+                        <option value="">Tous</option>
+                        <option value="1">✦ Grade 1 — Faible</option>
+                        <option value="2">✦✦ Grade 2 — Modéré</option>
+                        <option value="3">✦✦✦ Grade 3 — Standard</option>
+                        <option value="4">✦✦✦✦ Grade 4 — Puissant</option>
+                        <option value="5">✦✦✦✦✦ Grade 5 — Extrême</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label" for="filterVariant">Type de monstre</label>
+                    <select id="filterVariant" class="filter-select">
+                        <option value="">Tous</option>
+                        <option value="NONE">Standard</option>
+                        <option value="NORMAL">Alpha</option>
+                        <option value="KING">Alpha Suprême</option>
+                    </select>
+                </div>
             </div>
         </section>
 
@@ -262,7 +282,7 @@ $displayName = $_SESSION['displayName'] ?? $_SESSION['login'] ?? '';
                         <div class="modal-info-cell-value accent" id="modalMoney"></div>
                     </div>
                     <div class="modal-info-cell">
-                        <div class="modal-info-cell-label">Puissance des monstres</div>
+                        <div class="modal-info-cell-label">Grade des monstres</div>
                         <div class="modal-info-cell-value" id="modalMonsterStars"></div>
                     </div>
                 </div>

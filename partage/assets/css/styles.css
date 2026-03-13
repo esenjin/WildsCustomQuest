@@ -316,6 +316,12 @@ body {
 }
 .star.dim { background: var(--surface3); box-shadow: none; }
 
+.meta-chip-grade {
+    background-color: rgba(107, 76, 16, 0.25);
+    border: 1px solid rgba(194, 71, 173, 0.5);
+    color: #bb3a81;
+}
+
 /* Icônes monstres dans la carte (illustration uniquement) */
 .quest-monster-icons { display: flex; flex-wrap: wrap; gap: 6px; }
 .monster-icon-wrap {

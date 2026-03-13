@@ -591,3 +591,40 @@ button.external:hover { background-color: var(--blue-h); }
     vertical-align: middle;
     font-weight: bold;
 }
+
+/* ── Panneau de restrictions de difficulté ──────────────── */
+.difficulty-restrictions {
+    margin-top: 8px;
+    padding: 8px 12px;
+    background-color: #1a1208;
+    border: 1px solid #6b4c10;
+    border-radius: 6px;
+    font-size: 0.82em;
+}
+
+.restr-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.restr-list li {
+    padding: 3px 0;
+    line-height: 1.4;
+}
+
+.restr-block {
+    color: #e0a060;
+}
+
+.restr-ok {
+    color: #5aad70;
+}
+
+/* Icône cadenas sur les checkboxes bloquées */
+.restr-lock {
+    font-size: 0.85em;
+    margin-left: 3px;
+    opacity: 0.7;
+    cursor: help;
+}
