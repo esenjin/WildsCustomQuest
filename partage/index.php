@@ -559,6 +559,26 @@ $displayName = $_SESSION['displayName'] ?? $_SESSION['login'] ?? '';
     </div>
 </div>
 
+<!-- ── Modal Avertissements (admin + modo) ─────────────────── -->
+<div id="warningsOverlay" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="warningsModalTitle">
+    <div class="modal" style="max-width:500px">
+        <div class="modal-banner" style="background:linear-gradient(90deg,#7a5500,#c48800)"></div>
+        <div class="modal-header">
+            <div class="modal-header-left">
+                <div class="modal-type-badge" style="background:rgba(200,136,0,.15);color:#e6a817;border-color:rgba(200,136,0,.3)">⚠ Avertissements</div>
+                <h2 class="modal-title" id="warningsModalTitle">Avertissements</h2>
+                <div style="font-size:.82em;color:var(--text-muted);margin-top:3px">
+                    Détectés automatiquement lors de la soumission — ne bloquent pas la quête mais méritent vérification.
+                </div>
+            </div>
+            <button class="modal-close" id="warningsClose" aria-label="Fermer">✕</button>
+        </div>
+        <div class="modal-body">
+            <ul id="warningsList" class="warnings-list"></ul>
+        </div>
+    </div>
+</div>
+
 <!-- ── Scripts ─────────────────────────────────────────────── -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script>

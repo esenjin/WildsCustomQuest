@@ -117,6 +117,13 @@ session_start();
                         <span class="chk-detail"></span>
                     </div>
                 </div>
+                <div class="checklist-item" id="chk-zones">
+                    <span class="chk-icon">⏳</span>
+                    <div class="chk-text">
+                        <span class="chk-label">Zones de spawn</span>
+                        <span class="chk-detail"></span>
+                    </div>
+                </div>
                 <div class="checklist-item" id="chk-rewards">
                     <span class="chk-icon">⏳</span>
                     <div class="chk-text">
@@ -124,10 +131,24 @@ session_start();
                         <span class="chk-detail"></span>
                     </div>
                 </div>
+                <div class="checklist-item" id="chk-values">
+                    <span class="chk-icon">⏳</span>
+                    <div class="chk-text">
+                        <span class="chk-label">Valeurs dans les plages autorisées</span>
+                        <span class="chk-detail"></span>
+                    </div>
+                </div>
                 <div class="checklist-item" id="chk-duplicate">
                     <span class="chk-icon">⏳</span>
                     <div class="chk-text">
                         <span class="chk-label">Doublon d'ID</span>
+                        <span class="chk-detail"></span>
+                    </div>
+                </div>
+                <div class="checklist-item" id="chk-warnings">
+                    <span class="chk-icon">⏳</span>
+                    <div class="chk-text">
+                        <span class="chk-label">Vérifications avancées</span>
                         <span class="chk-detail"></span>
                     </div>
                 </div>

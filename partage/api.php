@@ -143,6 +143,7 @@ match ($action) {
     'clear_logs'        => actionClearLogs(),
     'check_duplicate'   => actionCheckDuplicate(),
     'check_monsters'    => actionCheckMonsters(),
+    'get_warnings'      => actionGetWarnings(),
     'version'           => actionVersion(),
     'report_quest'      => actionReportQuest(),
     'list_reports'      => actionListReports(),
@@ -496,6 +497,20 @@ function actionUpload(): void {
     if (!move_uploaded_file($tmp, $destPath))
         fail('Impossible de sauvegarder le fichier sur le serveur.');
 
+    // Sauvegarder les avertissements s'il y en a
+    $warningsRaw = $_POST['warnings'] ?? '';
+    if ($warningsRaw !== '') {
+        $warnings = json_decode($warningsRaw, true);
+        if (is_array($warnings) && !empty($warnings)) {
+            $metaPath = ATTENTE_DIR . pathinfo($destName, PATHINFO_FILENAME) . '.meta.json';
+            $meta = ['warnings' => array_values($warnings)];
+            file_put_contents(
+                $metaPath,
+                json_encode($meta, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
+            );
+        }
+    }
+
     ok([
         'filename' => $destName,
         'questId'  => $questId,
@@ -529,6 +544,10 @@ function actionAdminRefuse(): void {
     $path = ATTENTE_DIR . $filename;
     if (!file_exists($path)) fail('Fichier introuvable.');
     unlink($path);
+
+    // Supprimer aussi le fichier de méta-données s'il existe
+    $metaPath = ATTENTE_DIR . pathinfo($filename, PATHINFO_FILENAME) . '.meta.json';
+    if (file_exists($metaPath)) unlink($metaPath);
 
     appendLog('refuse', $filename);
     ok(['message' => "Quête « {$filename} » refusée et supprimée."]);
@@ -642,26 +661,41 @@ function readQuestDir(string $dir, bool $skipSubdirs = false): array {
             false
         );
 
+        // Lire les avertissements éventuels depuis le .meta.json (dossier attente uniquement)
+        $warningsList = [];
+        $metaPath = $dir . pathinfo($filename, PATHINFO_FILENAME) . '.meta.json';
+        if (file_exists($metaPath)) {
+            $metaRaw = file_get_contents($metaPath);
+            if ($metaRaw !== false) {
+                $meta = json_decode($metaRaw, true);
+                if (is_array($meta['warnings'] ?? null)) {
+                    $warningsList = $meta['warnings'];
+                }
+            }
+        }
+
         $quests[] = [
-            'filename'     => $filename,
-            'id'           => $questId,
-            'pseudo'       => $pseudo,
-            'title'        => $title,
-            'client'       => $client,
-            'desc'         => $desc,
-            'level'        => (int)($data['_QuestLv']                        ?? 8),
-            'timeLimit'    => (int)($data['_TimeLimit']                       ?? 50),
-            'money'        => (int)($data['_RemMoney']                        ?? 0),
-            'questLife'    => (int)($data['_QuestLife']                       ?? 3),
-            'maxPlayers'   => (int)($data['_OrderCondition']['_MaxPlayerNum'] ?? 4),
-            'minRC'        => (int)($data['_OrderCondition']['_OrderHR']      ?? 1),
-            'stageVal'     => (int)($data['_Stage']['_Value']                 ?? 0),
-            'stageName'    => $data['_Stage']['_Name'] ?? '',
-            'sequential'   => $isSequential,
-            'monsterGrade' => $monsterGrade,
-            'monsters'     => $monsters,
-            'rewards'      => $ext['rewardItems'] ?? [],
-            'addedAt'      => filemtime($path),
+            'filename'      => $filename,
+            'id'            => $questId,
+            'pseudo'        => $pseudo,
+            'title'         => $title,
+            'client'        => $client,
+            'desc'          => $desc,
+            'level'         => (int)($data['_QuestLv']                        ?? 8),
+            'timeLimit'     => (int)($data['_TimeLimit']                       ?? 50),
+            'money'         => (int)($data['_RemMoney']                        ?? 0),
+            'questLife'     => (int)($data['_QuestLife']                       ?? 3),
+            'maxPlayers'    => (int)($data['_OrderCondition']['_MaxPlayerNum'] ?? 4),
+            'minRC'         => (int)($data['_OrderCondition']['_OrderHR']      ?? 1),
+            'stageVal'      => (int)($data['_Stage']['_Value']                 ?? 0),
+            'stageName'     => $data['_Stage']['_Name'] ?? '',
+            'sequential'    => $isSequential,
+            'monsterGrade'  => $monsterGrade,
+            'monsters'      => $monsters,
+            'rewards'       => $ext['rewardItems'] ?? [],
+            'addedAt'       => filemtime($path),
+            'warnings'      => $warningsList,
+            'warningCount'  => count($warningsList),
         ];
     }
 
@@ -1117,6 +1151,32 @@ function actionDeleteReported(): void {
 
     appendLog('delete_reported', $filename);
     ok(['message' => "Quête « {$filename} » supprimée suite à signalement."]);
+}
+
+/* ══════════════════════════════════════════════════════════
+   AVERTISSEMENTS D'UNE QUÊTE EN ATTENTE
+   ══════════════════════════════════════════════════════════ */
+
+/**
+ * Retourne la liste des avertissements associés à un fichier en attente.
+ * Accessible aux modérateurs et admins authentifiés.
+ */
+function actionGetWarnings(): void {
+    requireAuth();
+
+    $filename = sanitizeFilename($_GET['filename'] ?? $_POST['filename'] ?? '');
+    if (!$filename) fail('Nom de fichier manquant.');
+
+    $metaPath = ATTENTE_DIR . pathinfo($filename, PATHINFO_FILENAME) . '.meta.json';
+    if (!file_exists($metaPath)) {
+        ok(['warnings' => [], 'count' => 0]);
+    }
+
+    $raw  = file_get_contents($metaPath);
+    $meta = $raw !== false ? (json_decode($raw, true) ?? []) : [];
+    $warnings = is_array($meta['warnings'] ?? null) ? $meta['warnings'] : [];
+
+    ok(['warnings' => $warnings, 'count' => count($warnings)]);
 }
 
 /* ══════════════════════════════════════════════════════════

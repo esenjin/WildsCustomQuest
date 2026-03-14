@@ -506,6 +506,17 @@ function buildPendingRow(quest) {
     btnDetail.addEventListener('click', () => openModal(quest, true));
     actions.appendChild(btnDetail);
 
+    // Bouton avertissements (visible seulement si la quête en a)
+    const warningCount = quest.warningCount ?? (quest.warnings ?? []).length;
+    if (warningCount > 0) {
+        const btnWarn = document.createElement('button');
+        btnWarn.className = 'btn btn-warning btn-sm';
+        btnWarn.innerHTML = `⚠ Avertissements <span class="badge-warn-count">${warningCount}</span>`;
+        btnWarn.title = 'Voir les avertissements détectés lors de la soumission';
+        btnWarn.addEventListener('click', () => openWarningsModal(quest));
+        actions.appendChild(btnWarn);
+    }
+
     const btnVal = document.createElement('button');
     btnVal.className = 'btn btn-success btn-sm';
     btnVal.textContent = '✓ Valider';
@@ -841,6 +852,74 @@ function buildModoRow(user) {
 
     row.appendChild(actions);
     return row;
+}
+
+/* ══════════════════════════════════════════════════════════
+   MODAL AVERTISSEMENTS (admin + modo)
+   ══════════════════════════════════════════════════════════ */
+
+let currentWarningsQuest = null;
+
+/**
+ * Ouvre la modal affichant les avertissements d'une quête en attente.
+ * Les avertissements sont lus depuis quest.warnings (déjà chargé) ou
+ * fetchés depuis l'API si absents.
+ */
+function openWarningsModal(quest) {
+    currentWarningsQuest = quest;
+
+    const overlay = document.getElementById('warningsOverlay');
+    if (!overlay) return;
+
+    // Titre
+    const titleEl = document.getElementById('warningsModalTitle');
+    if (titleEl) titleEl.textContent = `Avertissements — ${quest.title || quest.filename}`;
+
+    const listEl = document.getElementById('warningsList');
+    if (!listEl) return;
+
+    const warnings = quest.warnings ?? [];
+
+    if (warnings.length) {
+        renderWarningsList(listEl, warnings);
+    } else {
+        // Pas de warnings en cache local : tenter de les charger via l'API
+        listEl.innerHTML = '<li class="warnings-loading"><span class="spinner" style="width:14px;height:14px;border-width:2px;margin:0"></span> Chargement…</li>';
+        api('get_warnings', { filename: quest.filename })
+            .then(data => {
+                const w = data.warnings ?? [];
+                if (w.length) {
+                    renderWarningsList(listEl, w);
+                } else {
+                    listEl.innerHTML = '<li class="warnings-none">✓ Aucun avertissement enregistré pour cette quête.</li>';
+                }
+            })
+            .catch(err => {
+                listEl.innerHTML = `<li class="warnings-error">Erreur lors du chargement : ${esc(err.message)}</li>`;
+            });
+    }
+
+    overlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+
+    document.getElementById('warningsClose')?.addEventListener('click', closeWarningsModal, { once: true });
+    overlay.addEventListener('click', e => { if (e.target === overlay) closeWarningsModal(); }, { once: true });
+}
+
+function renderWarningsList(listEl, warnings) {
+    listEl.innerHTML = '';
+    warnings.forEach(w => {
+        const li = document.createElement('li');
+        li.className = 'warnings-item';
+        li.textContent = w;
+        listEl.appendChild(li);
+    });
+}
+
+function closeWarningsModal() {
+    document.getElementById('warningsOverlay')?.classList.remove('open');
+    document.body.style.overflow = '';
+    currentWarningsQuest = null;
 }
 
 /* ── Modal créer / éditer modérateur ─────────────────────── */
