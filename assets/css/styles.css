@@ -675,3 +675,38 @@ button.external:hover { background-color: var(--blue-h); }
 .footer-version a:hover {
     color: var(--accent);
 }
+
+/* ── Responsive mobile ────────────────────────────────────── */
+@media (max-width: 600px) {
+    .tabs {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 4px;
+        border-bottom: none;
+        margin-bottom: 12px;
+    }
+
+    .tab {
+        padding: 10px 6px;
+        font-size: 0.78em;
+        border-radius: 6px;
+        border: 1px solid var(--border);
+        text-align: center;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .tab.active {
+        margin-bottom: 0;
+        border-color: var(--accent);
+        border-bottom: 1px solid var(--accent);
+    }
+}
+
+@media (max-width: 400px) {
+    .tab {
+        font-size: 0.72em;
+        padding: 9px 4px;
+    }
+}
