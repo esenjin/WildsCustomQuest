@@ -128,6 +128,30 @@ function bindFilters() {
     document.getElementById('filterMaxTime')?.addEventListener('input', debounce(applyFilters, 280));
     document.getElementById('sortSelect')?.addEventListener('change', applyFilters);
     document.getElementById('btnReset')?.addEventListener('click', resetFilters);
+
+    /* ── Toggle filtres mobile ───────────────────────────── */
+    const btnToggle   = document.getElementById('btnToggleFilters');
+    const filtersGrid = document.getElementById('filtersGrid');
+    btnToggle?.addEventListener('click', () => {
+        const isOpen = filtersGrid.classList.toggle('filters-open');
+        btnToggle.setAttribute('aria-expanded', String(isOpen));
+    });
+}
+
+/* Met à jour le point indicateur si des filtres avancés sont actifs */
+function updateFiltersDot() {
+    const hasFilter = [
+        'filterLevel','filterZone','filterMonster','filterPlayers',
+        'filterGrade','filterVariant'
+    ].some(id => {
+        const el = document.getElementById(id);
+        return el && el.value !== '' && el.value !== '0';
+    }) || ['filterAuthor','filterMaxDeaths','filterMaxTime'].some(id => {
+        const el = document.getElementById(id);
+        return el && el.value.trim() !== '';
+    });
+    const dot = document.getElementById('filtersActiveDot');
+    if (dot) dot.hidden = !hasFilter;
 }
 
 function applyFilters() {
@@ -171,6 +195,7 @@ function applyFilters() {
 
     renderGrid();
     updateResultsMeta();
+    updateFiltersDot();
 }
 
 function resetFilters() {
@@ -181,6 +206,7 @@ function resetFilters() {
         const el = document.getElementById(id); if (el) el.selectedIndex = 0;
     });
     applyFilters();
+    updateFiltersDot();
 }
 
 /* ══════════════════════════════════════════════════════════

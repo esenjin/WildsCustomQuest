@@ -79,10 +79,13 @@ $displayName = $_SESSION['displayName'] ?? $_SESSION['login'] ?? '';
                            autocomplete="off" spellcheck="false">
                 </div>
                 <div class="search-actions">
+                    <button class="btn btn-secondary btn-filters-toggle" id="btnToggleFilters" aria-expanded="false" aria-controls="filtersGrid">
+                        <span class="filters-toggle-icon">⚙</span> Filtres <span class="filters-active-dot" id="filtersActiveDot" hidden></span>
+                    </button>
                     <button class="btn btn-secondary" id="btnReset">↺ Réinitialiser</button>
                 </div>
             </div>
-            <div class="filters-grid">
+            <div class="filters-grid" id="filtersGrid">
                 <div class="filter-group">
                     <label class="filter-label" for="filterLevel">Niveau</label>
                     <select id="filterLevel" class="filter-select">
