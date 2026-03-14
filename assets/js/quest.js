@@ -549,10 +549,485 @@ function downloadQuest() {
 
 /* ── Import ───────────────────────────────────────────────── */
 
+/* ── Correction automatique à l'import ───────────────────── */
+
+/**
+ * Constantes de validation des champs numériques de la quête.
+ * Chaque entrée définit les bornes min/max acceptées et une valeur par défaut.
+ */
+const QUEST_FIELD_LIMITS = {
+    timeLimit:  { min: 5,  max: 500,     def: 50     },
+    questLife:  { min: 1,  max: 99,      def: 4      },
+    maxPlayers: { min: 1,  max: 4,       def: 4      },
+    questLevel: { min: 1,  max: 10,      def: 8      },
+    rewardMoney:{ min: 1000,  max: 10000000, def: 24000  },
+    hrPoints:   { min: 100,   max: 25000,    def: 2000    },
+    minRC:      { min: 1,     max: 999,      def: 41      },
+};
+
+/**
+ * Analyse et corrige automatiquement les données brutes d'une quête importée.
+ * Retourne les données corrigées ainsi qu'un journal détaillé des actions entreprises.
+ *
+ * Corrections appliquées :
+ *  1. Suppression des monstres absents de enemiesData (ID inconnu).
+ *  2. Suppression des monstres hors-zone (selon monster.zones).
+ *  3. Déduplication : les entrées identiques (même fixedId + même variant) sont
+ *     fusionnées et leur compteur `count` est incrémenté.
+ *  4. Ajustement niveau/grade pour rendre tous les variants valides :
+ *     - Alpha requiert ★5+ et grade ≥ 3.
+ *     - Alpha Suprême requiert ★8+ et grade = 5.
+ *     - Quête ★9 exige grade ≥ 3 ; ★10 exige grade = 5.
+ *     Si l'ajustement est impossible (ex. AT sur ★1 sans pouvoir monter),
+ *     les monstres problématiques sont rétrogradés ou supprimés (les plus faibles).
+ *  5. Clamp de toutes les valeurs numériques dans leurs intervalles définis.
+ *  6. Correction des récompenses : minCount ≤ maxCount, clamp probability 1–100,
+ *     clamp counts 1–999, suppression des entrées avec itemId inconnu.
+ *
+ * @param {Object}   raw          - Données brutes du fichier .raw.json parsé.
+ * @param {Object}   ext          - Données brutes du fichier .ext.json parsé.
+ * @param {string}   locationId   - ID string de la zone choisie pour la quête.
+ * @returns {{ raw, ext, questLevel, grade, actions: string[] }}
+ */
+function sanitizeImportedQuest(raw, ext, locationId) {
+    /** Journal des actions de correction, affiché à l'utilisateur. */
+    const actions = [];
+
+    /* ── helpers ─────────────────────────────────────────── */
+
+    /**
+     * Clamp une valeur numérique entre min et max.
+     * Si la valeur est NaN ou hors bornes, retourne la valeur clamped ou le défaut.
+     */
+    function clamp(val, min, max, def) {
+        const n = parseInt(val, 10);
+        if (isNaN(n)) return def;
+        if (n < min)  return min;
+        if (n > max)  return max;
+        return n;
+    }
+
+    /** Nom lisible d'un monstre (fr-fr en priorité, puis en-us, puis label). */
+    function monsterName(m) {
+        return m?.name?.['fr-fr'] || m?.name?.['en-us'] || m?.label || String(m?.fixedId);
+    }
+
+    /* ═══════════════════════════════════════════════════════
+       ÉTAPE 1 — Récupérer et valider les données de base
+       ═══════════════════════════════════════════════════════ */
+
+    const data = raw._DataList ?? {};
+
+    // Niveau de quête
+    let questLevel = clamp(data._QuestLv, 1, 10, 8);
+    if (data._QuestLv !== questLevel) {
+        actions.push(`⚙️ Niveau de quête corrigé : ${data._QuestLv} → ★${questLevel}`);
+    }
+
+    // Limite de temps
+    const rawTime = data._TimeLimit;
+    const fixedTime = clamp(rawTime, QUEST_FIELD_LIMITS.timeLimit.min, QUEST_FIELD_LIMITS.timeLimit.max, QUEST_FIELD_LIMITS.timeLimit.def);
+    if (rawTime !== fixedTime) {
+        actions.push(`⚙️ Limite de temps corrigée : ${rawTime} min → ${fixedTime} min`);
+        data._TimeLimit = fixedTime;
+    }
+
+    // Vies
+    const rawLife = data._QuestLife;
+    const fixedLife = clamp(rawLife, QUEST_FIELD_LIMITS.questLife.min, QUEST_FIELD_LIMITS.questLife.max, QUEST_FIELD_LIMITS.questLife.def);
+    if (rawLife !== fixedLife) {
+        actions.push(`⚙️ Nombre de vies corrigé : ${rawLife} → ${fixedLife}`);
+        data._QuestLife = fixedLife;
+    }
+
+    // Max joueurs
+    const rawPlayers = data._OrderCondition?._MaxPlayerNum;
+    const fixedPlayers = clamp(rawPlayers, 1, 4, 4);
+    if (rawPlayers !== fixedPlayers) {
+        actions.push(`⚙️ Nombre de joueurs corrigé : ${rawPlayers} → ${fixedPlayers}`);
+        if (data._OrderCondition) data._OrderCondition._MaxPlayerNum = fixedPlayers;
+    }
+
+    // Argent
+    const rawMoney = data._RemMoney;
+    const fixedMoney = clamp(rawMoney, 0, 9999999, 24000);
+    if (rawMoney !== fixedMoney) {
+        actions.push(`⚙️ Zenny de récompense corrigé : ${rawMoney} → ${fixedMoney}`);
+        data._RemMoney = fixedMoney;
+    }
+
+    // Points HR
+    const rawHR = data._HRPoint;
+    const fixedHR = clamp(rawHR, 0, 9999, 660);
+    if (rawHR !== fixedHR) {
+        actions.push(`⚙️ Points HR corrigés : ${rawHR} → ${fixedHR}`);
+        data._HRPoint = fixedHR;
+    }
+
+    // RC minimum
+    const rawRC = data._OrderCondition?._OrderHR;
+    const fixedRC = clamp(rawRC, 1, 999, 1);
+    if (rawRC !== fixedRC) {
+        actions.push(`⚙️ RC minimum corrigé : ${rawRC} → ${fixedRC}`);
+        if (data._OrderCondition) data._OrderCondition._OrderHR = fixedRC;
+    }
+
+    /* ═══════════════════════════════════════════════════════
+       ÉTAPE 2 — Détecter le grade depuis le premier monstre
+       ═══════════════════════════════════════════════════════ */
+
+    const firstTarget = raw._BossZakoDataList?._MainTargetDataList?.[0];
+    let grade = 3; // valeur par défaut raisonnable
+    if (firstTarget?._DifficultyRankId?.Value) {
+        const uuid = firstTarget._DifficultyRankId.Value;
+        outer:
+        for (const [, rankEntry] of Object.entries(DIFFICULTY_TABLE)) {
+            for (const [gradeKey, gradeEntry] of Object.entries(rankEntry)) {
+                if (gradeEntry.normal === uuid || gradeEntry.alpha === uuid || gradeEntry.supreme === uuid) {
+                    grade = parseInt(gradeKey);
+                    break outer;
+                }
+            }
+        }
+        // Fallback: lire le grade dans le nom (format ★N-G)
+        const nameMatch = firstTarget._DifficultyRankId.Name?.match(/★\d+-(\d+)/);
+        if (nameMatch && grade === 3) grade = parseInt(nameMatch[1]);
+    }
+
+    /* ═══════════════════════════════════════════════════════
+       ÉTAPE 3 — Construire la liste initiale des monstres
+       ═══════════════════════════════════════════════════════ */
+
+    const targets = raw._BossZakoDataList?._MainTargetDataList ?? [];
+
+    // Parsed list : { monster, variant, spawnZone }
+    let parsedMonsters = [];
+
+    targets.forEach(t => {
+        const monster = enemiesData.find(m => m.fixedId === t._EmID);
+        if (!monster) {
+            actions.push(`🗑️ Monstre inconnu supprimé (fixedId=${t._EmID})`);
+            return;
+        }
+        const isAT    = t._LegendaryID === 'KING';
+        const isAlpha = t._LegendaryID === 'NORMAL';
+        const canAT   = ARCH_TEMPERED_IDS.has(monster.fixedId);
+        let variant;
+        if (isAT && canAT)  variant = 'ARCH_TEMPERED';
+        else if (isAT)      { variant = 'TEMPERED'; actions.push(`🔀 ${monsterName(monster)} n'a pas de version Alpha Suprême → rétrogradé en Alpha`); }
+        else if (isAlpha)   variant = 'TEMPERED';
+        else                variant = 'NONE';
+
+        const spawnZone = t._SetAreaNo !== undefined ? t._SetAreaNo : undefined;
+        parsedMonsters.push({ monster, variant, spawnZone });
+    });
+
+    /* ═══════════════════════════════════════════════════════
+       ÉTAPE 4 — Supprimer les monstres hors-zone
+       ═══════════════════════════════════════════════════════ */
+
+    // Les zones fixes (Vallon meurtri, Cimes gelées) acceptent tous les monstres
+    const isFixedZone = locationId === '1181994624' || locationId === '544388992';
+
+    if (!isFixedZone) {
+        const before = parsedMonsters.length;
+        parsedMonsters = parsedMonsters.filter(({ monster }) => {
+            if (isMonsterAllowedInZone(monster, locationId)) return true;
+            const zoneName = getZoneLabel(locationId);
+            actions.push(`🗺️ ${monsterName(monster)} supprimé — absent de la zone « ${zoneName} »`);
+            return false;
+        });
+    }
+
+    /* ═══════════════════════════════════════════════════════
+       ÉTAPE 5 — Dédupliquer et incrémenter les compteurs
+       ═══════════════════════════════════════════════════════ */
+
+    // Regrouper par (fixedId, variant)
+    const monsterMap = new Map(); // clé = "fixedId:variant"
+
+    parsedMonsters.forEach(({ monster, variant, spawnZone }) => {
+        const key = `${monster.fixedId}:${variant}`;
+        if (monsterMap.has(key)) {
+            const entry = monsterMap.get(key);
+            entry.count++;
+            // Garder la première spawnZone rencontrée ; ignorer les doublons
+        } else {
+            monsterMap.set(key, { monster, variant, spawnZone, count: 1 });
+        }
+    });
+
+    // Signaler les regroupements
+    for (const [, entry] of monsterMap) {
+        if (entry.count > 1) {
+            actions.push(`🔢 ${monsterName(entry.monster)} (${_variantLabel(entry.variant)}) apparaît ${entry.count} fois → compteur mis à jour`);
+        }
+    }
+
+    // Respecter le plafond MAX_MONSTER_COUNT par entrée
+    for (const [, entry] of monsterMap) {
+        if (entry.count > MAX_MONSTER_COUNT) {
+            actions.push(`✂️ ${monsterName(entry.monster)} : compteur réduit de ${entry.count} à ${MAX_MONSTER_COUNT} (maximum autorisé)`);
+            entry.count = MAX_MONSTER_COUNT;
+        }
+    }
+
+    let deduped = Array.from(monsterMap.values()); // { monster, variant, spawnZone, count }
+
+    /* ═══════════════════════════════════════════════════════
+       ÉTAPE 6 — Ajuster niveau et grade pour les variants
+       ═══════════════════════════════════════════════════════ */
+
+    /**
+     * Vérifie si la combinaison (questLevel, grade) est compatible
+     * avec tous les monstres de la liste.
+     * @returns {boolean}
+     */
+    function isConfigValid(lvl, gr, monsters) {
+        // Restrictions de grade global
+        if (lvl >= 10 && gr !== 5)        return false;
+        if (lvl >= 9  && gr < 3)          return false;
+
+        for (const { variant } of monsters) {
+            if (variant === 'TEMPERED'      && !isAlphaAllowed(lvl, gr))   return false;
+            if (variant === 'ARCH_TEMPERED' && !isSupremeAllowed(lvl, gr)) return false;
+        }
+        return true;
+    }
+
+    /**
+     * "Poids" relatif d'un variant pour déterminer quel monstre supprimer
+     * en dernier recours (plus le poids est faible, plus on supprime en premier).
+     */
+    function variantWeight(variant) {
+        return variant === 'ARCH_TEMPERED' ? 3 : variant === 'TEMPERED' ? 2 : 1;
+    }
+
+    // Tenter d'ajuster questLevel et grade sans supprimer de monstres
+    if (deduped.length > 0 && !isConfigValid(questLevel, grade, deduped)) {
+        let adjusted = false;
+
+        // Chercher la combinaison (level, grade) minimale qui inclut tout
+        // On préfère d'abord monter le grade, puis le niveau
+        outer2:
+        for (let lv = questLevel; lv <= 10; lv++) {
+            const grMin = lv >= 10 ? 5 : lv >= 9 ? 3 : 1;
+            const grMax = 5;
+            for (let gr = Math.max(grade, grMin); gr <= grMax; gr++) {
+                if (isConfigValid(lv, gr, deduped)) {
+                    if (lv !== questLevel || gr !== grade) {
+                        actions.push(`🎯 Niveau/grade ajusté : ★${questLevel} grade ${grade} → ★${lv} grade ${gr} (pour inclure tous les monstres sélectionnés)`);
+                        questLevel = lv;
+                        grade      = gr;
+                    }
+                    adjusted = true;
+                    break outer2;
+                }
+            }
+        }
+
+        // Si aucune combinaison ne fonctionne, supprimer les monstres les plus « faibles »
+        // (variant NONE < TEMPERED < ARCH_TEMPERED) jusqu'à obtenir une config valide
+        if (!adjusted) {
+            // Trier : les monstres les moins contraignants d'abord (supprimés en premier)
+            deduped.sort((a, b) => variantWeight(a.variant) - variantWeight(b.variant));
+
+            while (deduped.length > 0 && !isConfigValid(questLevel, grade, deduped)) {
+                const removed = deduped.shift();
+                actions.push(`🗑️ ${monsterName(removed.monster)} (${_variantLabel(removed.variant)}) supprimé — impossible de concilier avec le niveau/grade courant`);
+            }
+
+            // Ré-essayer un ajustement sur la liste réduite
+            if (deduped.length > 0) {
+                outer3:
+                for (let lv = questLevel; lv <= 10; lv++) {
+                    const grMin = lv >= 10 ? 5 : lv >= 9 ? 3 : 1;
+                    for (let gr = Math.max(grade, grMin); gr <= 5; gr++) {
+                        if (isConfigValid(lv, gr, deduped)) {
+                            if (lv !== questLevel || gr !== grade) {
+                                actions.push(`🎯 Niveau/grade ajusté après nettoyage : ★${questLevel} grade ${grade} → ★${lv} grade ${gr}`);
+                                questLevel = lv;
+                                grade      = gr;
+                            }
+                            break outer3;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // Restrictions ★9 (grade minimum 3) et ★10 (grade obligatoire 5)
+    if (questLevel >= 10 && grade !== 5) {
+        actions.push(`⚙️ Grade forcé à 5 (obligatoire pour une quête ★10)`);
+        grade = 5;
+    } else if (questLevel >= 9 && grade < 3) {
+        actions.push(`⚙️ Grade relevé à 3 (minimum pour une quête ★9)`);
+        grade = 3;
+    }
+
+    /* ═══════════════════════════════════════════════════════
+       ÉTAPE 7 — Reconstruire selectedMonsters
+       ═══════════════════════════════════════════════════════ */
+
+    // Convertir deduped en format selectedMonsters
+    // Chaque monstre avec count > 1 sera représenté par une seule entrée avec .count
+    const finalMonsters = deduped.map(({ monster, variant, spawnZone, count }) => ({
+        ...monster,
+        variant,
+        spawnZone,
+        count: count || 1
+    }));
+
+    /* ═══════════════════════════════════════════════════════
+       ÉTAPE 8 — Corriger les récompenses (ext)
+       ═══════════════════════════════════════════════════════ */
+
+    const rawRewards = ext.rewardItems ?? [];
+    const fixedRewards = [];
+
+    rawRewards.forEach(r => {
+        // Vérifier que l'objet existe dans itemsData
+        const item = itemsData.find(i => i.id === r.itemId);
+        if (!item) {
+            actions.push(`🎁 Récompense supprimée — objet ID ${r.itemId} inconnu`);
+            return;
+        }
+
+        let changed = false;
+        const orig = { minCount: r.minCount, maxCount: r.maxCount, probability: r.probability };
+
+        // Clamp probability
+        const prob = clamp(r.probability, 1, 100, 100);
+        if (prob !== r.probability) { r.probability = prob; changed = true; }
+
+        // Clamp counts
+        const minC = clamp(r.minCount, 1, 999, 1);
+        if (minC !== r.minCount) { r.minCount = minC; changed = true; }
+
+        const maxC = clamp(r.maxCount, 1, 999, 1);
+        if (maxC !== r.maxCount) { r.maxCount = maxC; changed = true; }
+
+        // S'assurer min ≤ max
+        if (r.minCount > r.maxCount) {
+            r.maxCount = r.minCount;
+            changed = true;
+        }
+
+        if (changed) {
+            const name = item.name?.[currentLanguage] || item.name?.['fr-fr'] || `ID ${r.itemId}`;
+            actions.push(`🎁 Récompense « ${name} » corrigée — quantité [${orig.minCount}–${orig.maxCount}], chance ${orig.probability}% → [${r.minCount}–${r.maxCount}], ${r.probability}%`);
+        }
+
+        fixedRewards.push(r);
+    });
+
+    if (fixedRewards.length === 0 && rawRewards.length > 0) {
+        actions.push(`⚠️ Toutes les récompenses étaient invalides et ont été supprimées`);
+    }
+    ext.rewardItems = fixedRewards;
+
+    /* ═══════════════════════════════════════════════════════
+       Résumé final
+       ═══════════════════════════════════════════════════════ */
+
+    return {
+        raw,
+        ext,
+        questLevel,
+        grade,
+        finalMonsters,
+        actions
+    };
+}
+
+/**
+ * Retourne un libellé lisible pour un variant de monstre.
+ * @param {string} variant - 'NONE', 'TEMPERED' ou 'ARCH_TEMPERED'.
+ * @returns {string}
+ */
+function _variantLabel(variant) {
+    if (variant === 'ARCH_TEMPERED') return 'Alpha Suprême';
+    if (variant === 'TEMPERED')      return 'Alpha';
+    return 'Normal';
+}
+
+/**
+ * Affiche le rapport de correction dans une modale dédiée ou dans un bloc
+ * inséré juste après la zone d'import, et le referme après 30 secondes.
+ * @param {string[]} actions - Tableau des messages de correction.
+ * @param {string}   filename - Nom du fichier importé.
+ */
+function _showImportReport(actions, filename) {
+    // Supprimer un rapport précédent s'il existe
+    const existing = document.getElementById('import-report');
+    if (existing) existing.remove();
+
+    // Construire le rapport
+    const report = document.createElement('div');
+    report.id = 'import-report';
+    report.style.cssText = `
+        margin: 12px 0 4px;
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        overflow: hidden;
+        font-size: 0.85em;
+    `;
+
+    const headerColor = actions.length === 0 ? 'var(--accent)' : '#b8860b';
+
+    report.innerHTML = `
+        <div style="
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 8px 12px;
+            background: ${actions.length === 0 ? '#0d2b1a' : '#2a1f00'};
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+        " onclick="this.parentElement.querySelector('.import-report-body').style.display =
+                   this.parentElement.querySelector('.import-report-body').style.display === 'none' ? 'block' : 'none'">
+            <span style="color: ${headerColor}; font-weight: 600;">
+                ${actions.length === 0
+                    ? '✅ Import sans correction nécessaire'
+                    : `⚠️ ${actions.length} correction${actions.length > 1 ? 's' : ''} appliquée${actions.length > 1 ? 's' : ''} lors de l'import`}
+            </span>
+            <span style="color: var(--text-dim); font-size: 0.9em;">▼ Détails</span>
+        </div>
+        <div class="import-report-body" style="padding: 10px 14px; line-height: 1.7;">
+            ${actions.length === 0
+                ? `<p style="color: var(--text-dim); margin: 0;">
+                       Aucune anomalie détectée dans « ${filename} ».
+                       Vérifiez tout de même les champs avant de régénérer.
+                   </p>`
+                : `<ul style="margin: 0; padding-left: 18px; color: var(--text);">
+                       ${actions.map(a => `<li style="margin-bottom:4px;">${a}</li>`).join('')}
+                   </ul>`
+            }
+            <p style="margin: 8px 0 0; color: var(--text-dim); font-size: 0.9em;">
+                Ce rapport disparaîtra dans 30 secondes, ou cliquez sur l'en-tête pour le masquer.
+            </p>
+        </div>
+    `;
+
+    // Insérer juste après la zone d'import
+    const importZone = document.getElementById('importFile')?.closest('div');
+    if (importZone?.parentElement) {
+        importZone.parentElement.insertBefore(report, importZone.nextSibling);
+    } else {
+        // Fallback : au début du tab quest-info
+        const container = document.getElementById('quest-info');
+        if (container) container.prepend(report);
+    }
+
+    // Auto-suppression après 30 s
+    setTimeout(() => { report.remove(); }, 30000);
+}
+
 /**
  * Importe une quête existante depuis un fichier ZIP contenant
  * un fichier .raw.json et un fichier .ext.json.
- * Remplit tous les champs du formulaire avec les données importées.
+ * Applique une correction automatique avant de remplir le formulaire
+ * et affiche un rapport détaillé des modifications effectuées.
  * @param {HTMLInputElement} input - Le champ <input type="file"> ayant déclenché l'événement.
  */
 async function importQuest(input) {
@@ -580,6 +1055,18 @@ async function importQuest(input) {
         const raw = JSON.parse(await rawFile.async('string'));
         const ext = JSON.parse(await extFile.async('string'));
 
+        // ── Déterminer le lieu avant la sanitisation ────────
+        const stageVal  = String(raw._DataList?._Stage?._Value ?? '1181994624');
+        const locSelect = document.getElementById('questLocation');
+        if ([...locSelect.options].some(o => o.value === stageVal)) {
+            locSelect.value = stageVal;
+        }
+        onLocationChange(stageVal);
+
+        // ── Correction automatique ──────────────────────────
+        const sanitized = sanitizeImportedQuest(raw, ext, stageVal);
+        const { questLevel, grade, finalMonsters, actions } = sanitized;
+
         // ── Informations de base ────────────────────────────
         const data   = raw._DataList;
         const msgFR  = raw._MessageAssetList?.find(m => m.Language === 2);
@@ -597,65 +1084,18 @@ async function importQuest(input) {
         document.getElementById('questLife').value        = data._QuestLife ?? 2;
         document.getElementById('maxPlayers').value       = data._OrderCondition?._MaxPlayerNum ?? 4;
         document.getElementById('minRC').value            = data._OrderCondition?._OrderHR      ?? 1;
-        document.getElementById('questLevel').value       = data._QuestLv ?? 8;
+        document.getElementById('questLevel').value       = questLevel;
 
-        // ── Difficulté des monstres ─────────────────────────
-        // Lire le DifficultyRankId du premier monstre principal pour déduire le grade
-        const firstTarget = raw._BossZakoDataList?._MainTargetDataList?.[0];
-        if (firstTarget?._DifficultyRankId?.Value) {
-            const uuid = firstTarget._DifficultyRankId.Value;
-            // Chercher dans la DIFFICULTY_TABLE complète (10 rangs × 5 grades × 3 variants)
-            let detectedGrade = 3; // défaut raisonnable
-            outer:
-            for (const [rankKey, rankEntry] of Object.entries(DIFFICULTY_TABLE)) {
-                for (const [gradeKey, gradeEntry] of Object.entries(rankEntry)) {
-                    if (gradeEntry.normal === uuid || gradeEntry.alpha === uuid || gradeEntry.supreme === uuid) {
-                        detectedGrade = parseInt(gradeKey);
-                        break outer;
-                    }
-                }
-            }
-            // Fallback : lire le grade depuis le nom (format ★N-G)
-            if (detectedGrade === 3) {
-                const nameMatch = firstTarget._DifficultyRankId.Name?.match(/★\d+-(\d+)/);
-                if (nameMatch) detectedGrade = parseInt(nameMatch[1]);
-            }
-            const diffEl = document.getElementById('monsterDifficulty');
-            if (diffEl) {
-                diffEl.value = String(detectedGrade);
-                // Appliquer les restrictions et rafraîchir le panneau
-                const questLevel = parseInt(document.getElementById('questLevel')?.value ?? '8');
-                _applyGradeRestrictions(questLevel);
-                _refreshRestrictionsPanel();
-            }
+        // ── Difficulté des monstres (grade corrigé) ─────────
+        const diffEl = document.getElementById('monsterDifficulty');
+        if (diffEl) {
+            diffEl.value = String(grade);
+            _applyGradeRestrictions(questLevel);
+            _refreshRestrictionsPanel();
         }
 
-
-        // ── Lieu ────────────────────────────────────────────
-        const stageVal  = String(data._Stage?._Value ?? '1181994624');
-        const locSelect = document.getElementById('questLocation');
-        if ([...locSelect.options].some(o => o.value === stageVal)) {
-            locSelect.value = stageVal;
-        }
-        onLocationChange(stageVal);
-
-        // ── Monstres ────────────────────────────────────────
-        selectedMonsters = [];
-        const targets = raw._BossZakoDataList?._MainTargetDataList ?? [];
-        targets.forEach(t => {
-            const monster = enemiesData.find(m => m.fixedId === t._EmID);
-            if (!monster) return;
-            const isAT    = t._LegendaryID === 'KING';
-            const isAlpha = t._LegendaryID === 'NORMAL';
-            const canAT   = ARCH_TEMPERED_IDS.has(monster.fixedId);
-            let variant;
-            if (isAT && canAT)  variant = 'ARCH_TEMPERED';
-            else if (isAlpha)   variant = 'TEMPERED';
-            else                variant = 'NONE';
-            // Récupérer la zone de spawn stockée dans _SetAreaNo
-            const spawnZone = t._SetAreaNo !== undefined ? t._SetAreaNo : undefined;
-            selectedMonsters.push({ ...monster, variant, spawnZone });
-        });
+        // ── Monstres (liste sanitisée) ──────────────────────
+        selectedMonsters = finalMonsters;
 
         // Détecter le mode séquentiel : présence de _BossRushParams avec au moins un PopType 2
         const bossRushParams = raw._DataList?._BossRushParams ?? [];
@@ -667,7 +1107,7 @@ async function importQuest(input) {
         populateMonsterList();
         updateMonsterPreview();
 
-        // ── Récompenses ─────────────────────────────────────
+        // ── Récompenses (sanitisées) ────────────────────────
         rewardItems = [];
         (ext.rewardItems ?? []).forEach(r => {
             const item = itemsData.find(i => i.id === r.itemId);
@@ -684,11 +1124,18 @@ async function importQuest(input) {
         // Réinitialiser le champ fichier pour permettre un ré-import
         input.value = '';
 
-        status.textContent = `✓ "${file.name}" importé avec succès`;
-        status.style.color = 'var(--accent)';
-        setTimeout(() => { status.textContent = ''; }, 4000);
+        // ── Rapport de correction ───────────────────────────
+        _showImportReport(actions, file.name);
 
-        showAlert('Quête importée ! Vérifiez et modifiez les champs, puis régénérez.', 'success');
+        status.textContent = `✓ "${file.name}" importé${actions.length > 0 ? ` (${actions.length} correction${actions.length > 1 ? 's' : ''})` : ' sans correction'}`;
+        status.style.color = actions.length > 0 ? 'var(--accent)' : '#4caf82';
+        setTimeout(() => { status.textContent = ''; }, 8000);
+
+        if (actions.length > 0) {
+            showAlert(`Quête importée avec ${actions.length} correction${actions.length > 1 ? 's' : ''} automatique${actions.length > 1 ? 's' : ''} — voir le rapport ci-dessous.`, 'success');
+        } else {
+            showAlert('Quête importée sans anomalie détectée ! Vérifiez les champs, puis régénérez.', 'success');
+        }
 
     } catch (err) {
         console.error("Erreur d'import :", err);
