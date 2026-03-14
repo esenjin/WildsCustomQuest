@@ -35,6 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
         bindProfile();
         loadPending();
+        loadReports();
         document.getElementById('btnLogout')?.addEventListener('click', doLogout);
 
         if (IS_ADMIN) {
@@ -406,6 +407,13 @@ function openModal(quest, isPending = false) {
         }
     }
 
+    // Bouton signalement (visible uniquement pour les quêtes validées, pas en attente)
+    const btnReport = document.getElementById('btnReportQuest');
+    if (btnReport) {
+        btnReport.style.display = isPending ? 'none' : '';
+        btnReport.onclick = () => { closeModal(); openReportModal(quest); };
+    }
+
     overlay.classList.add('open');
     document.body.style.overflow = 'hidden';
 }
@@ -421,6 +429,7 @@ function closeModal() {
    ══════════════════════════════════════════════════════════ */
 function bindAdmin() {
     document.getElementById('btnRefreshPending')?.addEventListener('click', loadPending);
+    document.getElementById('btnRefreshReports')?.addEventListener('click', loadReports);
     document.getElementById('btnNewModo')?.addEventListener('click', () => openModoModal(null));
     document.getElementById('btnRefreshLogs')?.addEventListener('click', loadLogs);
     document.getElementById('btnClearLogs')?.addEventListener('click', clearLogs);
@@ -550,6 +559,221 @@ async function adminDeleteQuest(filename) {
         loadQuests();
     } catch(e) {
         showToast('Erreur : ' + e.message, 'error');
+    }
+}
+
+/* ══════════════════════════════════════════════════════════
+   SIGNALEMENTS (admin + modo)
+   ══════════════════════════════════════════════════════════ */
+async function loadReports() {
+    const list = document.getElementById('reportedList');
+    if (!list) return;
+    list.innerHTML = '<div class="state-message"><span class="spinner"></span>Chargement…</div>';
+    try {
+        const data = await api('list_reports');
+        const reports = data.reports ?? [];
+
+        const badge = document.getElementById('reportedBadge');
+        if (badge) {
+            badge.textContent = reports.length;
+            badge.style.display = reports.length ? 'inline-flex' : 'none';
+        }
+
+        if (!reports.length) {
+            list.innerHTML = '<div class="state-message"><span class="state-icon">✓</span>Aucun signalement en attente.</div>';
+            return;
+        }
+
+        list.innerHTML = '';
+        reports.forEach(r => list.appendChild(buildReportRow(r)));
+    } catch(e) {
+        list.innerHTML = `<div class="state-message">Erreur : ${esc(e.message)}</div>`;
+    }
+}
+
+const REPORT_REASONS = {
+    broken:      { label: 'Quête cassée',      icon: '⚠', cls: 'report-broken'      },
+    unreachable: { label: 'Quête irréalisable', icon: '🎯', cls: 'report-unreachable' },
+    cheat:       { label: 'Quête de triche',   icon: '💰', cls: 'report-cheat'       },
+};
+
+function buildReportRow(report) {
+    const row = document.createElement('div');
+    row.className = 'pending-row';
+    row.id = 'report-' + report.id;
+
+    const reasonMeta = REPORT_REASONS[report.reason] ?? { label: report.reason, icon: '?', cls: '' };
+    const date = new Date(report.at * 1000);
+    const dateStr = date.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+
+    const info = document.createElement('div');
+    info.className = 'pending-info';
+    info.style.flexDirection = 'column';
+    info.style.gap = '4px';
+
+    info.innerHTML = `
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            <span class="log-action-badge ${reasonMeta.cls}" style="font-size:.82em">${reasonMeta.icon} ${esc(reasonMeta.label)}</span>
+            <span class="pending-title" style="margin:0">${esc(report.questTitle || report.filename)}</span>
+        </div>
+        <div class="pending-sub">
+            <span style="color:var(--text-muted);font-size:.82em">${esc(report.filename)}</span>
+            ${report.comment ? `· <em style="color:var(--text-dim);font-size:.85em">"${esc(report.comment)}"</em>` : ''}
+        </div>
+        <div style="font-size:.8em;color:var(--text-muted)">${dateStr}</div>`;
+    row.appendChild(info);
+
+    const actions = document.createElement('div');
+    actions.className = 'pending-actions';
+
+    // Chercher la quête dans allQuests pour le bouton détail
+    const quest = allQuests.find(q => q.filename === report.filename);
+    if (quest) {
+        const btnDetail = document.createElement('button');
+        btnDetail.className = 'btn btn-secondary btn-sm';
+        btnDetail.textContent = '👁 Détail';
+        btnDetail.addEventListener('click', () => openModal(quest, false));
+        actions.appendChild(btnDetail);
+    }
+
+    const btnDismiss = document.createElement('button');
+    btnDismiss.className = 'btn btn-secondary btn-sm';
+    btnDismiss.textContent = '✓ Ignorer';
+    btnDismiss.title = 'Ignorer ce signalement sans supprimer la quête';
+    btnDismiss.addEventListener('click', () => dismissReport(report.id, report.filename, row));
+    actions.appendChild(btnDismiss);
+
+    const btnDelete = document.createElement('button');
+    btnDelete.className = 'btn btn-danger btn-sm';
+    btnDelete.textContent = '🗑 Supprimer la quête';
+    btnDelete.addEventListener('click', () => deleteReportedQuest(report.id, report.filename, row));
+    actions.appendChild(btnDelete);
+
+    row.appendChild(actions);
+    return row;
+}
+
+async function dismissReport(id, filename, rowEl) {
+    try {
+        await api('dismiss_report', { id });
+        rowEl.classList.add('row-fade-out');
+        setTimeout(() => {
+            rowEl.remove();
+            showToast('Signalement ignoré.', 'success');
+            updateReportsBadge();
+        }, 400);
+    } catch(e) {
+        showToast('Erreur : ' + e.message, 'error');
+    }
+}
+
+async function deleteReportedQuest(id, filename, rowEl) {
+    const confirmed = await showConfirm(
+        'Supprimer la quête signalée',
+        `Supprimer définitivement <strong>${esc(filename)}</strong> suite à ce signalement ? Cette action est irréversible.`
+    );
+    if (!confirmed) return;
+    try {
+        await api('delete_reported', { id });
+        // Retirer toutes les lignes de signalement pour ce fichier
+        document.querySelectorAll('.pending-row').forEach(r => {
+            if (r.id.startsWith('report-')) {
+                const reportId = r.id.replace('report-', '');
+                // On recharge la liste entière pour être propre
+            }
+        });
+        showToast('Quête supprimée.', 'success');
+        loadReports();
+        loadQuests();
+    } catch(e) {
+        showToast('Erreur : ' + e.message, 'error');
+    }
+}
+
+function updateReportsBadge() {
+    const remaining = document.querySelectorAll('[id^="report-"]').length;
+    const badge = document.getElementById('reportedBadge');
+    if (badge) {
+        badge.textContent = remaining;
+        badge.style.display = remaining ? 'inline-flex' : 'none';
+    }
+    if (!remaining) {
+        const list = document.getElementById('reportedList');
+        if (list) list.innerHTML = '<div class="state-message"><span class="state-icon">✓</span>Aucun signalement en attente.</div>';
+    }
+}
+
+/* ══════════════════════════════════════════════════════════
+   MODAL DE SIGNALEMENT (public)
+   ══════════════════════════════════════════════════════════ */
+let currentReportQuest = null;
+
+function openReportModal(quest) {
+    currentReportQuest = quest;
+    const overlay = document.getElementById('reportOverlay');
+    if (!overlay) return;
+
+    const nameEl = document.getElementById('reportQuestName');
+    if (nameEl) nameEl.textContent = quest.title || quest.filename;
+
+    // Reset
+    document.querySelectorAll('input[name="reportReason"]').forEach(r => r.checked = false);
+    const commentEl = document.getElementById('reportComment');
+    if (commentEl) commentEl.value = '';
+    const errEl  = document.getElementById('reportError');
+    const okEl   = document.getElementById('reportSuccess');
+    if (errEl) errEl.style.display = 'none';
+    if (okEl)  okEl.style.display  = 'none';
+
+    const btnSubmit = document.getElementById('btnSubmitReport');
+    if (btnSubmit) btnSubmit.disabled = false;
+
+    overlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+
+    document.getElementById('reportClose')?.addEventListener('click', closeReportModal, { once: true });
+    document.getElementById('reportCancel')?.addEventListener('click', closeReportModal, { once: true });
+    overlay.addEventListener('click', e => { if (e.target === overlay) closeReportModal(); }, { once: true });
+
+    btnSubmit?.replaceWith(btnSubmit.cloneNode(true));
+    document.getElementById('btnSubmitReport')?.addEventListener('click', submitReport);
+}
+
+function closeReportModal() {
+    document.getElementById('reportOverlay')?.classList.remove('open');
+    document.body.style.overflow = '';
+    currentReportQuest = null;
+}
+
+async function submitReport() {
+    const errEl = document.getElementById('reportError');
+    const okEl  = document.getElementById('reportSuccess');
+    errEl.style.display = 'none';
+    okEl.style.display  = 'none';
+
+    const reason = document.querySelector('input[name="reportReason"]:checked')?.value ?? '';
+    if (!reason) {
+        errEl.textContent = 'Veuillez choisir une raison de signalement.';
+        errEl.style.display = 'block';
+        return;
+    }
+
+    const comment  = document.getElementById('reportComment')?.value ?? '';
+    const filename = currentReportQuest?.filename ?? '';
+    if (!filename) { errEl.textContent = 'Quête introuvable.'; errEl.style.display = 'block'; return; }
+
+    const btn = document.getElementById('btnSubmitReport');
+    if (btn) btn.disabled = true;
+
+    try {
+        const res = await api('report_quest', { filename, reason, comment });
+        okEl.textContent = res.message ?? 'Signalement envoyé. Merci !';
+        okEl.style.display = 'block';
+        setTimeout(closeReportModal, 1800);
+    } catch(e) {
+        errEl.textContent = e.message;
+        errEl.style.display = 'block';
+        if (btn) btn.disabled = false;
     }
 }
 
@@ -801,9 +1025,11 @@ function renderLogs() {
 }
 
 const LOG_META = {
-    validate: { label: 'Validation',  icon: '✓', cls: 'log-validate' },
-    refuse:   { label: 'Refus',       icon: '✗', cls: 'log-refuse'   },
-    delete:   { label: 'Suppression', icon: '🗑', cls: 'log-delete'   },
+    validate:        { label: 'Validation',               icon: '✓',  cls: 'log-validate' },
+    refuse:          { label: 'Refus',                    icon: '✗',  cls: 'log-refuse'   },
+    delete:          { label: 'Suppression',              icon: '🗑', cls: 'log-delete'   },
+    dismiss_report:  { label: 'Signalement ignoré',       icon: '✓',  cls: 'log-validate' },
+    delete_reported: { label: 'Suppression (signalement)', icon: '🚩', cls: 'log-delete'   },
 };
 
 function buildLogRow(log) {

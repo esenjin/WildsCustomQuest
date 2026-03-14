@@ -143,7 +143,11 @@ match ($action) {
     'clear_logs'        => actionClearLogs(),
     'check_duplicate'   => actionCheckDuplicate(),
     'check_monsters'    => actionCheckMonsters(),
-    'version'            => actionVersion(),
+    'version'           => actionVersion(),
+    'report_quest'      => actionReportQuest(),
+    'list_reports'      => actionListReports(),
+    'dismiss_report'    => actionDismissReport(),
+    'delete_reported'   => actionDeleteReported(),
     default             => fail('Action inconnue.', 400),
 };
 
@@ -952,6 +956,169 @@ function uploadErrMsg(int $code): string {
         default               => 'Erreur d\'upload inconnue.',
     };
 }
+/* ══════════════════════════════════════════════════════════
+   SIGNALEMENTS (public → report_quest ; auth → list/dismiss/delete)
+   ══════════════════════════════════════════════════════════ */
+
+/**
+ * Charge reports.json depuis le disque.
+ */
+function loadReports(): array {
+    if (!file_exists(REPORTS_FILE)) return [];
+    $raw = file_get_contents(REPORTS_FILE);
+    if ($raw === false) return [];
+    $data = json_decode($raw, true);
+    return is_array($data) ? $data : [];
+}
+
+/**
+ * Écrit reports.json de manière atomique.
+ */
+function saveReports(array $reports): void {
+    $json = json_encode(
+        array_values($reports),
+        JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
+    );
+    $tmp = REPORTS_FILE . '.tmp.' . getmypid();
+    if (file_put_contents($tmp, $json, LOCK_EX) === false) {
+        @unlink($tmp);
+        fail('Impossible d\'écrire reports.json (droits ?).');
+    }
+    if (!rename($tmp, REPORTS_FILE)) {
+        @unlink($tmp);
+        fail('Impossible de finaliser l\'écriture de reports.json.');
+    }
+}
+
+/**
+ * Signaler une quête (accessible sans authentification).
+ * Limite : 1 signalement par IP et par fichier.
+ */
+function actionReportQuest(): void {
+    $filename = sanitizeFilename($_POST['filename'] ?? '');
+    if (!$filename) fail('Nom de fichier invalide.');
+
+    $reason = trim($_POST['reason'] ?? '');
+    $allowed = ['broken', 'unreachable', 'cheat'];
+    if (!in_array($reason, $allowed, true))
+        fail('Raison de signalement invalide.');
+
+    $comment = trim($_POST['comment'] ?? '');
+    if (mb_strlen($comment) > 300)
+        fail('Commentaire trop long (300 caractères max).');
+
+    // Vérifier que la quête existe bien dans base/
+    if (!file_exists(BASE_DIR . $filename))
+        fail('Quête introuvable.');
+
+    // Extraire titre et questId depuis le fichier
+    $questId    = null;
+    $questTitle = '';
+    if (preg_match('/^quest_(\d+)_/', $filename, $m)) $questId = (int)$m[1];
+
+    $zip = new ZipArchive();
+    if ($zip->open(BASE_DIR . $filename) === true) {
+        [$raw] = extractQuestData($zip);
+        $zip->close();
+        if ($raw) {
+            [$questTitle] = findQuestTexts($raw);
+        }
+    }
+
+    // Anti-doublon : 1 signalement par IP + filename
+    $ip      = $_SERVER['REMOTE_ADDR'] ?? '';
+    $reports = loadReports();
+    foreach ($reports as $r) {
+        if ($r['filename'] === $filename && ($r['ip'] ?? '') === $ip)
+            fail('Vous avez déjà signalé cette quête.');
+    }
+
+    // Générer un UUID v4 simple
+    $uid = sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
+        mt_rand(0, 0xffff), mt_rand(0, 0xffff),
+        mt_rand(0, 0xffff),
+        mt_rand(0, 0x0fff) | 0x4000,
+        mt_rand(0, 0x3fff) | 0x8000,
+        mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff)
+    );
+
+    $entry = [
+        'id'         => $uid,
+        'at'         => time(),
+        'filename'   => $filename,
+        'questId'    => $questId,
+        'questTitle' => $questTitle,
+        'reason'     => $reason,
+        'comment'    => $comment,
+        'ip'         => $ip,
+    ];
+
+    array_unshift($reports, $entry);
+    if (count($reports) > 1000) $reports = array_slice($reports, 0, 1000);
+    saveReports($reports);
+
+    ok(['message' => 'Signalement enregistré. Merci pour votre retour !']);
+}
+
+/**
+ * Lister les signalements (admin + modo).
+ */
+function actionListReports(): void {
+    requireAuth();
+    $reports = loadReports();
+    ok(['reports' => $reports]);
+}
+
+/**
+ * Ignorer un signalement (le supprimer de la liste sans toucher à la quête).
+ */
+function actionDismissReport(): void {
+    requireAuth();
+    $id = trim($_POST['id'] ?? '');
+    if ($id === '') fail('ID de signalement requis.');
+
+    $reports    = loadReports();
+    $newReports = array_values(array_filter($reports, fn($r) => $r['id'] !== $id));
+    if (count($newReports) === count($reports)) fail('Signalement introuvable.');
+
+    // Récupérer les infos du signalement pour le log
+    $found = null;
+    foreach ($reports as $r) { if ($r['id'] === $id) { $found = $r; break; } }
+
+    saveReports($newReports);
+    if ($found) appendLog('dismiss_report', $found['filename']);
+    ok(['message' => 'Signalement ignoré.']);
+}
+
+/**
+ * Supprimer la quête signalée ET retirer le signalement.
+ */
+function actionDeleteReported(): void {
+    requireAuth();
+    $id = trim($_POST['id'] ?? '');
+    if ($id === '') fail('ID de signalement requis.');
+
+    $reports = loadReports();
+    $found   = null;
+    foreach ($reports as $r) { if ($r['id'] === $id) { $found = $r; break; } }
+    if (!$found) fail('Signalement introuvable.');
+
+    $filename = $found['filename'];
+    $path     = BASE_DIR . $filename;
+
+    if (!str_starts_with(realpath($path) ?: '', realpath(BASE_DIR)))
+        fail('Chemin non autorisé.');
+    if (!file_exists($path)) fail('Fichier de quête introuvable (déjà supprimé ?).');
+    unlink($path);
+
+    // Retirer tous les signalements de cette quête
+    $newReports = array_values(array_filter($reports, fn($r) => $r['filename'] !== $filename));
+    saveReports($newReports);
+
+    appendLog('delete_reported', $filename);
+    ok(['message' => "Quête « {$filename} » supprimée suite à signalement."]);
+}
+
 /* ══════════════════════════════════════════════════════════
    VERSION
    ══════════════════════════════════════════════════════════ */

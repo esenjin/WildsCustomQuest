@@ -57,6 +57,10 @@ $displayName = $_SESSION['displayName'] ?? $_SESSION['login'] ?? '';
                 Quêtes en attente
                 <span class="pending-badge" id="pendingBadge" style="display:none"></span>
             </button>
+            <button class="main-tab" data-tab="reported">
+                Quêtes signalées
+                <span class="pending-badge" id="reportedBadge" style="display:none"></span>
+            </button>
         <?php endif; ?>
         <?php if ($isAdmin): ?>
             <button class="main-tab" data-tab="moderators">Gestion des modérateurs</button>
@@ -189,6 +193,21 @@ $displayName = $_SESSION['displayName'] ?? $_SESSION['login'] ?? '';
     </div>
     <?php endif; ?>
 
+    <?php if ($isAuth): ?>
+    <!-- ══════════════════════════════════════════════════════
+         ONGLET : QUÊTES SIGNALÉES (admin + modo)
+         ══════════════════════════════════════════════════════ -->
+    <div class="tab-panel" id="tab-reported">
+        <div class="admin-panel-header">
+            <h2 class="admin-panel-title">🚩 Quêtes signalées par la communauté</h2>
+            <button class="btn btn-secondary btn-sm" id="btnRefreshReports">↺ Actualiser</button>
+        </div>
+        <div id="reportedList" class="pending-list">
+            <div class="state-message"><span class="spinner"></span>Chargement…</div>
+        </div>
+    </div>
+    <?php endif; ?>
+
     <?php if ($isAdmin): ?>
     <!-- ══════════════════════════════════════════════════════
          ONGLET : MODÉRATEURS (admin uniquement)
@@ -220,6 +239,8 @@ $displayName = $_SESSION['displayName'] ?? $_SESSION['login'] ?? '';
                     <option value="validate">Validation</option>
                     <option value="refuse">Refus</option>
                     <option value="delete">Suppression</option>
+                    <option value="dismiss_report">Signalement ignoré</option>
+                    <option value="delete_reported">Suppression (signalement)</option>
                 </select>
                 <button class="btn btn-secondary btn-sm" id="btnRefreshLogs">↺ Actualiser</button>
                 <button class="btn btn-danger btn-sm" id="btnClearLogs">🗑 Vider</button>
@@ -334,7 +355,10 @@ $displayName = $_SESSION['displayName'] ?? $_SESSION['login'] ?? '';
             </div>
             <div class="modal-author-row">
                 <span>Proposée par <span class="modal-author-name" id="modalAuthor"></span></span>
-                <a id="modalDownload" href="#" class="btn btn-primary" download>⬇ Télécharger</a>
+                <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+                    <button class="btn btn-ghost btn-sm" id="btnReportQuest" title="Signaler cette quête">🚩 Signaler</button>
+                    <a id="modalDownload" href="#" class="btn btn-primary" download>⬇ Télécharger</a>
+                </div>
             </div>
             <?php if ($isAuth): ?>
             <div class="modal-admin-actions" id="modalAdminActions" style="display:none">
@@ -469,6 +493,71 @@ $displayName = $_SESSION['displayName'] ?? $_SESSION['login'] ?? '';
     </div>
 </div>
 <?php endif; ?>
+
+<!-- ════════════════════════════════════════════════════════
+     MODAL SIGNALEMENT
+     ════════════════════════════════════════════════════════ -->
+<div id="reportOverlay" class="modal-overlay" role="dialog" aria-modal="true">
+    <div class="modal" style="max-width:420px">
+        <div class="modal-banner" style="background:linear-gradient(90deg,#8a2020,#b83232)"></div>
+        <div class="modal-header">
+            <div class="modal-header-left">
+                <div class="modal-type-badge">🚩 Signalement</div>
+                <h2 class="modal-title">Signaler une quête</h2>
+                <div id="reportQuestName" style="font-size:.85em;color:var(--text-muted);margin-top:2px"></div>
+            </div>
+            <button class="modal-close" id="reportClose">✕</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label class="form-label">Raison du signalement <span style="color:var(--red);font-size:.85em">*</span></label>
+                <div class="report-reasons">
+                    <label class="report-reason-option">
+                        <input type="radio" name="reportReason" value="broken">
+                        <div class="report-reason-card">
+                            <span class="report-reason-icon">⚠</span>
+                            <div>
+                                <div class="report-reason-label">Quête cassée</div>
+                                <div class="report-reason-desc">Un monstre n'apparaît pas, crash au lancement, comportement anormal…</div>
+                            </div>
+                        </div>
+                    </label>
+                    <label class="report-reason-option">
+                        <input type="radio" name="reportReason" value="unreachable">
+                        <div class="report-reason-card">
+                            <span class="report-reason-icon">🎯</span>
+                            <div>
+                                <div class="report-reason-label">Quête irréalisable</div>
+                                <div class="report-reason-desc">Difficulté excessive pour le temps imparti, conditions impossibles à remplir…</div>
+                            </div>
+                        </div>
+                    </label>
+                    <label class="report-reason-option">
+                        <input type="radio" name="reportReason" value="cheat">
+                        <div class="report-reason-card">
+                            <span class="report-reason-icon">💰</span>
+                            <div>
+                                <div class="report-reason-label">Quête de triche</div>
+                                <div class="report-reason-desc">Trop facile avec des récompenses anormalement élevées, exploitation de failles…</div>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="reportComment">Commentaire <span style="opacity:.6;font-weight:400">(optionnel, 300 car. max)</span></label>
+                <textarea id="reportComment" class="form-input" rows="3" maxlength="300"
+                          placeholder="Décris le problème en détail…" style="resize:vertical;min-height:70px"></textarea>
+            </div>
+            <div id="reportError"   class="login-error"   style="display:none"></div>
+            <div id="reportSuccess" class="login-success" style="display:none"></div>
+            <div style="margin-top:16px;display:flex;gap:10px">
+                <button class="btn btn-secondary" id="reportCancel" style="flex:1">Annuler</button>
+                <button class="btn btn-danger"    id="btnSubmitReport" style="flex:1">🚩 Envoyer</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <!-- ── Scripts ─────────────────────────────────────────────── -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
