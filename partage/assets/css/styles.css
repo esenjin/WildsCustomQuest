@@ -1012,6 +1012,17 @@ body {
     line-height: 1.6;
 }
 
+/* ── Bouton éditer (admin/modo) ──────────────────────────── */
+.btn-edit {
+    background: rgba(45,111,181,0.12);
+    color: var(--blue-h);
+    border: 1px solid rgba(45,111,181,0.35);
+}
+.btn-edit:hover {
+    background: rgba(45,111,181,0.22);
+    border-color: rgba(45,111,181,0.6);
+}
+
 /* Bouton discret (outline) — utilisé notamment pour le bouton Signaler */
 .btn-ghost {
     background: transparent;
@@ -1058,6 +1069,57 @@ body {
     margin-left: 2px;
     vertical-align: middle;
     box-shadow: 0 0 5px rgba(200,135,42,0.7);
+}
+
+/* ── Badge log : édition ─────────────────────────────────── */
+.log-edit {
+    background: rgba(45,111,181,0.15);
+    color: var(--blue-h);
+    border-color: rgba(45,111,181,0.3);
+}
+
+/* ── Modale d'édition de quête ───────────────────────────── */
+.edit-field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 16px;
+}
+.edit-label {
+    font-size: .82em;
+    font-weight: 600;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: .05em;
+}
+.edit-input {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-size: .95em;
+    font-family: var(--font-body);
+    padding: 9px 12px;
+    width: 100%;
+    box-sizing: border-box;
+    transition: border-color .15s, box-shadow .15s;
+}
+.edit-input:focus {
+    outline: none;
+    border-color: var(--blue-h);
+    box-shadow: 0 0 0 3px rgba(45,111,181,.15);
+}
+.edit-input::placeholder { color: var(--text-muted); font-style: italic; }
+.edit-textarea {
+    resize: vertical;
+    min-height: 110px;
+    line-height: 1.5;
+}
+.edit-char-count {
+    font-size: .78em;
+    color: var(--text-muted);
+    text-align: right;
+    margin-top: 2px;
 }
 
 /* ── Responsive ───────────────────────────────────────────── */

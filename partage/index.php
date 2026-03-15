@@ -364,6 +364,7 @@ $displayName = $_SESSION['displayName'] ?? $_SESSION['login'] ?? '';
             <div class="modal-admin-actions" id="modalAdminActions" style="display:none">
                 <hr style="border-color:var(--border);margin:0">
                 <div style="display:flex;gap:10px;padding-top:4px;flex-wrap:wrap">
+                    <button class="btn btn-edit btn-sm" id="btnAdminEdit">✏ Éditer</button>
                     <button class="btn btn-danger btn-sm" id="btnAdminDelete">🗑 Supprimer cette quête</button>
                 </div>
             </div>

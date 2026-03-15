@@ -143,6 +143,7 @@ match ($action) {
     'clear_logs'        => actionClearLogs(),
     'check_duplicate'   => actionCheckDuplicate(),
     'check_monsters'    => actionCheckMonsters(),
+    'admin_edit_quest'  => actionAdminEditQuest(),
     'get_warnings'      => actionGetWarnings(),
     'version'           => actionVersion(),
     'report_quest'      => actionReportQuest(),
@@ -973,6 +974,89 @@ function resolveDifficultyGrade(string $uuid, string $name): int {
         if ($g >= 1 && $g <= 5) return $g;
     }
     return 3; // défaut raisonnable
+}
+
+function actionAdminEditQuest(): void {
+    requireAuth(); // accessible aux admins et modérateurs
+
+    $filename = sanitizeFilename($_POST['filename'] ?? '');
+    if (!$filename) fail('Nom de fichier invalide.');
+
+    $newTitle  = trim($_POST['title']  ?? '');
+    $newClient = trim($_POST['client'] ?? '');
+    $newDesc   = trim($_POST['desc']   ?? '');
+
+    if ($newTitle === '') fail('Le titre ne peut pas être vide.');
+    if (mb_strlen($newTitle)  > 200)  fail('Titre trop long (200 caractères max).');
+    if (mb_strlen($newClient) > 200)  fail('Client trop long (200 caractères max).');
+    if (mb_strlen($newDesc)   > 2000) fail('Description trop longue (2000 caractères max).');
+
+    $path = BASE_DIR . $filename;
+    if (!str_starts_with(realpath($path) ?: '', realpath(BASE_DIR)))
+        fail('Chemin non autorisé.');
+    if (!file_exists($path)) fail('Fichier introuvable.');
+
+    // ── 1. Lire tous les fichiers du ZIP en mémoire ──────────
+    $zip = new ZipArchive();
+    if ($zip->open($path) !== true) fail('Impossible d\'ouvrir le ZIP.');
+
+    $files = [];
+    for ($i = 0; $i < $zip->numFiles; $i++) {
+        $name = $zip->getNameIndex($i);
+        $files[$name] = $zip->getFromIndex($i);
+    }
+    $zip->close();
+
+    // ── 2. Localiser et patcher le .raw.json ─────────────────
+    $rawKey = null;
+    foreach (array_keys($files) as $n) {
+        if (str_ends_with($n, '.raw.json')) { $rawKey = $n; break; }
+    }
+    if ($rawKey === null) fail('.raw.json introuvable dans le ZIP.');
+
+    $raw = json_decode($files[$rawKey], true);
+    if ($raw === null) fail('.raw.json : JSON invalide.');
+
+    // Patcher le bloc FR (langCode 2)
+    $patchedTitle = false;
+    foreach ($raw['_MessageAssetList'] as &$ml) {
+        if ((int)($ml['Language'] ?? -1) !== 2) continue;
+        foreach ($ml['MessageData'] as &$md) {
+            if (str_ends_with($md['Name'] ?? '', '_100')) { $md['Text'] = $newTitle;  $patchedTitle = true; }
+            if (str_ends_with($md['Name'] ?? '', '_101')) { $md['Text'] = $newClient; }
+            if (str_ends_with($md['Name'] ?? '', '_102')) { $md['Text'] = $newDesc;   }
+        }
+        unset($md);
+        break;
+    }
+    unset($ml);
+
+    if (!$patchedTitle) fail('Bloc de texte FR (_100) introuvable dans le .raw.json.');
+
+    $files[$rawKey] = json_encode(
+        $raw,
+        JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
+    );
+
+    // ── 3. Réécrire un ZIP temporaire ────────────────────────
+    $tmpPath = $path . '.tmp.' . getmypid();
+    $newZip  = new ZipArchive();
+    if ($newZip->open($tmpPath, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true) {
+        fail('Impossible de créer le ZIP temporaire.');
+    }
+    foreach ($files as $n => $content) {
+        $newZip->addFromString($n, $content);
+    }
+    $newZip->close();
+
+    // ── 4. Remplacement atomique du ZIP original ─────────────
+    if (!rename($tmpPath, $path)) {
+        @unlink($tmpPath);
+        fail('Impossible de remplacer le ZIP original.');
+    }
+
+    appendLog('edit_quest', $filename);
+    ok(['message' => "Quête « {$filename} » modifiée avec succès."]);
 }
 
 function sanitizeFilename(string $name): string {

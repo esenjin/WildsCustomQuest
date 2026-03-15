@@ -405,6 +405,10 @@ function openModal(quest, isPending = false) {
         if (btnDel) {
             btnDel.onclick = () => adminDeleteQuest(quest.filename);
         }
+        const btnEdit = document.getElementById('btnAdminEdit');
+        if (btnEdit) {
+            btnEdit.onclick = () => openEditModal(quest);
+        }
     }
 
     // Bouton signalement (visible uniquement pour les quêtes validées, pas en attente)
@@ -570,6 +574,155 @@ async function adminDeleteQuest(filename) {
         loadQuests();
     } catch(e) {
         showToast('Erreur : ' + e.message, 'error');
+    }
+}
+
+/* ══════════════════════════════════════════════════════════
+   ADMIN : ÉDITION D'UNE QUÊTE
+   ══════════════════════════════════════════════════════════ */
+function openEditModal(quest) {
+    let overlay = document.getElementById('editQuestOverlay');
+    if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.id = 'editQuestOverlay';
+        overlay.className = 'modal-overlay';
+        overlay.innerHTML = `
+            <div class="modal" style="max-width:540px">
+                <div class="modal-banner" id="editModalBanner" style="background:linear-gradient(90deg,var(--accent),var(--accent-h))"></div>
+                <div class="modal-header">
+                    <div class="modal-header-left">
+                        <div class="modal-type-badge">✏ Édition</div>
+                        <h2 class="modal-title" id="editModalQuestTitle"></h2>
+                    </div>
+                    <button class="modal-close" id="editModalClose" aria-label="Fermer">✕</button>
+                </div>
+                <div class="modal-body">
+                    <div class="edit-field-group">
+                        <label class="edit-label" for="editTitleInput">Titre (FR)</label>
+                        <input
+                            id="editTitleInput"
+                            type="text"
+                            class="edit-input"
+                            maxlength="200"
+                            placeholder="Titre de la quête…"
+                        />
+                    </div>
+                    <div class="edit-field-group">
+                        <label class="edit-label" for="editClientInput">Client (FR)</label>
+                        <input
+                            id="editClientInput"
+                            type="text"
+                            class="edit-input"
+                            maxlength="200"
+                            placeholder="Nom du client…"
+                        />
+                    </div>
+                    <div class="edit-field-group">
+                        <label class="edit-label" for="editDescInput">Description (FR)</label>
+                        <textarea
+                            id="editDescInput"
+                            class="edit-input edit-textarea"
+                            maxlength="2000"
+                            rows="6"
+                            placeholder="Description de la quête…"
+                        ></textarea>
+                        <div class="edit-char-count"><span id="editDescCount">0</span> / 2000</div>
+                    </div>
+                    <div id="editErrorMsg" class="form-error" style="display:none"></div>
+                    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:20px">
+                        <button class="btn btn-secondary" id="editCancelBtn">Annuler</button>
+                        <button class="btn btn-primary"   id="editSaveBtn">💾 Enregistrer</button>
+                    </div>
+                </div>
+            </div>`;
+        document.body.appendChild(overlay);
+
+        // Fermeture sur clic backdrop
+        overlay.addEventListener('click', e => {
+            if (e.target === overlay) closeEditModal();
+        });
+
+        // Compteur de caractères description
+        document.getElementById('editDescInput').addEventListener('input', () => {
+            const len = document.getElementById('editDescInput').value.length;
+            document.getElementById('editDescCount').textContent = len;
+        });
+    }
+
+    // Pré-remplissage
+    document.getElementById('editModalQuestTitle').textContent = quest.title || 'Sans titre';
+    document.getElementById('editModalBanner').style.background = zoneGradient(quest.stageName).bg;
+    document.getElementById('editTitleInput').value  = quest.title  ?? '';
+    document.getElementById('editClientInput').value = quest.client ?? '';
+    document.getElementById('editDescInput').value   = quest.desc   ?? '';
+    document.getElementById('editDescCount').textContent = (quest.desc ?? '').length;
+    document.getElementById('editErrorMsg').style.display = 'none';
+    document.getElementById('editSaveBtn').disabled = false;
+
+    // Listeners (clone pour éviter les doublons)
+    const closeBtn = document.getElementById('editModalClose');
+    const cancelBtn = document.getElementById('editCancelBtn');
+    const saveBtn   = document.getElementById('editSaveBtn');
+
+    closeBtn.replaceWith(closeBtn.cloneNode(true));
+    cancelBtn.replaceWith(cancelBtn.cloneNode(true));
+    saveBtn.replaceWith(saveBtn.cloneNode(true));
+
+    document.getElementById('editModalClose').addEventListener('click', closeEditModal);
+    document.getElementById('editCancelBtn').addEventListener('click', closeEditModal);
+    document.getElementById('editSaveBtn').addEventListener('click', () => saveQuestEdit(quest));
+
+    overlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    setTimeout(() => document.getElementById('editTitleInput')?.focus(), 60);
+}
+
+function closeEditModal() {
+    document.getElementById('editQuestOverlay')?.classList.remove('open');
+    document.body.style.overflow = '';
+}
+
+async function saveQuestEdit(quest) {
+    const title  = document.getElementById('editTitleInput').value.trim();
+    const client = document.getElementById('editClientInput').value.trim();
+    const desc   = document.getElementById('editDescInput').value.trim();
+    const errEl  = document.getElementById('editErrorMsg');
+    const saveBtn = document.getElementById('editSaveBtn');
+
+    errEl.style.display = 'none';
+
+    if (!title) {
+        errEl.textContent = 'Le titre ne peut pas être vide.';
+        errEl.style.display = 'block';
+        return;
+    }
+
+    saveBtn.disabled = true;
+    saveBtn.textContent = '⏳ Enregistrement…';
+
+    try {
+        await api('admin_edit_quest', { filename: quest.filename, title, client, desc });
+
+        // Mettre à jour les données en mémoire pour éviter de tout recharger
+        quest.title  = title;
+        quest.client = client;
+        quest.desc   = desc;
+
+        closeEditModal();
+        showToast('Quête modifiée avec succès.', 'success');
+
+        // Rafraîchir la modal de détail si elle est encore ouverte sur cette quête
+        if (currentModalQuest?.filename === quest.filename) {
+            openModal(quest, false);
+        }
+
+        // Rafraîchir la grille (titre affiché sur les cartes)
+        renderGrid();
+    } catch(e) {
+        errEl.textContent = e.message;
+        errEl.style.display = 'block';
+        saveBtn.disabled = false;
+        saveBtn.textContent = '💾 Enregistrer';
     }
 }
 
@@ -1107,6 +1260,7 @@ const LOG_META = {
     validate:        { label: 'Validation',               icon: '✓',  cls: 'log-validate' },
     refuse:          { label: 'Refus',                    icon: '✗',  cls: 'log-refuse'   },
     delete:          { label: 'Suppression',              icon: '🗑', cls: 'log-delete'   },
+    edit_quest:      { label: 'Édition',                  icon: '✏', cls: 'log-edit'     },
     dismiss_report:  { label: 'Signalement ignoré',       icon: '✓',  cls: 'log-validate' },
     delete_reported: { label: 'Suppression (signalement)', icon: '🚩', cls: 'log-delete'   },
 };
