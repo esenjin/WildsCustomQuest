@@ -195,7 +195,11 @@ function populateMonsterList() {
             <div class="spawn-zone-control ${isSelected ? 'visible' : ''}" id="spawn-ctrl-${monster.fixedId}">
                 <label class="spawn-zone-label" for="spawn-${monster.fixedId}">Zone de départ :</label>
                 <select class="spawn-zone-select" id="spawn-${monster.fixedId}">
-                    ${spawnZones.map(z => `<option value="${z}" ${z === currentSpawnZone ? 'selected' : ''}>${z}</option>`).join('')}
+                    ${spawnZones.map(z => {
+                        const isCamp = (LOCATION_CAMP_ZONES[currentLocation] ?? []).includes(z);
+                        const label  = isCamp ? `${z} ⛺` : `${z}`;
+                        return `<option value="${z}" ${z === currentSpawnZone ? 'selected' : ''}>${label}</option>`;
+                    }).join('')}
                 </select>
             </div>
             ` : ''}

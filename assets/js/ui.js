@@ -45,22 +45,11 @@ function onLocationChange(locationId) {
         document.getElementById('sequentialMonsters').checked = false;
     }
 
-    // Désélectionner les monstres incompatibles avec la nouvelle zone
-    const removedNames = [];
-    selectedMonsters = selectedMonsters.filter(m => {
-        if (FROZEN_PEAKS_ONLY_IDS.has(m.fixedId) && locationId !== FROZEN_PEAKS_LOCATION) {
-            removedNames.push(m.name?.[currentLanguage] ?? m.label);
-            return false;
-        }
-        return true;
+    // Réinitialiser la zone de départ de chaque monstre sélectionné
+    // vers la valeur par défaut de la nouvelle région
+    selectedMonsters.forEach(m => {
+        m.spawnZone = getDefaultSpawnZone(locationId);
     });
-
-    if (removedNames.length > 0) {
-        showAlert(
-            `${removedNames.join(', ')} ${removedNames.length > 1 ? 'ont été retirés' : 'a été retiré'} — uniquement disponible${removedNames.length > 1 ? 's' : ''} en zone Cimes gelées.`,
-            'error'
-        );
-    }
 
     // Rafraîchir la liste pour appliquer / lever les verrous visuels
     populateMonsterList();
