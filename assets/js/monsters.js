@@ -203,7 +203,7 @@ function populateMonsterList() {
                 <button class="count-btn count-minus" type="button">−</button>
                 <span class="count-value" id="${counterId}">${currentCount}</span>
                 <button class="count-btn count-plus" type="button">+</button>
-                <span class="count-label">/ ${MAX_MONSTER_COUNT} — total : <span class="total-count">${getTotalMonsterCount()}</span>/${MAX_TOTAL_MONSTER_COUNT}</span>
+                <span class="count-label">/ ${MAX_MONSTER_COUNT} — total : <span class="total-count">0</span>/${MAX_TOTAL_MONSTER_COUNT}</span>
             </div>
             `}
         `;
@@ -370,6 +370,10 @@ function populateMonsterList() {
 
         monsterList.appendChild(card);
     });
+
+    // Initialiser le compteur total affiché dans toutes les cartes après construction
+    const _total = getTotalMonsterCount();
+    monsterList.querySelectorAll('.total-count').forEach(el => { el.textContent = _total; });
 }
 
 /**
