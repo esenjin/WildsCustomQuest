@@ -43,6 +43,17 @@ function getZoneLabel(locationId) {
 /** Nombre maximum d'exemplaires d'un même monstre autorisé par quête. */
 const MAX_MONSTER_COUNT = 5;
 
+/** Nombre maximum de monstres au total (toutes espèces confondues) autorisé par quête. */
+const MAX_TOTAL_MONSTER_COUNT = 5;
+
+/**
+ * Retourne le nombre total de monstres dans la quête (somme des counts).
+ * @returns {number}
+ */
+function getTotalMonsterCount() {
+    return selectedMonsters.reduce((sum, m) => sum + (m.count || 1), 0);
+}
+
 /* ── Affichage de la liste ────────────────────────────────── */
 
 /**
@@ -192,7 +203,7 @@ function populateMonsterList() {
                 <button class="count-btn count-minus" type="button">−</button>
                 <span class="count-value" id="${counterId}">${currentCount}</span>
                 <button class="count-btn count-plus" type="button">+</button>
-                <span class="count-label">/ ${MAX_MONSTER_COUNT}</span>
+                <span class="count-label">/ ${MAX_MONSTER_COUNT} — total : <span class="total-count">${getTotalMonsterCount()}</span>/${MAX_TOTAL_MONSTER_COUNT}</span>
             </div>
             `}
         `;
@@ -233,6 +244,11 @@ function populateMonsterList() {
                 _setSpawnZoneVisible(card, false);
                 _setCountDisplay(card, monster.fixedId, 1);
             } else {
+                // Bloquer si le total global est déjà atteint
+                if (getTotalMonsterCount() >= MAX_TOTAL_MONSTER_COUNT) {
+                    showAlert(`Limite atteinte — la quête ne peut pas contenir plus de ${MAX_TOTAL_MONSTER_COUNT} monstres au total.`, 'error');
+                    return;
+                }
                 // Sélectionner le monstre avec la variante lue depuis les cases
                 const newVariant = _getVariantFromCheckboxes(card);
                 const spawnSel   = card.querySelector('.spawn-zone-select');
@@ -264,6 +280,13 @@ function populateMonsterList() {
                 if (sel) {
                     sel.variant = newVariant;
                 } else {
+                    if (getTotalMonsterCount() >= MAX_TOTAL_MONSTER_COUNT) {
+                        showAlert(`Limite atteinte — la quête ne peut pas contenir plus de ${MAX_TOTAL_MONSTER_COUNT} monstres au total.`, 'error');
+                        // Réinitialiser la checkbox visuellement
+                        this.checked = false;
+                        if (cbAT) { cbAT.checked = false; cbAT.disabled = true; }
+                        return;
+                    }
                     const spawnSel  = card.querySelector('.spawn-zone-select');
                     const spawnZone = spawnSel ? parseInt(spawnSel.value) : getDefaultSpawnZone(document.getElementById('questLocation')?.value ?? '');
                     selectedMonsters.push({ ...monster, variant: newVariant, count: 1, spawnZone });
@@ -286,6 +309,11 @@ function populateMonsterList() {
                 if (sel) {
                     sel.variant = newVariant;
                 } else {
+                    if (getTotalMonsterCount() >= MAX_TOTAL_MONSTER_COUNT) {
+                        showAlert(`Limite atteinte — la quête ne peut pas contenir plus de ${MAX_TOTAL_MONSTER_COUNT} monstres au total.`, 'error');
+                        this.checked = false;
+                        return;
+                    }
                     const spawnSel  = card.querySelector('.spawn-zone-select');
                     const spawnZone = spawnSel ? parseInt(spawnSel.value) : getDefaultSpawnZone(document.getElementById('questLocation')?.value ?? '');
                     selectedMonsters.push({ ...monster, variant: newVariant, count: 1, spawnZone });
@@ -325,16 +353,19 @@ function populateMonsterList() {
             }
         });
 
-        // Bouton « + » : incrémenter le compteur (maximum MAX_MONSTER_COUNT) — absent sur les cartes zone-locked
+        // Bouton « + » : incrémenter le compteur (maximum MAX_MONSTER_COUNT et total MAX_TOTAL_MONSTER_COUNT) — absent sur les cartes zone-locked
         card.querySelector('.count-plus')?.addEventListener('click', function (e) {
             e.stopPropagation();
             const sel = selectedMonsters.find(m => m.fixedId === monster.fixedId);
             if (!sel) return;
-            if (sel.count < MAX_MONSTER_COUNT) {
-                sel.count++;
-                _setCountDisplay(card, monster.fixedId, sel.count);
-                updateMonsterPreview();
+            if (sel.count >= MAX_MONSTER_COUNT) return;
+            if (getTotalMonsterCount() >= MAX_TOTAL_MONSTER_COUNT) {
+                showAlert(`Limite atteinte — la quête ne peut pas contenir plus de ${MAX_TOTAL_MONSTER_COUNT} monstres au total.`, 'error');
+                return;
             }
+            sel.count++;
+            _setCountDisplay(card, monster.fixedId, sel.count);
+            updateMonsterPreview();
         });
 
         monsterList.appendChild(card);
@@ -442,6 +473,10 @@ function updateMonsterPreview() {
         console.error("Erreur lors de la mise à jour de l'aperçu des monstres :", error);
         preview.innerHTML = '<h3>Monstres sélectionnés :</h3><p>Erreur d\'affichage des monstres</p>';
     }
+
+    // Mettre à jour le compteur total affiché dans toutes les cartes
+    const total = getTotalMonsterCount();
+    document.querySelectorAll('.total-count').forEach(el => { el.textContent = total; });
 }
 
 /**
