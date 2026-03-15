@@ -1,7 +1,10 @@
 # Config sensible — ne jamais versionner
 users.json
 logs.json
+reports.json
 
 # ZIPs de quêtes (gérés séparément)
 base/*.zip
 base/attente/*.zip
+base/vip/*.zip
+base/vip/attente/*.zip

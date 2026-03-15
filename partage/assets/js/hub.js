@@ -58,6 +58,9 @@ function initTabs() {
             document.getElementById('tab-' + tab.dataset.tab)?.classList.add('active');
         });
     });
+
+    // Initialiser la logique de la gate VIP
+    initVipGate();
 }
 
 /* ══════════════════════════════════════════════════════════
@@ -225,13 +228,13 @@ function renderGrid() {
     }
 
     filtered.forEach((quest, i) => {
-        const card = buildCard(quest);
+        const card = _buildCardBase(quest);
         card.style.animationDelay = Math.min(i * 35, 350) + 'ms';
         grid.appendChild(card);
     });
 }
 
-function buildCard(quest) {
+function _buildCardBase(quest) {
     const card = document.createElement('div');
     card.className = 'quest-card';
     card.addEventListener('click', () => openModal(quest, false));
@@ -490,8 +493,11 @@ function buildPendingRow(quest) {
 
     const meta = document.createElement('div');
     meta.className = 'pending-meta';
+    const vipBadge = quest.isVip
+        ? '<span class="vip-pending-badge">☠ VIP</span> '
+        : '';
     meta.innerHTML = `
-        <div class="pending-title">${esc(quest.title || 'Sans titre')}</div>
+        <div class="pending-title">${vipBadge}${esc(quest.title || 'Sans titre')}</div>
         <div class="pending-sub">
             par <strong>${esc(quest.pseudo)}</strong> ·
             ${buildStars(quest.level, 5)} ·
@@ -510,34 +516,39 @@ function buildPendingRow(quest) {
     btnDetail.addEventListener('click', () => openModal(quest, true));
     actions.appendChild(btnDetail);
 
-    // Bouton avertissements (visible seulement si la quête en a)
-    const warningCount = quest.warningCount ?? (quest.warnings ?? []).length;
-    if (warningCount > 0) {
-        const btnWarn = document.createElement('button');
-        btnWarn.className = 'btn btn-warning btn-sm';
-        btnWarn.innerHTML = `⚠ Avertissements <span class="badge-warn-count">${warningCount}</span>`;
-        btnWarn.title = 'Voir les avertissements détectés lors de la soumission';
-        btnWarn.addEventListener('click', () => openWarningsModal(quest));
-        actions.appendChild(btnWarn);
+    // Bouton avertissements (visible seulement si la quête en a — non-VIP uniquement)
+    if (!quest.isVip) {
+        const warningCount = quest.warningCount ?? (quest.warnings ?? []).length;
+        if (warningCount > 0) {
+            const btnWarn = document.createElement('button');
+            btnWarn.className = 'btn btn-warning btn-sm';
+            btnWarn.innerHTML = `⚠ Avertissements <span class="badge-warn-count">${warningCount}</span>`;
+            btnWarn.title = 'Voir les avertissements détectés lors de la soumission';
+            btnWarn.addEventListener('click', () => openWarningsModal(quest));
+            actions.appendChild(btnWarn);
+        }
     }
+
+    const validateAction = quest.isVip ? 'admin_validate_vip' : 'admin_validate';
+    const refuseAction   = quest.isVip ? 'admin_refuse_vip'   : 'admin_refuse';
 
     const btnVal = document.createElement('button');
     btnVal.className = 'btn btn-success btn-sm';
     btnVal.textContent = '✓ Valider';
-    btnVal.addEventListener('click', () => adminAction('admin_validate', quest.filename, row, 'Quête validée !'));
+    btnVal.addEventListener('click', () => adminAction(validateAction, quest.filename, row, 'Quête validée !', quest.isVip));
     actions.appendChild(btnVal);
 
     const btnRef = document.createElement('button');
     btnRef.className = 'btn btn-danger btn-sm';
     btnRef.textContent = '✗ Refuser';
-    btnRef.addEventListener('click', () => adminAction('admin_refuse', quest.filename, row, 'Quête refusée.'));
+    btnRef.addEventListener('click', () => adminAction(refuseAction, quest.filename, row, 'Quête refusée.', quest.isVip));
     actions.appendChild(btnRef);
 
     row.appendChild(actions);
     return row;
 }
 
-async function adminAction(action, filename, rowEl, successMsg) {
+async function adminAction(action, filename, rowEl, successMsg, isVip = false) {
     try {
         await api(action, { filename });
         rowEl.classList.add('row-fade-out');
@@ -545,6 +556,7 @@ async function adminAction(action, filename, rowEl, successMsg) {
             rowEl.remove();
             showToast(successMsg, 'success');
             if (action === 'admin_validate') loadQuests();
+            if (action === 'admin_validate_vip' && vipLoaded) loadVipQuests();
             const remaining = document.querySelectorAll('.pending-row').length;
             const badge = document.getElementById('pendingBadge');
             if (badge) {
@@ -1263,6 +1275,9 @@ const LOG_META = {
     edit_quest:      { label: 'Édition',                  icon: '✏', cls: 'log-edit'     },
     dismiss_report:  { label: 'Signalement ignoré',       icon: '✓',  cls: 'log-validate' },
     delete_reported: { label: 'Suppression (signalement)', icon: '🚩', cls: 'log-delete'   },
+    validate_vip:    { label: 'Validation VIP',           icon: '☠',  cls: 'log-validate' },
+    refuse_vip:      { label: 'Refus VIP',                icon: '✗',  cls: 'log-refuse'   },
+    delete_vip:      { label: 'Suppression VIP',          icon: '🗑', cls: 'log-delete'   },
 };
 
 function buildLogRow(log) {
@@ -1439,6 +1454,268 @@ async function saveProfile() {
     } catch(e) {
         errEl.textContent = e.message;
         errEl.style.display = 'block';
+    }
+}
+
+/* ══════════════════════════════════════════════════════════
+   QUÊTES SPÉCIALES (VIP)
+   ══════════════════════════════════════════════════════════ */
+
+let allVipQuests   = [];
+let vipGateUnlocked = false;
+let vipLoaded       = false;
+
+/* ── Gate (checkbox + bouton Entrer) ─────────────────────── */
+function initVipGate() {
+    const checkbox = document.getElementById('vipGateCheckbox');
+    const btnEnter = document.getElementById('btnVipEnter');
+    if (!checkbox || !btnEnter) return;
+
+    checkbox.addEventListener('change', () => {
+        btnEnter.disabled = !checkbox.checked;
+    });
+
+    btnEnter.addEventListener('click', () => {
+        if (!checkbox.checked) return;
+        vipGateUnlocked = true;
+        document.getElementById('vipGate').style.display    = 'none';
+        document.getElementById('vipContent').style.display = '';
+        if (!vipLoaded) {
+            vipLoaded = true;
+            loadVipQuests();
+        }
+    });
+
+    // Bouton soumettre VIP
+    document.getElementById('btnSubmitVip')?.addEventListener('click', openVipSubmitModal);
+}
+
+/* ── Chargement des quêtes spéciales ─────────────────────── */
+async function loadVipQuests() {
+    const grid = document.getElementById('vipGrid');
+    if (grid) grid.innerHTML = '<div class="state-message"><span class="spinner"></span>Chargement…</div>';
+    try {
+        const data = await api('list_vip_quests');
+        allVipQuests = data.quests ?? [];
+        renderVipGrid();
+    } catch(e) {
+        if (grid) grid.innerHTML = `<div class="state-message"><span class="state-icon">⚠</span>${esc(e.message)}</div>`;
+    }
+}
+
+function renderVipGrid() {
+    const grid = document.getElementById('vipGrid');
+    if (!grid) return;
+    grid.innerHTML = '';
+
+    const countEl = document.getElementById('vipResultsCount');
+    if (countEl) countEl.innerHTML =
+        `<strong>${allVipQuests.length}</strong> quête${allVipQuests.length > 1 ? 's' : ''} spéciale${allVipQuests.length > 1 ? 's' : ''} disponible${allVipQuests.length > 1 ? 's' : ''}`;
+
+    if (!allVipQuests.length) {
+        grid.innerHTML = '<div class="state-message"><span class="state-icon">☠</span>Aucune quête spéciale disponible pour l\'instant.</div>';
+        return;
+    }
+
+    allVipQuests.forEach((quest, i) => {
+        const card = _buildCardBase(quest);
+        card.classList.add('quest-card-vip');
+        card.style.animationDelay = Math.min(i * 35, 350) + 'ms';
+        grid.appendChild(card);
+    });
+}
+
+/* ── buildCard publique (utilisée aussi depuis openModal, buildPendingRow etc.) */
+function buildCard(quest) { return _buildCardBase(quest); }
+
+/* ── Modal de soumission VIP ─────────────────────────────── */
+function openVipSubmitModal() {
+    const overlay = document.getElementById('vipSubmitOverlay');
+    if (!overlay) return;
+
+    // Reset
+    document.getElementById('vipPseudo').value    = '';
+    document.getElementById('vipZipInput').value  = '';
+    document.getElementById('vipDropLabel').innerHTML = 'Glisse ton ZIP ici ou <u>clique pour parcourir</u>';
+    document.getElementById('vipDropZone').classList.remove('has-file', 'drop-zone-error');
+    document.getElementById('vipVerifStatus').style.display  = 'none';
+    document.getElementById('vipSubmitError').style.display   = 'none';
+    document.getElementById('vipSubmitSuccess').style.display = 'none';
+    document.getElementById('btnVipSubmitSend').disabled      = true;
+
+    // Drag & drop
+    const dropZone = document.getElementById('vipDropZone');
+    const fileInput = document.getElementById('vipZipInput');
+
+    dropZone.onclick = () => fileInput.click();
+    fileInput.onchange = () => handleVipFileSelect(fileInput.files[0]);
+
+    dropZone.addEventListener('dragover',  e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+    dropZone.addEventListener('drop', e => {
+        e.preventDefault();
+        dropZone.classList.remove('drag-over');
+        const f = e.dataTransfer.files[0];
+        if (f) handleVipFileSelect(f);
+    });
+
+    overlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+
+    document.getElementById('vipSubmitClose').onclick  = closeVipSubmitModal;
+    document.getElementById('vipSubmitCancel').onclick = closeVipSubmitModal;
+    overlay.onclick = e => { if (e.target === overlay) closeVipSubmitModal(); };
+
+    // Clonar bouton envoi pour éviter les doublons
+    const btn = document.getElementById('btnVipSubmitSend');
+    btn.replaceWith(btn.cloneNode(true));
+    document.getElementById('btnVipSubmitSend').addEventListener('click', submitVipQuest);
+}
+
+function closeVipSubmitModal() {
+    document.getElementById('vipSubmitOverlay')?.classList.remove('open');
+    document.body.style.overflow = '';
+}
+
+let vipSelectedFile = null;
+
+function handleVipFileSelect(file) {
+    vipSelectedFile = null;
+    const dropZone  = document.getElementById('vipDropZone');
+    const dropLabel = document.getElementById('vipDropLabel');
+    const errEl     = document.getElementById('vipSubmitError');
+    const statusEl  = document.getElementById('vipVerifStatus');
+    errEl.style.display    = 'none';
+    statusEl.style.display = 'none';
+    document.getElementById('btnVipSubmitSend').disabled = true;
+
+    if (!file) return;
+    if (!file.name.toLowerCase().endsWith('.zip')) {
+        dropZone.classList.add('drop-zone-error');
+        dropLabel.textContent = '✗ Le fichier doit être un .zip';
+        return;
+    }
+    if (file.size > 2 * 1024 * 1024) {
+        dropZone.classList.add('drop-zone-error');
+        dropLabel.textContent = '✗ Fichier trop volumineux (2 Mo max)';
+        return;
+    }
+
+    dropZone.classList.remove('drop-zone-error');
+    dropZone.classList.add('has-file');
+    dropLabel.textContent = '✓ ' + file.name;
+    vipSelectedFile = file;
+
+    // Vérification légère côté client (ZIP magic + ext.json vierge)
+    verifyVipZip(file);
+}
+
+async function verifyVipZip(file) {
+    const statusEl = document.getElementById('vipVerifStatus');
+    const errEl    = document.getElementById('vipSubmitError');
+    statusEl.style.display = 'block';
+    statusEl.innerHTML     = '<span class="spinner" style="width:14px;height:14px;border-width:2px;vertical-align:middle;margin-right:6px"></span> Vérification du ZIP…';
+    statusEl.className     = 'vip-verif-status vip-verif-pending';
+
+    try {
+        const JSZip = window.JSZip;
+        if (!JSZip) throw new Error('JSZip non disponible — rechargez la page.');
+
+        const zip = await JSZip.loadAsync(file);
+
+        // Chercher raw.json et ext.json
+        let rawFile = null, extFile = null;
+        zip.forEach((relativePath, entry) => {
+            if (!entry.dir) {
+                if (relativePath.endsWith('.raw.json')) rawFile = entry;
+                if (relativePath.endsWith('.ext.json')) extFile = entry;
+            }
+        });
+
+        const warns = [];
+        if (!rawFile) warns.push('✗ .raw.json introuvable dans le ZIP');
+        if (!extFile) {
+            warns.push('✗ .ext.json introuvable — obligatoire pour les quêtes spéciales');
+        } else {
+            const extText = await extFile.async('string');
+            let extJson;
+            try { extJson = JSON.parse(extText); } catch { warns.push('✗ .ext.json : JSON invalide'); }
+            if (extJson) {
+                const items = extJson?.rewardItems ?? [];
+                const isBlank = items.length > 0 && items.every(it =>
+                    it.itemId === 0 && it.itemName === '---' &&
+                    it.probability === 100 && it.minCount === 1 && it.maxCount === 1
+                );
+                if (!isBlank) warns.push('✗ .ext.json n\'est pas vierge — les quêtes spéciales ne peuvent pas avoir de récompenses supplémentaires');
+            }
+        }
+
+        if (warns.length) {
+            statusEl.innerHTML = warns.map(w => `<div>${esc(w)}</div>`).join('');
+            statusEl.className = 'vip-verif-status vip-verif-error';
+            vipSelectedFile = null;
+            document.getElementById('btnVipSubmitSend').disabled = true;
+        } else {
+            statusEl.innerHTML = '✓ Vérifications préliminaires réussies — le serveur effectuera les contrôles finaux.';
+            statusEl.className = 'vip-verif-status vip-verif-ok';
+            document.getElementById('btnVipSubmitSend').disabled = false;
+        }
+    } catch(e) {
+        statusEl.innerHTML = `✗ Erreur lors de la lecture du ZIP : ${esc(e.message)}`;
+        statusEl.className = 'vip-verif-status vip-verif-error';
+        vipSelectedFile = null;
+    }
+}
+
+async function submitVipQuest() {
+    const errEl     = document.getElementById('vipSubmitError');
+    const okEl      = document.getElementById('vipSubmitSuccess');
+    const btn       = document.getElementById('btnVipSubmitSend');
+    errEl.style.display = 'none';
+    okEl.style.display  = 'none';
+
+    const pseudo = document.getElementById('vipPseudo')?.value.trim() ?? '';
+    if (!pseudo) {
+        errEl.textContent = 'Le pseudo est requis.';
+        errEl.style.display = 'block';
+        return;
+    }
+    if (!/^[a-zA-Z0-9]{1,15}$/.test(pseudo)) {
+        errEl.textContent = 'Pseudo invalide (1–15 caractères alphanumériques uniquement).';
+        errEl.style.display = 'block';
+        return;
+    }
+    if (!vipSelectedFile) {
+        errEl.textContent = 'Aucun fichier sélectionné ou le fichier ne passe pas les vérifications.';
+        errEl.style.display = 'block';
+        return;
+    }
+
+    btn.disabled    = true;
+    btn.textContent = '⏳ Envoi en cours…';
+
+    const fd = new FormData();
+    fd.append('action',   'upload_vip');
+    fd.append('pseudo',   pseudo);
+    fd.append('questzip', vipSelectedFile, vipSelectedFile.name);
+
+    try {
+        const res  = await fetch('api.php', { method: 'POST', body: fd });
+        const data = await res.json();
+        if (!data.ok) throw new Error(data.message ?? 'Erreur inconnue');
+
+        okEl.textContent = data.message ?? 'Quête spéciale soumise avec succès !';
+        okEl.style.display = 'block';
+        btn.textContent    = '☠ Soumettre';
+        setTimeout(closeVipSubmitModal, 2200);
+
+        // Rafraîchir la liste pending si admin/modo
+        if (IS_AUTH) loadPending();
+    } catch(e) {
+        errEl.textContent = e.message;
+        errEl.style.display = 'block';
+        btn.disabled    = false;
+        btn.textContent = '☠ Soumettre';
     }
 }
 

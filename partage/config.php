@@ -28,6 +28,8 @@ define('DEFAULT_ADMIN_PASSWORD', 'changeme'); // sera hashé automatiquement
 /* ── Chemins ─────────────────────────────────────────────── */
 define('BASE_DIR',    __DIR__ . '/base/');
 define('ATTENTE_DIR', __DIR__ . '/base/attente/');
+define('VIP_DIR',         __DIR__ . '/base/vip/');
+define('VIP_ATTENTE_DIR', __DIR__ . '/base/vip/attente/');
 // Chemin vers enemies.json — cherche d'abord datas/, puis la racine
 define('ENEMIES_JSON', (function() {
     $candidates = [

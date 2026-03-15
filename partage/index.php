@@ -52,6 +52,7 @@ $displayName = $_SESSION['displayName'] ?? $_SESSION['login'] ?? '';
     <!-- ── Tabs principaux ─────────────────────────────────── -->
     <div class="main-tabs">
         <button class="main-tab active" data-tab="quests">Quêtes communautaires</button>
+        <button class="main-tab" data-tab="vip">Quêtes spéciales</button>
         <?php if ($isAuth): ?>
             <button class="main-tab" data-tab="pending">
                 Quêtes en attente
@@ -177,6 +178,54 @@ $displayName = $_SESSION['displayName'] ?? $_SESSION['login'] ?? '';
         </main>
 
     </div><!-- /tab-quests -->
+
+    <!-- ══════════════════════════════════════════════════════
+         ONGLET : QUÊTES SPÉCIALES (VIP)
+         ══════════════════════════════════════════════════════ -->
+    <div class="tab-panel" id="tab-vip">
+
+        <!-- Gate : avertissement + checkbox -->
+        <div id="vipGate" class="vip-gate">
+            <div class="vip-gate-icon">☠</div>
+            <h2 class="vip-gate-title">Zone dangereuse</h2>
+            <p class="vip-gate-desc">
+                Les quêtes présentes ici <strong>s'éloignent fortement des standards des quêtes officielles</strong>.
+                Elles peuvent être excessivement difficiles, avoir des paramètres non conventionnels ou des comportements inattendus.
+                Il est <strong>fortement déconseillé</strong> aux chasseurs débutants de s'y aventurer —
+                ces quêtes s'adressent principalement aux joueurs ayant <strong>terminé le jeu</strong>.
+            </p>
+            <label class="vip-gate-check">
+                <input type="checkbox" id="vipGateCheckbox">
+                <span>J'ai conscience de mettre les pieds dans un endroit dangereux</span>
+            </label>
+            <button class="btn btn-danger" id="btnVipEnter" disabled>Entrer dans la zone</button>
+        </div>
+
+        <!-- Contenu VIP (masqué jusqu'à validation de la gate) -->
+        <div id="vipContent" style="display:none">
+
+            <!-- Bandeau d'avertissement persistant -->
+            <div class="vip-warning-banner">
+                <span class="vip-warning-icon">⚠</span>
+                <div>
+                    <strong>Zone non officielle</strong> — Ces quêtes s'éloignent sensiblement des standards officiels et sont destinées aux chasseurs expérimentés ayant terminé le jeu. Aucune récompense supplémentaire n'est associée à ces quêtes.
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="vip-content-header">
+                <p class="results-count" id="vipResultsCount">Chargement…</p>
+                <button class="btn btn-danger" id="btnSubmitVip">⚠ Soumettre une quête spéciale</button>
+            </div>
+
+            <!-- Grille -->
+            <main id="vipGrid" class="quest-grid" aria-live="polite">
+                <div class="state-message"><span class="spinner"></span>Chargement…</div>
+            </main>
+
+        </div><!-- /vipContent -->
+
+    </div><!-- /tab-vip -->
 
     <?php if ($isAuth): ?>
     <!-- ══════════════════════════════════════════════════════
@@ -576,6 +625,55 @@ $displayName = $_SESSION['displayName'] ?? $_SESSION['login'] ?? '';
         </div>
         <div class="modal-body">
             <ul id="warningsList" class="warnings-list"></ul>
+        </div>
+    </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     MODAL SOUMISSION QUÊTE SPÉCIALE (VIP)
+     ════════════════════════════════════════════════════════ -->
+<div id="vipSubmitOverlay" class="modal-overlay" role="dialog" aria-modal="true">
+    <div class="modal" style="max-width:520px">
+        <div class="modal-banner" style="background:linear-gradient(90deg,#6b1a1a,#a02222)"></div>
+        <div class="modal-header">
+            <div class="modal-header-left">
+                <div class="modal-type-badge" style="background:rgba(160,34,34,.15);color:#e05050;border-color:rgba(160,34,34,.35)">☠ Quête spéciale</div>
+                <h2 class="modal-title">Soumettre une quête spéciale</h2>
+                <div style="font-size:.82em;color:var(--text-muted);margin-top:3px">Vérifications allégées · Validation admin/modo requise</div>
+            </div>
+            <button class="modal-close" id="vipSubmitClose">✕</button>
+        </div>
+        <div class="modal-body">
+            <div class="vip-submit-notice">
+                <strong>⚠ Conditions requises pour les quêtes spéciales :</strong>
+                <ul style="margin:.6em 0 0 1.2em;font-size:.88em;line-height:1.7">
+                    <li>Le fichier ZIP doit contenir un <code>.raw.json</code> valide</li>
+                    <li>Le <code>.ext.json</code> doit être <strong>vierge</strong> (aucune récompense supplémentaire — itemId 0, "---")</li>
+                    <li>Les monstres et la zone doivent exister dans la base de données</li>
+                    <li>La quête ne doit pas être un doublon (ni dans les classiques, ni dans les spéciales)</li>
+                </ul>
+            </div>
+            <div class="form-group" style="margin-top:16px">
+                <label class="form-label" for="vipPseudo">Ton pseudo en jeu <span style="color:var(--red)">*</span></label>
+                <input type="text" id="vipPseudo" class="form-input"
+                       placeholder="1–15 caractères alphanumériques" maxlength="15" autocomplete="off">
+                <div style="font-size:.8em;color:var(--text-muted);margin-top:4px">Lettres et chiffres uniquement (1–15 car.)</div>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="vipZipInput">Fichier ZIP de la quête <span style="color:var(--red)">*</span></label>
+                <div class="file-drop-zone" id="vipDropZone">
+                    <span class="file-drop-icon">📦</span>
+                    <span class="file-drop-label" id="vipDropLabel">Glisse ton ZIP ici ou <u>clique pour parcourir</u></span>
+                    <input type="file" id="vipZipInput" accept=".zip" style="display:none">
+                </div>
+            </div>
+            <div id="vipVerifStatus" style="display:none;margin-top:8px"></div>
+            <div id="vipSubmitError"   class="login-error"   style="display:none"></div>
+            <div id="vipSubmitSuccess" class="login-success" style="display:none"></div>
+            <div style="margin-top:16px;display:flex;gap:10px">
+                <button class="btn btn-secondary" id="vipSubmitCancel" style="flex:1">Annuler</button>
+                <button class="btn btn-danger"    id="btnVipSubmitSend" style="flex:1" disabled>☠ Soumettre</button>
+            </div>
         </div>
     </div>
 </div>

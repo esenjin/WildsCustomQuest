@@ -146,11 +146,17 @@ match ($action) {
     'admin_edit_quest'  => actionAdminEditQuest(),
     'get_warnings'      => actionGetWarnings(),
     'version'           => actionVersion(),
-    'report_quest'      => actionReportQuest(),
-    'list_reports'      => actionListReports(),
-    'dismiss_report'    => actionDismissReport(),
-    'delete_reported'   => actionDeleteReported(),
-    default             => fail('Action inconnue.', 400),
+    'report_quest'        => actionReportQuest(),
+    'list_reports'        => actionListReports(),
+    'dismiss_report'      => actionDismissReport(),
+    'delete_reported'     => actionDeleteReported(),
+    'upload_vip'          => actionUploadVip(),
+    'list_vip_quests'     => actionListVipQuests(),
+    'list_vip_pending'    => actionListVipPending(),
+    'admin_validate_vip'  => actionAdminValidateVip(),
+    'admin_refuse_vip'    => actionAdminRefuseVip(),
+    'admin_delete_vip'    => actionAdminDeleteVip(),
+    default               => fail('Action inconnue.', 400),
 };
 
 /* ══════════════════════════════════════════════════════════
@@ -581,8 +587,14 @@ function actionListQuests(): void {
 
 function actionListPending(): void {
     requireAuth();
-    $quests = readQuestDir(ATTENTE_DIR);
-    ok(['quests' => $quests]);
+    $classic = readQuestDir(ATTENTE_DIR);
+    $vip     = readQuestDir(VIP_ATTENTE_DIR);
+    foreach ($vip as &$q) { $q['isVip'] = true; }
+    unset($q);
+    // Mélanger, tri par date décroissante
+    $all = array_merge($classic, $vip);
+    usort($all, fn($a, $b) => $b['addedAt'] - $a['addedAt']);
+    ok(['quests' => $all]);
 }
 
 /* ══════════════════════════════════════════════════════════
@@ -992,8 +1004,12 @@ function actionAdminEditQuest(): void {
     if (mb_strlen($newDesc)   > 2000) fail('Description trop longue (2000 caractères max).');
 
     $path = BASE_DIR . $filename;
-    if (!str_starts_with(realpath($path) ?: '', realpath(BASE_DIR)))
-        fail('Chemin non autorisé.');
+    if (!str_starts_with(realpath($path) ?: '', realpath(BASE_DIR))) {
+        // Essayer dans VIP_DIR
+        $path = VIP_DIR . $filename;
+        if (!str_starts_with(realpath($path) ?: '', realpath(VIP_DIR)))
+            fail('Chemin non autorisé.');
+    }
     if (!file_exists($path)) fail('Fichier introuvable.');
 
     // ── 1. Lire tous les fichiers du ZIP en mémoire ──────────
@@ -1261,6 +1277,200 @@ function actionGetWarnings(): void {
     $warnings = is_array($meta['warnings'] ?? null) ? $meta['warnings'] : [];
 
     ok(['warnings' => $warnings, 'count' => count($warnings)]);
+}
+
+/* ══════════════════════════════════════════════════════════
+   QUÊTES SPÉCIALES (VIP)
+   ══════════════════════════════════════════════════════════ */
+
+/**
+ * Vérifie qu'un .ext.json est bien "vierge" (récompenses neutres uniquement).
+ * itemId 0 + itemName "---" pour tous les items, probability 100, counts 1.
+ */
+function isExtJsonBlank(array $ext): bool {
+    $items = $ext['rewardItems'] ?? null;
+    if (!is_array($items) || empty($items)) return false;
+    foreach ($items as $item) {
+        if (
+            ($item['itemId']      ?? -1)  !== 0     ||
+            ($item['itemName']    ?? '')  !== '---'  ||
+            ($item['probability'] ?? 0)  !== 100    ||
+            ($item['minCount']    ?? 0)  !== 1      ||
+            ($item['maxCount']    ?? 0)  !== 1
+        ) {
+            return false;
+        }
+    }
+    return true;
+}
+
+/**
+ * Vérifie les doublons en tenant compte aussi des quêtes classiques.
+ * Retourne [$inBase, $inAttente, $inVip, $inVipAttente, $inClassicBase, $inClassicAttente]
+ */
+function checkDuplicateIdVip(int $questId): array {
+    $inBase          = !empty(glob(VIP_DIR         . "quest_{$questId}_*.zip"));
+    $inAttente       = !empty(glob(VIP_ATTENTE_DIR . "quest_{$questId}_*.zip"));
+    $inClassicBase   = !empty(glob(BASE_DIR        . "quest_{$questId}_*.zip"));
+    $inClassicAttente= !empty(glob(ATTENTE_DIR     . "quest_{$questId}_*.zip"));
+    return [$inBase, $inAttente, $inClassicBase, $inClassicAttente];
+}
+
+function actionUploadVip(): void {
+    $pseudo = trim($_POST['pseudo'] ?? '');
+    if ($pseudo === '') fail('Le pseudo est requis.');
+    if (!preg_match('/^[a-zA-Z0-9]{1,15}$/', $pseudo))
+        fail('Pseudo invalide (1–15 caractères alphanumériques uniquement).');
+
+    if (empty($_FILES['questzip']) || $_FILES['questzip']['error'] !== UPLOAD_ERR_OK)
+        fail(uploadErrMsg($_FILES['questzip']['error'] ?? UPLOAD_ERR_NO_FILE));
+
+    $tmp  = $_FILES['questzip']['tmp_name'];
+    $name = $_FILES['questzip']['name'];
+
+    if (strtolower(pathinfo($name, PATHINFO_EXTENSION)) !== 'zip')
+        fail('Le fichier doit être un .zip.');
+
+    if (filesize($tmp) > MAX_ZIP_SIZE)
+        fail('Le fichier dépasse la taille maximale (2 Mo).');
+
+    $fh    = fopen($tmp, 'rb');
+    $magic = fread($fh, 2);
+    fclose($fh);
+    if ($magic !== 'PK') fail('Le fichier n\'est pas un ZIP valide.');
+
+    $zip = new ZipArchive();
+    if ($zip->open($tmp) !== true) fail('Impossible d\'ouvrir le ZIP.');
+
+    // Extraction légère — on accepte des erreurs sur ext.json uniquement
+    $rawStr = null; $extStr = null;
+    for ($i = 0; $i < $zip->numFiles; $i++) {
+        $n = $zip->getNameIndex($i);
+        if (str_starts_with(basename($n), '.') || str_ends_with($n, '/')) continue;
+        if (str_ends_with($n, '.raw.json')) $rawStr = $zip->getFromIndex($i);
+        if (str_ends_with($n, '.ext.json')) $extStr = $zip->getFromIndex($i);
+    }
+    $zip->close();
+
+    if ($rawStr === null) fail('.raw.json introuvable dans le ZIP.');
+    $raw = json_decode($rawStr, true);
+    if ($raw === null) fail('.raw.json : JSON invalide.');
+
+    // .ext.json obligatoire et doit être vierge
+    if ($extStr === null) fail('.ext.json introuvable — il doit être présent et vierge (sans récompenses réelles).');
+    $ext = json_decode($extStr, true);
+    if ($ext === null) fail('.ext.json : JSON invalide.');
+    if (!isExtJsonBlank($ext))
+        fail('.ext.json doit être vierge (itemId 0, itemName "---", probability 100, counts 1). Les quêtes spéciales ne peuvent pas avoir de récompenses supplémentaires.');
+
+    $questId = $raw['_DataList']['_MissionId']['_Value'] ?? null;
+    if ($questId === null || (!is_int($questId) && !is_float($questId)))
+        fail('ID de quête introuvable dans le ZIP.');
+    $questId = (int)$questId;
+
+    [$title] = findQuestTexts($raw);
+    if ($title === '') fail('Le titre de la quête (FR) est vide dans le ZIP.');
+
+    // Vérifier les doublons (y compris dans les quêtes classiques)
+    [$inVip, $inVipAttente, $inBase, $inAttente] = checkDuplicateIdVip($questId);
+    if ($inVip)       fail("L'ID #{$questId} est déjà présent dans les Quêtes spéciales.");
+    if ($inVipAttente) fail("L'ID #{$questId} est déjà en attente de validation (Quêtes spéciales).");
+    if ($inBase)      fail("L'ID #{$questId} est déjà présent dans les Quêtes communautaires.");
+    if ($inAttente)   fail("L'ID #{$questId} est déjà en attente de validation (Quêtes communautaires).");
+
+    // Vérifier que les monstres existent
+    $targets = $raw['_BossZakoDataList']['_MainTargetDataList'] ?? [];
+    if (empty($targets)) fail('Aucun monstre cible trouvé dans le ZIP.');
+
+    $enemies  = loadEnemies();
+    $knownIds = array_map('strval', array_column($enemies, 'fixedId'));
+    foreach ($targets as $t) {
+        $fid = (string)((int)($t['_EmID'] ?? 0));
+        if (!in_array($fid, $knownIds, true))
+            fail("Monstre inconnu (fixedId={$fid}) — non présent dans la base de données.");
+    }
+
+    // Vérifier la zone
+    $stageName = $raw['_DataList']['_Stage']['_Name'] ?? '';
+    if ($stageName !== '') {
+        $knownStages = [
+            'st101_砂', 'st102_森', 'st103_油田', 'st104_壁',
+            'st105_炉心', 'st401_闘技場', 'st402_壁ヌシ戦闘',
+        ];
+        if (!in_array($stageName, $knownStages, true))
+            fail("Zone inconnue (stageName={$stageName}) — non présente dans la liste des zones valides.");
+    }
+
+    $destName = sprintf('quest_%d_%s.zip', $questId, $pseudo);
+    $destPath = VIP_ATTENTE_DIR . $destName;
+
+    if (!is_dir(VIP_ATTENTE_DIR)) mkdir(VIP_ATTENTE_DIR, 0755, true);
+    if (!move_uploaded_file($tmp, $destPath))
+        fail('Impossible de sauvegarder le fichier sur le serveur.');
+
+    ok([
+        'filename' => $destName,
+        'questId'  => $questId,
+        'message'  => 'Quête spéciale soumise avec succès ! Elle sera vérifiée et ajoutée prochainement.',
+    ]);
+}
+
+function actionListVipQuests(): void {
+    $quests = readQuestDir(VIP_DIR, skipSubdirs: true);
+    ok(['quests' => $quests]);
+}
+
+function actionListVipPending(): void {
+    requireAuth();
+    $quests = readQuestDir(VIP_ATTENTE_DIR);
+    // Marquer les quêtes comme VIP pour le badge dans la liste d'attente globale
+    foreach ($quests as &$q) { $q['isVip'] = true; }
+    unset($q);
+    ok(['quests' => $quests]);
+}
+
+function actionAdminValidateVip(): void {
+    requireAuth();
+    $filename = sanitizeFilename($_POST['filename'] ?? '');
+    if (!$filename) fail('Nom de fichier manquant.');
+
+    $src = VIP_ATTENTE_DIR . $filename;
+    $dst = VIP_DIR         . $filename;
+    if (!file_exists($src)) fail('Fichier introuvable en attente (VIP).');
+    if (!is_dir(VIP_DIR)) mkdir(VIP_DIR, 0755, true);
+    if (!rename($src, $dst)) fail('Impossible de déplacer le fichier.');
+
+    appendLog('validate_vip', $filename);
+    ok(['message' => "Quête spéciale « {$filename} » validée."]);
+}
+
+function actionAdminRefuseVip(): void {
+    requireAuth();
+    $filename = sanitizeFilename($_POST['filename'] ?? '');
+    if (!$filename) fail('Nom de fichier manquant.');
+
+    $path = VIP_ATTENTE_DIR . $filename;
+    if (!file_exists($path)) fail('Fichier introuvable (VIP attente).');
+    unlink($path);
+
+    appendLog('refuse_vip', $filename);
+    ok(['message' => "Quête spéciale « {$filename} » refusée et supprimée."]);
+}
+
+function actionAdminDeleteVip(): void {
+    requireAuth();
+    $filename = sanitizeFilename($_POST['filename'] ?? '');
+    if (!$filename) fail('Nom de fichier manquant.');
+
+    $path = VIP_DIR . $filename;
+    if (!str_starts_with(realpath($path) ?: '', realpath(VIP_DIR)))
+        fail('Chemin non autorisé.');
+    if (is_dir($path)) fail('Opération non autorisée sur un dossier.');
+    if (!file_exists($path)) fail('Fichier introuvable.');
+    unlink($path);
+
+    appendLog('delete_vip', $filename);
+    ok(['message' => "Quête spéciale « {$filename} » supprimée."]);
 }
 
 /* ══════════════════════════════════════════════════════════
