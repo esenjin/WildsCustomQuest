@@ -49,4 +49,4 @@ define('MAX_ZIP_SIZE', 2 * 1024 * 1024); // 2 Mo
 define('SESSION_NAME', 'mhw_hub_admin');
 /* ── Version de l'outil ──────────────────────────────────── */
 define('APP_VERSION',      '2.3.4');
-define('APP_VERSION_NAME', 'Les Trèflémères sntrépides');
+define('APP_VERSION_NAME', 'Les Trèflémères intrépides');
