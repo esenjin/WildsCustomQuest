@@ -45,11 +45,26 @@ function onLocationChange(locationId) {
         document.getElementById('sequentialMonsters').checked = false;
     }
 
-    // Réinitialiser la zone de départ de chaque monstre sélectionné
-    // vers la valeur par défaut de la nouvelle région
-    selectedMonsters.forEach(m => {
-        m.spawnZone = getDefaultSpawnZone(locationId);
-    });
+    // Désélectionner tous les monstres incompatibles avec la nouvelle zone
+    if (locationId !== '') {
+        const removedNames = [];
+        selectedMonsters = selectedMonsters.filter(m => {
+            const monsterData = enemiesData.find(e => e.fixedId === m.fixedId);
+            if (monsterData && !isMonsterAllowedInZone(monsterData, locationId)) {
+                removedNames.push(m.name?.[currentLanguage] ?? m.label);
+                return false;
+            }
+            return true;
+        });
+
+        if (removedNames.length > 0) {
+            const zones = removedNames.length > 1;
+            showAlert(
+                `${removedNames.join(', ')} ${zones ? 'ont été retirés' : 'a été retiré'} — non disponible${zones ? 's' : ''} dans cette région.`,
+                'error'
+            );
+        }
+    }
 
     // Rafraîchir la liste pour appliquer / lever les verrous visuels
     populateMonsterList();
