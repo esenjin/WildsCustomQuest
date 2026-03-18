@@ -139,6 +139,34 @@
             </div>
 
             <div class="form-group">
+                <label for="worldTimeHour">Heure de départ de la quête :</label>
+                <select id="worldTimeHour">
+                    <option value="6">Matin (6h)</option>
+                    <option value="12">Journée (12h)</option>
+                    <option value="18">Soir (18h)</option>
+                    <option value="0">Nuit (0h)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="envType">Météo :</label>
+                <select id="envType">
+                    <option value="1961958400" data-name="荒廃期" selected>Déclin</option>
+                    <option value="-1111779072" data-name="異常気象">Anomalie climatique</option>
+                    <option value="1272023808" data-name="豊穣期">Abondance</option>
+                </select>
+                <p class="hint">Conditions météo au lancement de la quête.</p>
+            </div>
+
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" id="isFixEnv" style="width:auto; margin-right:6px;">
+                    Fixer la météo pendant toute la quête
+                </label>
+                <p class="hint">Cochée : la météo reste celle définie ci-dessus jusqu'à la fin de la quête. Décochée : elle peut évoluer normalement.</p>
+            </div>
+
+            <div class="form-group">
                 <label for="timeLimit">Limite de temps (minutes) :</label>
                 <input type="number" id="timeLimit" min="5" max="500" value="50">
                 <p class="hint">Entre 5 et 500 minutes.</p>
@@ -327,12 +355,12 @@
 
             // Clamp en temps réel pour les inputs avec min/max
             const clampedInputs = [
-                { id: 'questId',     min: 50000, max: 9999999 },
-                { id: 'timeLimit',   min: 5,    max: 500      },
-                { id: 'rewardMoney', min: 1000, max: 10000000 },
-                { id: 'hrPoints',    min: 100,  max: 25000    },
-                { id: 'minRC',       min: 1,    max: 999      },
-                { id: 'questLife',   min: 1,    max: 99       },
+                { id: 'questId',       min: 50000, max: 9999999 },
+                { id: 'timeLimit',     min: 5,    max: 500      },
+                { id: 'rewardMoney',   min: 1000, max: 10000000 },
+                { id: 'hrPoints',      min: 100,  max: 25000    },
+                { id: 'minRC',         min: 1,    max: 999      },
+                { id: 'questLife',     min: 1,    max: 99       },
             ];
 
             clampedInputs.forEach(({ id, min, max }) => {

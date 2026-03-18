@@ -55,6 +55,13 @@ function generateQuest() {
         const monsterDifficulty = parseInt(document.getElementById('monsterDifficulty')?.value ?? '3') || 3;
         const maxPlayers    = Math.min(4, Math.max(1, parseInt(document.getElementById('maxPlayers')?.value) || 4));
 
+        // Heure & météo
+        const worldTimeHourQuest = Math.min(23, Math.max(0, parseInt(document.getElementById('worldTimeHour')?.value ?? '18') || 0));
+        const envTypeEl          = document.getElementById('envType');
+        const envTypeValue       = parseInt(envTypeEl?.value ?? '1961958400');
+        const envTypeName        = envTypeEl?.selectedOptions[0]?.dataset?.name ?? '荒廃期';
+        const isFixEnv           = document.getElementById('isFixEnv')?.checked ?? false;
+
         // Configuration dépendante du niveau
         const levelConfig = getQuestLevelConfig(questLevel);
         const minRC       = Math.min(999, Math.max(1, parseInt(document.getElementById('minRC')?.value) || levelConfig.orderHR));
@@ -330,11 +337,11 @@ function generateQuest() {
                     {
                         "_EnvTimeRate": 0,
                         "_EnvType": {
-                            "_Name": "荒廃期",
-                            "_Value": 1961958400
+                            "_Name": envTypeName,
+                            "_Value": envTypeValue
                         },
                         "_ForcastDatas": [],
-                        "_IsFixEnv": false,
+                        "_IsFixEnv": isFixEnv,
                         "_IsTransitionEnv": false,
                         "_StageType": {
                             "_Name": getLocationName(questLocation),
@@ -367,7 +374,7 @@ function generateQuest() {
                 "_StopTimeTimingMinute": 0,
                 "_StopTimeTimingMinuteQuest": 0,
                 "_WorldTimeHour": 0,
-                "_WorldTimeHourQuest": 21,
+                "_WorldTimeHourQuest": worldTimeHourQuest,
                 "_WorldTimeMinute": 0,
                 "_WorldTimeMinuteQuest": 0
             }
@@ -1085,6 +1092,31 @@ async function importQuest(input) {
         document.getElementById('maxPlayers').value       = data._OrderCondition?._MaxPlayerNum ?? 4;
         document.getElementById('minRC').value            = data._OrderCondition?._OrderHR      ?? 1;
         document.getElementById('questLevel').value       = questLevel;
+
+        // ── Heure & météo ────────────────────────────────────
+        const streamData = raw._StreamQuestData;
+        const importedHour = streamData?._WorldTimeHourQuest ?? 18;
+        const hourEl = document.getElementById('worldTimeHour');
+        if (hourEl) {
+            const allowedHours = [6, 12, 18, 0];
+            const closest = allowedHours.reduce((prev, curr) => {
+                const diffPrev = Math.min(Math.abs(importedHour - prev), 24 - Math.abs(importedHour - prev));
+                const diffCurr = Math.min(Math.abs(importedHour - curr), 24 - Math.abs(importedHour - curr));
+                return diffCurr < diffPrev ? curr : prev;
+            });
+            hourEl.value = String(closest);
+        }
+
+        const importedEnvValue = streamData?._SetEnvironmentDataList?.[0]?._EnvType?._Value;
+        const envTypeEl = document.getElementById('envType');
+        if (envTypeEl && importedEnvValue !== undefined) {
+            const matchingOption = [...envTypeEl.options].find(o => parseInt(o.value) === importedEnvValue);
+            if (matchingOption) envTypeEl.value = matchingOption.value;
+        }
+
+        const importedIsFixEnv = streamData?._SetEnvironmentDataList?.[0]?._IsFixEnv ?? false;
+        const isFixEnvEl = document.getElementById('isFixEnv');
+        if (isFixEnvEl) isFixEnvEl.checked = importedIsFixEnv;
 
         // ── Difficulté des monstres (grade corrigé) ─────────
         const diffEl = document.getElementById('monsterDifficulty');
