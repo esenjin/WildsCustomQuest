@@ -1149,7 +1149,25 @@ body {
     }
 
     .report-reason-card { gap: 8px; padding: 9px 11px; }
-    .report-reason-desc { display: none; } /* trop verbeux sur mobile */
+    .report-reason-desc { display: none; }
+
+    /* Tabs – scroll horizontal sur mobile */
+    .main-tabs {
+        overflow-x: auto;
+        overflow-y: visible;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        flex-wrap: nowrap;
+        padding-bottom: 1px;
+    }
+    .main-tabs::-webkit-scrollbar { display: none; } /* Chrome/Safari */
+
+    .main-tab {
+        flex-shrink: 0;
+        padding: 10px 14px;
+        font-size: 0.82em;
+        white-space: nowrap;
+    }
 }
 @media (max-width: 400px) {
     .hub-wrapper  { padding: 0 12px 40px; }
