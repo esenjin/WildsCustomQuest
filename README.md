@@ -59,6 +59,7 @@ Voir [le wiki](https://git.crystalyx.net/Esenjin_Asakha/WildsQuetesPerso/wiki/) 
 
 - **kassent** — mod [Custom Quest Loader](https://www.nexusmods.com/monsterhunterwilds/mods/1096) et données [mhwilds_datas](https://github.com/kassent/mhwilds_data)
 - Basé sur [WildCustomQuest](https://github.com/Farad77/WildCustomQuest) de Farad77
+- Développé avec l'aide de [Claude.ai](https://claude.ai).
 
 ---
 
