@@ -14,13 +14,15 @@ const GEN_LOCATION_SPAWN_ZONES = {
     "1182228864":  [3, 8, 12],    // Falaises de glace
     "327401792":   [2, 5, 12],    // Ruines de Wyveria
     "1181994624":  null,          // Vallon meurtri (zone fixe 2)
-    "544388992":   null           // Cimes gelées (zone fixe 255)
+    "544388992":   null,           // Cimes gelées (zone fixe 255)
+    "905584064":   null            // Torche Draconique (zone fixe 255)
 };
 
 /** Zone fixe par région à zone fixe. */
 const GEN_FIXED_ZONES = {
     "1181994624": 2,   // Vallon meurtri
-    "544388992":  255  // Cimes gelées
+    "544388992":  255, // Cimes gelées
+    "905584064":  255  // Torche Draconique
 };
 
 /** Noms lisibles des régions. */
@@ -31,7 +33,8 @@ const GEN_ZONE_NAMES = {
     "1182228864":  "Falaises de glace",
     "327401792":   "Ruines de Wyveria",
     "1181994624":  "Vallon meurtri",
-    "544388992":   "Cimes gelées"
+    "544388992":   "Cimes gelées",
+    "905584064":   "Torche Draconique"
 };
 
 /** Configuration par niveau de quête (money, hrPoints, rewardId, orderHR min). */

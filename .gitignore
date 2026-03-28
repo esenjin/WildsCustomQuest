@@ -1,0 +1,10 @@
+# Config sensible — ne jamais versionner
+partage/users.json
+partage/logs.json
+partage/reports.json
+
+# ZIPs de quêtes (gérés séparément)
+partage/base/*.zip
+partage/base/attente/*.zip
+partage/base/vip/*.zip
+partage/base/vip/attente/*.zip

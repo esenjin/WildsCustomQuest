@@ -35,7 +35,8 @@ function getZoneLabel(locationId) {
         "1182228864":  "Falaises de glace",
         "327401792":   "Ruines de Wyveria",
         "1181994624":  "Vallon meurtri",
-        "544388992":   "Cimes gelées"
+        "544388992":   "Cimes gelées",
+        "905584064": "Torche Draconique"
     };
     return labels[locationId] ?? locationId;
 }

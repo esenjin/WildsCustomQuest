@@ -12,6 +12,7 @@ const ZONES = {
     'st105_炉心':       'Ruines de Wyveria',
     'st401_闘技場':     'Vallon meurtri',
     'st402_壁ヌシ戦闘': 'Cimes gelées',
+    'st403':           'Torche Draconique',
 };
 
 function getZoneName(stageVal, stageName) {

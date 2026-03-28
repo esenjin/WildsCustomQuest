@@ -44,7 +44,8 @@ function getLocationName(locationId) {
         "1182228864":  "st104_壁",       // Falaises de glace
         "327401792":   "st105_炉心",     // Ruines de Wyveria
         "1181994624":  "st401_闘技場",   // Vallon meurtri (arène)
-        "544388992":  "st402_壁ヌシ戦闘" // Cimes gelées
+        "544388992":  "st402_壁ヌシ戦闘", // Cimes gelées
+        "905584064": "st403"            // Torche Draconique
     };
     return locations[locationId] || "st401";
 }
@@ -63,8 +64,9 @@ const LOCATION_SPAWN_ZONES = {
     "-1251081216": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18],    // Bassin pétrolier
     "1182228864":  [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],    // Falaises de glace
     "327401792":   [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],    // Ruines de Wyveria
-    "1181994624":  null,          // Vallon meurtri — zone fixe (2)
-    "544388992":   null           // Cimes gelées — zone fixe (255)
+    "1181994624":  null,    // Vallon meurtri — zone fixe (2)
+    "544388992":   null,    // Cimes gelées — zone fixe (255)
+    "905584064":   null     // Torche Draconique — zone fixe (255)
 };
 
 // Zones avec un camp pour le joueur
@@ -85,8 +87,8 @@ function getDefaultSpawnZone(locationId) {
     const zones = LOCATION_SPAWN_ZONES[locationId];
     if (zones && zones.length > 0) return zones[0];
     if (locationId === '1181994624') return 2;   // Vallon meurtri
-    if (locationId === '544388992')  return 255;  // Cimes gelées
-    return 17; // fallback
+    if (locationId === '544388992' || locationId === '905584064') return 255;  // Cimes gelées et Torche Draconique
+    return 15; // fallback
 }
 
 /**
