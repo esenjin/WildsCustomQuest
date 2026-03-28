@@ -42,7 +42,11 @@ function generateQuest() {
         }
 
         const questId       = parseInt(questIdEl.value) || 10086;
-        const questTitle    = questTitleEl.value || "Custom Quest";
+        const questTitleRaw  = questTitleEl.value || "Custom Quest";
+        const isRedTitle     = document.getElementById('redTitle')?.checked ?? false;
+        const questTitle     = isRedTitle
+            ? `\u003cCOLOR preset="TXT_Danger"\u003e${questTitleRaw}\u003c/COLOR\u003e`
+            : questTitleRaw;
         // Convertir les sauts de ligne en \r\n pour l'affichage en jeu dans la description
         const questDesc     = (questDescriptionEl.value || "A custom monster hunt").replace(/\r\n|\r|\n/g, '\r\n');
         const questClient   = document.getElementById('questClient')?.value || "Générateur de quêtes";
@@ -468,7 +472,7 @@ function updateQuestSummary() {
         const html = `
             <h3>Résumé de la quête</h3>
             <div>
-                <div><strong>Titre :</strong> ${msgEntry.MessageData[2].Text}</div>
+                <div><strong>Titre :</strong> ${msgEntry.MessageData[2].Text.replace(/<COLOR[^>]*>|<\/COLOR>/gi, '')}</div>
                 <div><strong>Client :</strong> ${msgEntry.MessageData[3].Text}</div>
                 <div><strong>ID :</strong> ${quest._DataList._MissionId._Value}</div>
                 <div><strong>Niveau :</strong> ★${quest._DataList._QuestLv}</div>
@@ -1082,7 +1086,11 @@ async function importQuest(input) {
         const desc   = msgFR?.MessageData?.find(m => m.Name?.endsWith('_102'))?.Text || '';
 
         document.getElementById('questId').value          = data._MissionId?._Value ?? ext.questId ?? 10086;
-        document.getElementById('questTitle').value       = title;
+        document.getElementById('questTitle').value = title.replace(/<COLOR[^>]*>|<\/COLOR>/gi, '');
+        const redTitleEl = document.getElementById('redTitle');
+            if (redTitleEl) redTitleEl.checked = /\u003cCOLOR[^>]*TXT_Danger/i.test(
+                msgFR?.MessageData?.find(m => m.Name?.endsWith('_100'))?.Text ?? ''
+            );
         document.getElementById('questClient').value      = client;
         document.getElementById('questDescription').value = desc;
         document.getElementById('timeLimit').value        = data._TimeLimit ?? 20;

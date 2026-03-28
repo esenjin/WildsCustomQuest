@@ -253,7 +253,7 @@ function _buildCardBase(quest) {
     const header = document.createElement('div');
     header.className = 'quest-card-header';
     header.innerHTML = `
-        <div class="quest-card-title">${esc(quest.title || 'Sans titre')}</div>
+        <div class="quest-card-title">${esc(stripColorTags(quest.title || 'Sans titre'))}</div>
         <div class="quest-stars" style="--star-color:${sc.active};--star-glow:${sc.glow}">${buildStars(quest.level)}</div>`;
     body.appendChild(header);
 
@@ -316,7 +316,7 @@ function openModal(quest, isPending = false) {
     const overlay = document.getElementById('modalOverlay');
     if (!overlay) return;
 
-    setEl('modalTitle',  quest.title  || 'Sans titre');
+    setEl('modalTitle', esc(stripColorTags(quest.title || 'Sans titre')));
     setEl('modalClient', quest.client ? `Client : ${esc(quest.client)}` : '');
     setEl('modalStars',  buildStars(quest.level));
     setEl('modalZone',   getZoneName(quest.stageVal, quest.stageName));
@@ -498,7 +498,7 @@ function buildPendingRow(quest) {
         ? '<span class="vip-pending-badge">☠ VIP</span> '
         : '';
     meta.innerHTML = `
-        <div class="pending-title">${vipBadge}${esc(quest.title || 'Sans titre')}</div>
+        <div class="pending-title">${vipBadge}${esc(stripColorTags(quest.title || 'Sans titre'))}</div>
         <div class="pending-sub">
             par <strong>${esc(quest.pseudo)}</strong> ·
             ${buildStars(quest.level, 5)} ·
@@ -1875,6 +1875,12 @@ function levelStarColor(l) {
     if (l >= 8)  return { active: '#e09a38', glow: 'rgba(224,154,56,0.55)'  };
     if (l >= 6)  return { active: '#3a82cc', glow: 'rgba(58,130,204,0.55)'  };
     return { active: '#34a85a', glow: 'rgba(52,168,90,0.55)' };
+}
+
+function stripColorTags(s) {
+    return String(s ?? '')
+        .replace(/<COLOR[^>]*>/gi, '')
+        .replace(/<\/COLOR>/gi, '');
 }
 
 function esc(s) {
