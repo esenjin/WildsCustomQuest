@@ -126,7 +126,6 @@ const GEN_FIXED_VALUES = {
     _IsStopTimeTiming:     false,
     _IsStopTimeTimingQuest: false,
     _WorldTimeHour:        0,
-    _WorldTimeHourQuest:   21,
     _WorldTimeMinute:      0,
     _WorldTimeMinuteQuest: 0,
     // Lune
@@ -446,7 +445,6 @@ async function handleFile(file) {
             ['_IsFixWorldTimeQuest',  streamData._IsFixWorldTimeQuest,  GEN_FIXED_VALUES._IsFixWorldTimeQuest,  'Temps fixe de quête activé (_IsFixWorldTimeQuest)'],
             ['_IsSetWorldTime',       streamData._IsSetWorldTime,       GEN_FIXED_VALUES._IsSetWorldTime,       'Heure du monde forcée (_IsSetWorldTime)'],
             ['_IsStopTimeTiming',     streamData._IsStopTimeTiming,     GEN_FIXED_VALUES._IsStopTimeTiming,     'Arrêt de temps activé (_IsStopTimeTiming)'],
-            ['_WorldTimeHourQuest',   streamData._WorldTimeHourQuest,   GEN_FIXED_VALUES._WorldTimeHourQuest,   `Heure de quête modifiée (${streamData._WorldTimeHourQuest} ≠ 21)`],
         ];
         for (const [, val, expected, label] of envChecks) {
             if (val !== undefined && val !== expected) {
