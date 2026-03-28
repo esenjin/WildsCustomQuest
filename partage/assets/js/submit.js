@@ -8,11 +8,11 @@
 
 /** Zones de spawn autorisées par région (null = zone fixe). */
 const GEN_LOCATION_SPAWN_ZONES = {
-    "-1226157568": [8, 13, 17],   // Plaines venteuses
-    "-859829056":  [6, 12, 15],   // Forêt écarlate
-    "-1251081216": [2, 9, 15],    // Bassin pétrolier
-    "1182228864":  [3, 8, 12],    // Falaises de glace
-    "327401792":   [2, 5, 12],    // Ruines de Wyveria
+    "-1226157568": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17],   // Plaines venteuses
+    "-859829056":  [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18],   // Forêt écarlate
+    "-1251081216": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18],    // Bassin pétrolier
+    "1182228864":  [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],    // Falaises de glace
+    "327401792":   [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],    // Ruines de Wyveria
     "1181994624":  null,          // Vallon meurtri (zone fixe 2)
     "544388992":   null,           // Cimes gelées (zone fixe 255)
     "905584064":   null            // Torche Draconique (zone fixe 255)
