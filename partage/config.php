@@ -48,5 +48,5 @@ define('MAX_ZIP_SIZE', 2 * 1024 * 1024); // 2 Mo
 /* ── Session ─────────────────────────────────────────────── */
 define('SESSION_NAME', 'mhw_hub_admin');
 /* ── Version de l'outil ──────────────────────────────────── */
-define('APP_VERSION',      '2.3.5');
-define('APP_VERSION_NAME', 'Le Gelidron chétif');
+define('APP_VERSION',      '2.3.6');
+define('APP_VERSION_NAME', 'Le Gelidron efflanqué');
